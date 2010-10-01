@@ -2,7 +2,7 @@ require 'active_support'
 require 'rr'
 require 'sham_rack'
 
-require 'media_wiki/gateway'
+require 'media_wiki'
 require 'spec/fake_media_wiki/app'
 
 $fake_media_wiki = FakeMediaWiki::App.new
