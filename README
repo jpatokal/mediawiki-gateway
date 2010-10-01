@@ -2,6 +2,9 @@
 
  Ruby framework for MediaWiki API manipulation
 
+ Gem:  http://rubygems.org/gems/mediawiki-gateway
+ RDoc: http://rubydoc.info/gems/mediawiki-gateway
+
 == Example
 
  Simple page creation script:
