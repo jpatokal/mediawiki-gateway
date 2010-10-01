@@ -2,7 +2,7 @@
 #
 # Import a MediaWiki XML dump 
 #
-require 'media_wiki/gateway'
+require 'lib/media_wiki'
 
 if ARGV.length < 3
   raise "Syntax: import_xml.rb <host> <username> <password> <file>"

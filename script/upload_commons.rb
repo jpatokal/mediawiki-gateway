@@ -1,5 +1,4 @@
-require 'lib/media_wiki/gateway'
-require 'lib/media_wiki/config'
+require 'lib/media_wiki'
 
 config = MediaWiki::Config.new(ARGV, "upload")
 file = ARGV[0]

@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'media_wiki/gateway'
+require 'lib/media_wiki'
 
 if ARGV.length <1
   raise "Syntax: delete_batch.rb <wiki-api-url> <startswith_pattern>"

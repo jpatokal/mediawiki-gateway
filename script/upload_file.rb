@@ -2,8 +2,7 @@
 #
 # Sample script for fetching a page's current contents in Wiki markup
 #
-require 'media_wiki/gateway'
-require 'media_wiki/config'
+require 'lib/media_wiki'
 
 config = MediaWiki::Config.new(ARGV, "upload")
 config.abort("Name of file to upload is mandatory.") unless ARGV[0]

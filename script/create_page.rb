@@ -2,8 +2,7 @@
 #
 # Sample script for fetching a page's current contents in Wiki markup
 #
-require 'media_wiki/gateway'
-require 'media_wiki/config'
+require 'lib/media_wiki'
 
 config = MediaWiki::Config.new ARGV 
 config.abort("Name of article is mandatory.") unless config.article

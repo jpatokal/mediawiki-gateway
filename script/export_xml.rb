@@ -2,7 +2,7 @@
 #
 # Export MediaWiki pages as XML
 #
-require 'media_wiki/gateway'
+require 'lib/media_wiki'
 
 if ARGV.length < 3
   raise "Syntax: export_xml.rb <host> <user> <password> [page page page...]"
