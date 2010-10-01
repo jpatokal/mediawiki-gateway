@@ -24,22 +24,17 @@ Spec::Rake::SpecTask.new('spec') do |t|
   t.rcov_opts = ['--exclude', 'spec,gems']
 end
 
-spec = Gem::Specification.new do |s| 
-  s.name = "MediaWikiGateway"
-  s.version = "0.0.1"
-  s.author = "Jani Patokallio/Lonely Planet"
-  s.email = "jpatokal@iki.fi"
-  s.homepage = "http://github.com/jpatokal"
-  s.platform = Gem::Platform::RUBY
-  s.summary = "Ruby framework for MediaWiki API manipulation"
-  s.files = FileList["{bin,lib}/**/*"].to_a
-  s.require_path = "lib"
-  s.autorequire = "name"
-  s.test_files = FileList["{spec}/**/*.rb"].to_a
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README"]
-end
-Rake::GemPackageTask.new(spec) do |pkg| 
-  pkg.need_tar = true 
-end 
 
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "mediawiki-gateway"
+    gemspec.summary = "Connect to the mediawiki API"
+    gemspec.description = ""
+    gemspec.email = "jpatokal@iki.fi"
+    gemspec.homepage = "http://github.com/jpatokal/media_wiki_gateway"
+    gemspec.authors = ["Jani Patokallio"]
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: gem install jeweler"
+end
