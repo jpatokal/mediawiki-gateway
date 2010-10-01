@@ -3,7 +3,7 @@ require 'logger'
 require 'rest_client'
 require 'rexml/document'
 require 'uri'
-require 'lib/media_wiki/utils'
+require File.dirname(__FILE__) + '/utils'
 
 module MediaWiki
 
