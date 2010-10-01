@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.0.1"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
      "doc/fr_method_index.html",
      "doc/index.html",
      "doc/rdoc-style.css",
+     "lib/media_wiki.rb",
      "lib/media_wiki/config.rb",
      "lib/media_wiki/gateway.rb",
      "lib/media_wiki/utils.rb",
