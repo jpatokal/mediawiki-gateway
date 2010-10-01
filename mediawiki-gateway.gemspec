@@ -45,6 +45,7 @@ Gem::Specification.new do |s|
      "lib/media_wiki/config.rb",
      "lib/media_wiki/gateway.rb",
      "lib/media_wiki/utils.rb",
+     "mediawiki-gateway.gemspec",
      "script/create_page.rb",
      "script/delete_book.rb",
      "script/export_xml.rb",
