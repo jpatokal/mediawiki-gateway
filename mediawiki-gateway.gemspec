@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2010-10-01}
+  s.date = %q{2010-10-09}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -48,12 +48,11 @@ Gem::Specification.new do |s|
      "lib/media_wiki/utils.rb",
      "mediawiki-gateway.gemspec",
      "script/create_page.rb",
-     "script/delete_book.rb",
+     "script/delete_batch.rb",
      "script/export_xml.rb",
      "script/get_page.rb",
      "script/import_xml.rb",
      "script/run_fake_media_wiki.rb",
-     "script/undelete_page.rb",
      "script/upload_commons.rb",
      "script/upload_file.rb",
      "spec/fake_media_wiki/api_pages.rb",
@@ -69,10 +68,10 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Connect to the mediawiki API}
   s.test_files = [
-    "spec/fake_media_wiki/api_pages.rb",
+    "spec/gateway_spec.rb",
      "spec/fake_media_wiki/app.rb",
      "spec/fake_media_wiki/query_handling.rb",
-     "spec/gateway_spec.rb"
+     "spec/fake_media_wiki/api_pages.rb"
   ]
 
   if s.respond_to? :specification_version then
