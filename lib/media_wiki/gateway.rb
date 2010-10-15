@@ -170,27 +170,21 @@ module MediaWiki
     # log out and then log back in).
     #
     # Options:
-    # * 'filename'       - Target filename (defaults to local name if not 
-    #                      given, options[:target] is alias for this.
-    # * 'comment'        - Upload comment. Also used as the initial page 
-    #                      text for new files if "text" is not specified.
+    # * 'filename'       - Target filename (defaults to local name if not given), options[:target] is alias for this.
+    # * 'comment'        - Upload comment. Also used as the initial page text for new files if "text" is not specified.
     # * 'text'           - Initial page text for new files
     # * 'watch'          - Watch the page
     # * 'ignorewarnings' - Ignore any warnings
-    # * 'url'            - Url to fetch the file from. Set path to nil
-    #                      if you want to use this.
+    # * 'url'            - Url to fetch the file from. Set path to nil if you want to use this.
     #
     # Deprecated but still supported options:
     # * :description     - Description of this file. Used as 'text'.
     # * :target          - Target filename, same as 'filename'.
-    # * :summary         - Edit summary for history. Used as 'comment'. Also
-    #                      used as 'text' if neither it or :description is
-    #                      specified.
+    # * :summary         - Edit summary for history. Used as 'comment'. Also used as 'text' if neither it or :description is specified.
     # 
     # Examples:
     #   mw.upload('/path/to/local/file.jpg', 'filename' => "RemoteFile.jpg")
-    #   mw.upload(nil, 'filename' => "RemoteFile2.jpg", 
-    #     'url' => 'http://remote.com/server/file.jpg')
+    #   mw.upload(nil, 'filename' => "RemoteFile2.jpg", 'url' => 'http://remote.com/server/file.jpg')
     #
     def upload(path, options={})
       if options[:description]
