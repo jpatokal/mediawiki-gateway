@@ -34,6 +34,7 @@ begin
     gemspec.email = "jpatokal@iki.fi"
     gemspec.homepage = "http://github.com/jpatokal/media_wiki_gateway"
     gemspec.authors = ["Jani Patokallio"]
+    gemspec.add_dependency 'rest_client'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"

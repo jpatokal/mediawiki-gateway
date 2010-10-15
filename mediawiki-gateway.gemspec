@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2010-10-09}
+  s.date = %q{2010-10-15}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -25,16 +25,16 @@ Gem::Specification.new do |s|
      "doc/classes/MediaWiki/Config.html",
      "doc/classes/MediaWiki/Gateway.html",
      "doc/created.rid",
-     "doc/files/README_txt.html",
-     "doc/files/media_wiki/config_rb.html",
-     "doc/files/media_wiki/gateway_rb.html",
-     "doc/files/media_wiki/utils_rb.html",
+     "doc/files/README.html",
+     "doc/files/lib/media_wiki/config_rb.html",
+     "doc/files/lib/media_wiki/gateway_rb.html",
+     "doc/files/lib/media_wiki/utils_rb.html",
      "doc/files/script/create_page_rb.html",
-     "doc/files/script/delete_book_rb.html",
+     "doc/files/script/delete_batch_rb.html",
      "doc/files/script/export_xml_rb.html",
      "doc/files/script/get_page_rb.html",
      "doc/files/script/import_xml_rb.html",
-     "doc/files/script/undelete_page_rb.html",
+     "doc/files/script/run_fake_media_wiki_rb.html",
      "doc/files/script/upload_commons_rb.html",
      "doc/files/script/upload_file_rb.html",
      "doc/fr_class_index.html",
@@ -68,10 +68,10 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Connect to the mediawiki API}
   s.test_files = [
-    "spec/gateway_spec.rb",
+    "spec/fake_media_wiki/api_pages.rb",
      "spec/fake_media_wiki/app.rb",
      "spec/fake_media_wiki/query_handling.rb",
-     "spec/fake_media_wiki/api_pages.rb"
+     "spec/gateway_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -79,9 +79,12 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<rest_client>, [">= 0"])
     else
+      s.add_dependency(%q<rest_client>, [">= 0"])
     end
   else
+    s.add_dependency(%q<rest_client>, [">= 0"])
   end
 end
 
