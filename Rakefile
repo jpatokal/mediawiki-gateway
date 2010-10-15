@@ -9,8 +9,8 @@ desc 'generate API documentation to doc/index.html'
 
 Rake::RDocTask.new do |rd|
   rd.rdoc_dir = 'doc'
-  rd.main = 'README.txt'
-  rd.rdoc_files.include "README.txt", "lib/media_wiki/**/*\.rb", "script/**/*\.rb"
+  rd.main = 'README'
+  rd.rdoc_files.include "README", "lib/media_wiki/**/*\.rb", "script/**/*\.rb"
   rd.options << '--inline-source'
   rd.options << '--line-numbers'
   rd.options << '--all'
