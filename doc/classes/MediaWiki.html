@@ -55,16 +55,16 @@
         <tr class="top-aligned-row">
             <td><strong>In:</strong></td>
             <td>
-                <a href="../files/media_wiki/config_rb.html">
-                media_wiki/config.rb
+                <a href="../files/lib/media_wiki/config_rb.html">
+                lib/media_wiki/config.rb
                 </a>
         <br />
-                <a href="../files/media_wiki/gateway_rb.html">
-                media_wiki/gateway.rb
+                <a href="../files/lib/media_wiki/gateway_rb.html">
+                lib/media_wiki/gateway.rb
                 </a>
         <br />
-                <a href="../files/media_wiki/utils_rb.html">
-                media_wiki/utils.rb
+                <a href="../files/lib/media_wiki/utils_rb.html">
+                lib/media_wiki/utils.rb
                 </a>
         <br />
             </td>
@@ -132,7 +132,7 @@ Class <a href="MediaWiki/Gateway.html" class="link">MediaWiki::Gateway</a><br />
             onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000001-source">
 <pre>
-   <span class="ruby-comment cmt"># File media_wiki/utils.rb, line 5</span>
+   <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 5</span>
 5:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
 6:       <span class="ruby-value str">&quot;0.0.1&quot;</span>
 7:     <span class="ruby-keyword kw">end</span>
@@ -165,7 +165,7 @@ slashes
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/utils.rb, line 12</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 12</span>
 12:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
 13:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
 14:     <span class="ruby-keyword kw">end</span>

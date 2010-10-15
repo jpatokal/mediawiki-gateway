@@ -55,8 +55,8 @@
         <tr class="top-aligned-row">
             <td><strong>In:</strong></td>
             <td>
-                <a href="../../files/media_wiki/gateway_rb.html">
-                media_wiki/gateway.rb
+                <a href="../../files/lib/media_wiki/gateway_rb.html">
+                lib/media_wiki/gateway.rb
                 </a>
         <br />
             </td>
@@ -88,21 +88,23 @@
       <div class="name-list">
       <a href="#M000007">create</a>&nbsp;&nbsp;
       <a href="#M000008">delete</a>&nbsp;&nbsp;
-      <a href="#M000014">export</a>&nbsp;&nbsp;
-      <a href="#M000016">extensions</a>&nbsp;&nbsp;
+      <a href="#M000014">download</a>&nbsp;&nbsp;
+      <a href="#M000016">export</a>&nbsp;&nbsp;
+      <a href="#M000018">extensions</a>&nbsp;&nbsp;
       <a href="#M000005">get</a>&nbsp;&nbsp;
-      <a href="#M000021">get_response</a>&nbsp;&nbsp;
-      <a href="#M000018">get_token</a>&nbsp;&nbsp;
-      <a href="#M000019">get_undelete_token</a>&nbsp;&nbsp;
-      <a href="#M000013">import</a>&nbsp;&nbsp;
+      <a href="#M000023">get_response</a>&nbsp;&nbsp;
+      <a href="#M000020">get_token</a>&nbsp;&nbsp;
+      <a href="#M000021">get_undelete_token</a>&nbsp;&nbsp;
+      <a href="#M000013">image_info</a>&nbsp;&nbsp;
+      <a href="#M000015">import</a>&nbsp;&nbsp;
       <a href="#M000010">list</a>&nbsp;&nbsp;
       <a href="#M000004">login</a>&nbsp;&nbsp;
-      <a href="#M000020">make_api_request</a>&nbsp;&nbsp;
-      <a href="#M000015">namespaces_by_prefix</a>&nbsp;&nbsp;
+      <a href="#M000022">make_api_request</a>&nbsp;&nbsp;
+      <a href="#M000017">namespaces_by_prefix</a>&nbsp;&nbsp;
       <a href="#M000003">new</a>&nbsp;&nbsp;
       <a href="#M000006">render</a>&nbsp;&nbsp;
       <a href="#M000011">search</a>&nbsp;&nbsp;
-      <a href="#M000017">semantic_query</a>&nbsp;&nbsp;
+      <a href="#M000019">semantic_query</a>&nbsp;&nbsp;
       <a href="#M000009">undelete</a>&nbsp;&nbsp;
       <a href="#M000012">upload</a>&nbsp;&nbsp;
       </div>
@@ -167,14 +169,14 @@ href="http://en.wikipedia.org/w/api.php">en.wikipedia.org/w/api.php</a>&quot;)
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 16</span>
-16:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">loglevel</span> = <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">WARN</span>)
-17:       <span class="ruby-ivar">@log</span> = <span class="ruby-constant">Logger</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">STDERR</span>)
-18:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">loglevel</span>
-19:       <span class="ruby-ivar">@wiki_url</span> = <span class="ruby-identifier">url</span>
-20:       <span class="ruby-ivar">@headers</span> = { <span class="ruby-value str">&quot;User-Agent&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;MediaWiki::Gateway/#{MediaWiki.version}&quot;</span> }
-21:       <span class="ruby-ivar">@cookies</span> = {}
-22:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 15</span>
+15:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">loglevel</span> = <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">WARN</span>)
+16:       <span class="ruby-ivar">@log</span> = <span class="ruby-constant">Logger</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">STDERR</span>)
+17:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">loglevel</span>
+18:       <span class="ruby-ivar">@wiki_url</span> = <span class="ruby-identifier">url</span>
+19:       <span class="ruby-ivar">@headers</span> = { <span class="ruby-value str">&quot;User-Agent&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;MediaWiki::Gateway/#{MediaWiki.version}&quot;</span> }
+20:       <span class="ruby-ivar">@cookies</span> = {}
+21:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -227,12 +229,12 @@ href="Gateway.html#M000003">new</a> one (useful for bulk loads)
             onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000007-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 80</span>
-80:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">title</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>={})
-81:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'edit'</span>, <span class="ruby-value str">'title'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">title</span>, <span class="ruby-value str">'text'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">content</span>, <span class="ruby-value str">'summary'</span> =<span class="ruby-operator">&gt;</span> (<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>), <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'edit'</span>, <span class="ruby-identifier">title</span>)}
-82:       <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'createonly'</span>] = <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:overwrite</span>]
-83:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-84:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 79</span>
+79:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">title</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>={})
+80:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'edit'</span>, <span class="ruby-value str">'title'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">title</span>, <span class="ruby-value str">'text'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">content</span>, <span class="ruby-value str">'summary'</span> =<span class="ruby-operator">&gt;</span> (<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>), <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'edit'</span>, <span class="ruby-identifier">title</span>)}
+81:       <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'createonly'</span>] = <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:overwrite</span>]
+82:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+83:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -261,11 +263,11 @@ support deleting multiple pages at a time.)
             onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000008-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 89</span>
-89:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">title</span>)
-90:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'delete'</span>, <span class="ruby-value str">'title'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">title</span>, <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'delete'</span>, <span class="ruby-identifier">title</span>)}
-91:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-92:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 88</span>
+88:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">title</span>)
+89:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'delete'</span>, <span class="ruby-value str">'title'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">title</span>, <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'delete'</span>, <span class="ruby-identifier">title</span>)}
+90:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+91:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -276,6 +278,43 @@ support deleting multiple pages at a time.)
 
         <div class="method-heading">
           <a href="#M000014" class="method-signature">
+          <span class="method-name">download</span><span class="method-args">(file_name, options={})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Download <em>file_name</em>. Returns file contents. All options are passed
+to <a href="Gateway.html#M000013">image_info</a> however
+options[&#8216;iiprop&#8217;] is forced to url. You can still set other
+options to control what file you want to <a
+href="Gateway.html#M000014">download</a>.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000014-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000014-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 282</span>
+282:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">download</span>(<span class="ruby-identifier">file_name</span>, <span class="ruby-identifier">options</span>={})
+283:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">'iiprop'</span>] = <span class="ruby-value str">'url'</span>
+284:   
+285:       <span class="ruby-identifier">attributes</span> = <span class="ruby-identifier">image_info</span>(<span class="ruby-identifier">file_name</span>, <span class="ruby-identifier">options</span>)
+286:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attributes</span>
+287:         <span class="ruby-constant">RestClient</span>.<span class="ruby-identifier">get</span> <span class="ruby-identifier">attributes</span>[<span class="ruby-value str">'url'</span>]
+288:       <span class="ruby-keyword kw">else</span>
+289:         <span class="ruby-keyword kw">nil</span>
+290:       <span class="ruby-keyword kw">end</span>
+291:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000016" class="method-detail">
+        <a name="M000016"></a>
+
+        <div class="method-heading">
+          <a href="#M000016" class="method-signature">
           <span class="method-name">export</span><span class="method-args">(page_titles)</span>
           </a>
         </div>
@@ -293,24 +332,24 @@ Exports a page or set of pages
 Returns <a href="../MediaWiki.html">MediaWiki</a> XML dump
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000014-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000014-source">
+            onclick="toggleCode('M000016-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000016-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 199</span>
-199:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">export</span>(<span class="ruby-identifier">page_titles</span>)
-200:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">page_titles</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">'|'</span>), <span class="ruby-value str">'export'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">'exportnowrap'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>}
-201:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-202:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 313</span>
+313:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">export</span>(<span class="ruby-identifier">page_titles</span>)
+314:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">page_titles</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">'|'</span>), <span class="ruby-value str">'export'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">'exportnowrap'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>}
+315:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+316:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
       </div>
 
-      <div id="method-M000016" class="method-detail">
-        <a name="M000016"></a>
+      <div id="method-M000018" class="method-detail">
+        <a name="M000018"></a>
 
         <div class="method-heading">
-          <a href="#M000016" class="method-signature">
+          <a href="#M000018" class="method-signature">
           <span class="method-name">extensions</span><span class="method-args">()</span>
           </a>
         </div>
@@ -318,26 +357,26 @@ Returns <a href="../MediaWiki.html">MediaWiki</a> XML dump
         <div class="method-description">
           <p>
 Get a <a href="Gateway.html#M000010">list</a> of all installed (and
-registered) <a href="Gateway.html#M000016">extensions</a>
+registered) <a href="Gateway.html#M000018">extensions</a>
 </p>
 <p>
-Returns array of <a href="Gateway.html#M000016">extensions</a> (name =&gt;
+Returns array of <a href="Gateway.html#M000018">extensions</a> (name =&gt;
 version)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000016-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000016-source">
+            onclick="toggleCode('M000018-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000018-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 220</span>
-220:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extensions</span>
-221:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'meta'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'siteinfo'</span>, <span class="ruby-value str">'siprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'extensions'</span> }
-222:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-223:       <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">res</span>, <span class="ruby-value str">&quot;//ext&quot;</span>).<span class="ruby-identifier">inject</span>(<span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">extensions</span>, <span class="ruby-identifier">extension</span><span class="ruby-operator">|</span>
-224:         <span class="ruby-identifier">name</span> = <span class="ruby-identifier">extension</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;name&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
-225:         <span class="ruby-identifier">extensions</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">extension</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;version&quot;</span>]
-226:         <span class="ruby-identifier">extensions</span>
-227:       <span class="ruby-keyword kw">end</span>
-228:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 334</span>
+334:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extensions</span>
+335:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'meta'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'siteinfo'</span>, <span class="ruby-value str">'siprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'extensions'</span> }
+336:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+337:       <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">res</span>, <span class="ruby-value str">&quot;//ext&quot;</span>).<span class="ruby-identifier">inject</span>(<span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">extensions</span>, <span class="ruby-identifier">extension</span><span class="ruby-operator">|</span>
+338:         <span class="ruby-identifier">name</span> = <span class="ruby-identifier">extension</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;name&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
+339:         <span class="ruby-identifier">extensions</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">extension</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;version&quot;</span>]
+340:         <span class="ruby-identifier">extensions</span>
+341:       <span class="ruby-keyword kw">end</span>
+342:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -369,16 +408,16 @@ Returns nil if the page does not exist
             onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 45</span>
-45:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">page_title</span>)
-46:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'revisions'</span>, <span class="ruby-value str">'rvprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'content'</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_title</span>}
-47:       <span class="ruby-identifier">page</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>).<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/pages/page&quot;</span>]
-48:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">page</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">page</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;missing&quot;</span>]
-49:         <span class="ruby-keyword kw">nil</span>
-50:       <span class="ruby-keyword kw">else</span>
-51:         <span class="ruby-identifier">page</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;revisions/rev&quot;</span>].<span class="ruby-identifier">text</span>
-52:       <span class="ruby-keyword kw">end</span>
-53:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 44</span>
+44:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">page_title</span>)
+45:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'revisions'</span>, <span class="ruby-value str">'rvprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'content'</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_title</span>}
+46:       <span class="ruby-identifier">page</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>).<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/pages/page&quot;</span>]
+47:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">page</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">page</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;missing&quot;</span>]
+48:         <span class="ruby-keyword kw">nil</span>
+49:       <span class="ruby-keyword kw">else</span>
+50:         <span class="ruby-identifier">page</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;revisions/rev&quot;</span>].<span class="ruby-identifier">text</span>
+51:       <span class="ruby-keyword kw">end</span>
+52:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -389,6 +428,98 @@ Returns nil if the page does not exist
 
         <div class="method-heading">
           <a href="#M000013" class="method-signature">
+          <span class="method-name">image_info</span><span class="method-args">(file_name_or_page_id, options={})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Requests image info from <a href="../MediaWiki.html">MediaWiki</a>. Follows
+redirects.
+</p>
+<p>
+<em>file_name_or_page_id</em> should be either:
+</p>
+<ul>
+<li>a file name (String) you want info about without File: prefix.
+
+</li>
+<li>or a Fixnum page id you of the file.
+
+</li>
+</ul>
+<p>
+<em>options</em> is <tt>Hash</tt> passed as query arguments. See <a
+href="http://www.mediawiki.org/wiki/API:Query_-_Properties#imageinfo_.2F_ii">www.mediawiki.org/wiki/API:Query_-_Properties#imageinfo_.2F_ii</a>
+for more information.
+</p>
+<p>
+options[&#8216;iiprop&#8217;] should be either a string of properties
+joined by &#8217;|&#8217; or an <tt>Array</tt> (or more precisely something
+that responds to join).
+</p>
+<p>
+<tt>Hash</tt> like object is returned where keys are image properties.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  mw.image_info(
+    &quot;Trooper.jpg&quot;, 'iiprop' =&gt; ['timestamp', 'user']
+  ).each do |key, value|
+    puts &quot;#{key.inspect} =&gt; #{value.inspect}&quot;
+  end
+</pre>
+<p>
+Output:
+</p>
+<pre>
+  &quot;timestamp&quot; =&gt; &quot;2009-10-31T12:59:11Z&quot;
+  &quot;user&quot; =&gt; &quot;Valdas&quot;
+</pre>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000013-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000013-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 251</span>
+251:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">image_info</span>(<span class="ruby-identifier">file_name_or_page_id</span>, <span class="ruby-identifier">options</span>={})
+252:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">'iiprop'</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-value str">'iiprop'</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">'|'</span>) \
+253:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'iiprop'</span>].<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:join</span>)
+254:       <span class="ruby-identifier">form_data</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(
+255:         <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>,
+256:         <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'imageinfo'</span>,
+257:         <span class="ruby-value str">'redirects'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>
+258:       )
+259: 
+260:       <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">file_name_or_page_id</span>
+261:       <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Fixnum</span>
+262:         <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'pageids'</span>] = <span class="ruby-identifier">file_name_or_page_id</span>
+263:       <span class="ruby-keyword kw">else</span>
+264:         <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'titles'</span>] = <span class="ruby-node">&quot;File:#{file_name_or_page_id}&quot;</span>
+265:       <span class="ruby-keyword kw">end</span>
+266: 
+267:       <span class="ruby-identifier">xml</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+268:       <span class="ruby-identifier">page</span> = <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/pages/page&quot;</span>]
+269:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">page</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">page</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;missing&quot;</span>]
+270:         <span class="ruby-keyword kw">nil</span>
+271:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/redirects/r&quot;</span>]
+272:         <span class="ruby-comment cmt"># We're dealing with redirect here.</span>
+273:         <span class="ruby-identifier">image_info</span>(<span class="ruby-identifier">page</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;pageid&quot;</span>].<span class="ruby-identifier">to_i</span>, <span class="ruby-identifier">options</span>)
+274:       <span class="ruby-keyword kw">else</span>
+275:         <span class="ruby-identifier">page</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;imageinfo/ii&quot;</span>].<span class="ruby-identifier">attributes</span>
+276:       <span class="ruby-keyword kw">end</span>
+277:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000015" class="method-detail">
+        <a name="M000015"></a>
+
+        <div class="method-heading">
+          <a href="#M000015" class="method-signature">
           <span class="method-name">import</span><span class="method-args">(xmlfile)</span>
           </a>
         </div>
@@ -404,22 +535,22 @@ Imports a <a href="../MediaWiki.html">MediaWiki</a> XML dump
 </dl>
 <p>
 Returns XML array &lt;api&gt;&lt;<a
-href="Gateway.html#M000013">import</a>&gt;&lt;page/&gt;&lt;page/&gt;&#8230;
+href="Gateway.html#M000015">import</a>&gt;&lt;page/&gt;&lt;page/&gt;&#8230;
 &lt;page revisions=&quot;1&quot;&gt; (or more) means successfully imported
 &lt;page revisions=&quot;0&quot;&gt; means duplicate, not imported
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000013-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000013-source">
+            onclick="toggleCode('M000015-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000015-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 186</span>
-186:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">import</span>(<span class="ruby-identifier">xmlfile</span>)
-187:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">&quot;action&quot;</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;import&quot;</span>,
-188:         <span class="ruby-value str">&quot;xml&quot;</span>     =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">xmlfile</span>),
-189:         <span class="ruby-value str">&quot;token&quot;</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'import'</span>, <span class="ruby-value str">'Main Page'</span>), <span class="ruby-comment cmt"># NB: dummy page name</span>
-190:         <span class="ruby-value str">&quot;format&quot;</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'xml'</span> }
-191:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-192:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 300</span>
+300:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">import</span>(<span class="ruby-identifier">xmlfile</span>)
+301:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">&quot;action&quot;</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;import&quot;</span>,
+302:         <span class="ruby-value str">&quot;xml&quot;</span>     =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">xmlfile</span>),
+303:         <span class="ruby-value str">&quot;token&quot;</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'import'</span>, <span class="ruby-value str">'Main Page'</span>), <span class="ruby-comment cmt"># NB: dummy page name</span>
+304:         <span class="ruby-value str">&quot;format&quot;</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'xml'</span> }
+305:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+306:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -450,26 +581,26 @@ Returns array of page titles (empty if no matches)
             onclick="toggleCode('M000010-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000010-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 115</span>
-115:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">list</span>(<span class="ruby-identifier">key</span>)
-116:       <span class="ruby-identifier">titles</span> = []
-117:       <span class="ruby-identifier">apfrom</span> = <span class="ruby-keyword kw">nil</span>
-118:       <span class="ruby-identifier">key</span>, <span class="ruby-identifier">namespace</span> = <span class="ruby-identifier">key</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;:&quot;</span>, <span class="ruby-value">2</span>).<span class="ruby-identifier">reverse</span>
-119:       <span class="ruby-identifier">namespace</span> = <span class="ruby-identifier">namespaces_by_prefix</span>[<span class="ruby-identifier">namespace</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>
-120:       <span class="ruby-keyword kw">begin</span>
-121:         <span class="ruby-identifier">form_data</span> =
-122:           {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>,
-123:           <span class="ruby-value str">'list'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'allpages'</span>,
-124:           <span class="ruby-value str">'apfrom'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">apfrom</span>,
-125:           <span class="ruby-value str">'apprefix'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">key</span>,
-126:           <span class="ruby-value str">'aplimit'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">500</span>, <span class="ruby-comment cmt"># max allowed by API</span>
-127:           <span class="ruby-value str">'apnamespace'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">namespace</span>}
-128:         <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-129:         <span class="ruby-identifier">apfrom</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">'query-continue'</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">'query-continue/allpages'</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">'apfrom'</span>] <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
-130:         <span class="ruby-identifier">titles</span> <span class="ruby-operator">+=</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">res</span>, <span class="ruby-value str">&quot;//p&quot;</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;title&quot;</span>] }
-131:       <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">apfrom</span>
-132:       <span class="ruby-identifier">titles</span>
-133:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 114</span>
+114:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">list</span>(<span class="ruby-identifier">key</span>)
+115:       <span class="ruby-identifier">titles</span> = []
+116:       <span class="ruby-identifier">apfrom</span> = <span class="ruby-keyword kw">nil</span>
+117:       <span class="ruby-identifier">key</span>, <span class="ruby-identifier">namespace</span> = <span class="ruby-identifier">key</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;:&quot;</span>, <span class="ruby-value">2</span>).<span class="ruby-identifier">reverse</span>
+118:       <span class="ruby-identifier">namespace</span> = <span class="ruby-identifier">namespaces_by_prefix</span>[<span class="ruby-identifier">namespace</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>
+119:       <span class="ruby-keyword kw">begin</span>
+120:         <span class="ruby-identifier">form_data</span> =
+121:           {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>,
+122:           <span class="ruby-value str">'list'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'allpages'</span>,
+123:           <span class="ruby-value str">'apfrom'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">apfrom</span>,
+124:           <span class="ruby-value str">'apprefix'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">key</span>,
+125:           <span class="ruby-value str">'aplimit'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">500</span>, <span class="ruby-comment cmt"># max allowed by API</span>
+126:           <span class="ruby-value str">'apnamespace'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">namespace</span>}
+127:         <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+128:         <span class="ruby-identifier">apfrom</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">'query-continue'</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">'query-continue/allpages'</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">'apfrom'</span>] <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
+129:         <span class="ruby-identifier">titles</span> <span class="ruby-operator">+=</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">res</span>, <span class="ruby-value str">&quot;//p&quot;</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;title&quot;</span>] }
+130:       <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">apfrom</span>
+131:       <span class="ruby-identifier">titles</span>
+132:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -507,23 +638,23 @@ Throws error if <a href="Gateway.html#M000004">login</a> fails
             onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 33</span>
-33:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">login</span>(<span class="ruby-identifier">username</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">domain</span> = <span class="ruby-value str">'local'</span>)
-34:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'login'</span>, <span class="ruby-value str">'lgname'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">username</span>, <span class="ruby-value str">'lgpassword'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">password</span>, <span class="ruby-value str">'lgdomain'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">domain</span>}
-35:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-36:       <span class="ruby-ivar">@password</span> = <span class="ruby-identifier">password</span>
-37:       <span class="ruby-ivar">@username</span> = <span class="ruby-identifier">username</span>
-38:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 32</span>
+32:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">login</span>(<span class="ruby-identifier">username</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">domain</span> = <span class="ruby-value str">'local'</span>)
+33:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'login'</span>, <span class="ruby-value str">'lgname'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">username</span>, <span class="ruby-value str">'lgpassword'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">password</span>, <span class="ruby-value str">'lgdomain'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">domain</span>}
+34:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+35:       <span class="ruby-ivar">@password</span> = <span class="ruby-identifier">password</span>
+36:       <span class="ruby-ivar">@username</span> = <span class="ruby-identifier">username</span>
+37:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
       </div>
 
-      <div id="method-M000015" class="method-detail">
-        <a name="M000015"></a>
+      <div id="method-M000017" class="method-detail">
+        <a name="M000017"></a>
 
         <div class="method-heading">
-          <a href="#M000015" class="method-signature">
+          <a href="#M000017" class="method-signature">
           <span class="method-name">namespaces_by_prefix</span><span class="method-args">()</span>
           </a>
         </div>
@@ -536,19 +667,19 @@ Get a <a href="Gateway.html#M000010">list</a> of all known namespaces
 Returns array of namespaces (name =&gt; id)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000015-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000015-source">
+            onclick="toggleCode('M000017-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000017-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 207</span>
-207:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">namespaces_by_prefix</span>
-208:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'meta'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'siteinfo'</span>, <span class="ruby-value str">'siprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'namespaces'</span> }
-209:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-210:       <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">res</span>, <span class="ruby-value str">&quot;//ns&quot;</span>).<span class="ruby-identifier">inject</span>(<span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">namespaces</span>, <span class="ruby-identifier">namespace</span><span class="ruby-operator">|</span>
-211:         <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;canonical&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
-212:         <span class="ruby-identifier">namespaces</span>[<span class="ruby-identifier">prefix</span>] = <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;id&quot;</span>].<span class="ruby-identifier">to_i</span>
-213:         <span class="ruby-identifier">namespaces</span>
-214:       <span class="ruby-keyword kw">end</span>
-215:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 321</span>
+321:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">namespaces_by_prefix</span>
+322:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'meta'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'siteinfo'</span>, <span class="ruby-value str">'siprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'namespaces'</span> }
+323:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+324:       <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">res</span>, <span class="ruby-value str">&quot;//ns&quot;</span>).<span class="ruby-identifier">inject</span>(<span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">namespaces</span>, <span class="ruby-identifier">namespace</span><span class="ruby-operator">|</span>
+325:         <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;canonical&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
+326:         <span class="ruby-identifier">namespaces</span>[<span class="ruby-identifier">prefix</span>] = <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;id&quot;</span>].<span class="ruby-identifier">to_i</span>
+327:         <span class="ruby-identifier">namespaces</span>
+328:       <span class="ruby-keyword kw">end</span>
+329:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -579,16 +710,16 @@ Returns nil if the page does not exist
             onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000006-source">
 <pre>
-    <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 60</span>
-60:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">render</span>(<span class="ruby-identifier">page_title</span>)
-61:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'parse'</span>, <span class="ruby-value str">'page'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_title</span>}
-62:       <span class="ruby-identifier">parsed</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>).<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;parse&quot;</span>]
-63:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">parsed</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;revid&quot;</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">'0'</span>
-64:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">parsed</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;text&quot;</span>].<span class="ruby-identifier">text</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&lt;!--(.|\s)*?--&gt;/</span>, <span class="ruby-value str">''</span>)
-65:       <span class="ruby-keyword kw">else</span>
-66:         <span class="ruby-keyword kw">nil</span>
-67:       <span class="ruby-keyword kw">end</span>
-68:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 59</span>
+59:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">render</span>(<span class="ruby-identifier">page_title</span>)
+60:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'parse'</span>, <span class="ruby-value str">'page'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_title</span>}
+61:       <span class="ruby-identifier">parsed</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>).<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;parse&quot;</span>]
+62:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">parsed</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;revid&quot;</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">'0'</span>
+63:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">parsed</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;text&quot;</span>].<span class="ruby-identifier">text</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&lt;!--(.|\s)*?--&gt;/</span>, <span class="ruby-value str">''</span>)
+64:       <span class="ruby-keyword kw">else</span>
+65:         <span class="ruby-keyword kw">nil</span>
+66:       <span class="ruby-keyword kw">end</span>
+67:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -627,30 +758,30 @@ Returns array of page titles (empty if no matches)
             onclick="toggleCode('M000011-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000011-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 142</span>
-142:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">namespaces</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">limit</span>=<span class="ruby-value">10</span>)
-143:       <span class="ruby-identifier">titles</span> = []
-144:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>,
-145:         <span class="ruby-value str">'list'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'search'</span>,
-146:         <span class="ruby-value str">'srwhat'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text'</span>,
-147:         <span class="ruby-value str">'srsearch'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">key</span>,
-148:         <span class="ruby-value str">'srlimit'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">limit</span>}
-149:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">namespaces</span>
-150:         <span class="ruby-identifier">namespaces</span> = [ <span class="ruby-identifier">namespaces</span> ] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">namespaces</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Array</span>
-151:         <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'srnamespace'</span>] = <span class="ruby-identifier">namespaces</span>.<span class="ruby-identifier">map!</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ns</span><span class="ruby-operator">|</span> <span class="ruby-identifier">namespaces_by_prefix</span>[<span class="ruby-identifier">ns</span>] <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'|'</span>)
-152:       <span class="ruby-keyword kw">end</span>
-153:       <span class="ruby-identifier">titles</span> <span class="ruby-operator">+=</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>), <span class="ruby-value str">&quot;//p&quot;</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;title&quot;</span>] }
-154:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 141</span>
+141:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">namespaces</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">limit</span>=<span class="ruby-value">10</span>)
+142:       <span class="ruby-identifier">titles</span> = []
+143:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>,
+144:         <span class="ruby-value str">'list'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'search'</span>,
+145:         <span class="ruby-value str">'srwhat'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text'</span>,
+146:         <span class="ruby-value str">'srsearch'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">key</span>,
+147:         <span class="ruby-value str">'srlimit'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">limit</span>}
+148:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">namespaces</span>
+149:         <span class="ruby-identifier">namespaces</span> = [ <span class="ruby-identifier">namespaces</span> ] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">namespaces</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Array</span>
+150:         <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'srnamespace'</span>] = <span class="ruby-identifier">namespaces</span>.<span class="ruby-identifier">map!</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ns</span><span class="ruby-operator">|</span> <span class="ruby-identifier">namespaces_by_prefix</span>[<span class="ruby-identifier">ns</span>] <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'|'</span>)
+151:       <span class="ruby-keyword kw">end</span>
+152:       <span class="ruby-identifier">titles</span> <span class="ruby-operator">+=</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">XPath</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>), <span class="ruby-value str">&quot;//p&quot;</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;title&quot;</span>] }
+153:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
       </div>
 
-      <div id="method-M000017" class="method-detail">
-        <a name="M000017"></a>
+      <div id="method-M000019" class="method-detail">
+        <a name="M000019"></a>
 
         <div class="method-heading">
-          <a href="#M000017" class="method-signature">
+          <a href="#M000019" class="method-signature">
           <span class="method-name">semantic_query</span><span class="method-args">(query, params = [])</span>
           </a>
         </div>
@@ -672,16 +803,16 @@ Execute Semantic Mediawiki query
 Returns result as an HTML string
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000017-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000017-source">
+            onclick="toggleCode('M000019-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000019-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 236</span>
-236:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">semantic_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">params</span> = [])
-237:       <span class="ruby-identifier">params</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;format=list&quot;</span>
-238:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'parse'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text'</span>, <span class="ruby-value str">'text'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;{{#ask:#{query}|#{params.join('|')}}}&quot;</span> }
-239:       <span class="ruby-identifier">xml</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-240:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;parse/text&quot;</span>].<span class="ruby-identifier">text</span>
-241:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 350</span>
+350:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">semantic_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">params</span> = [])
+351:       <span class="ruby-identifier">params</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;format=list&quot;</span>
+352:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'parse'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text'</span>, <span class="ruby-value str">'text'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;{{#ask:#{query}|#{params.join('|')}}}&quot;</span> }
+353:       <span class="ruby-identifier">xml</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+354:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;parse/text&quot;</span>].<span class="ruby-identifier">text</span>
+355:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -712,17 +843,17 @@ Returns number of revisions undeleted.
             onclick="toggleCode('M000009-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000009-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 99</span>
- 99:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">undelete</span>(<span class="ruby-identifier">title</span>)
-100:       <span class="ruby-identifier">token</span> = <span class="ruby-identifier">get_undelete_token</span>(<span class="ruby-identifier">title</span>)
-101:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">token</span>
-102:         <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'undelete'</span>, <span class="ruby-value str">'title'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">title</span>, <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">token</span> }
-103:         <span class="ruby-identifier">xml</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-104:         <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;undelete&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;revisions&quot;</span>].<span class="ruby-identifier">to_i</span>
-105:       <span class="ruby-keyword kw">else</span>
-106:         <span class="ruby-value">0</span> <span class="ruby-comment cmt"># No revisions to undelete</span>
-107:       <span class="ruby-keyword kw">end</span>
-108:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 98</span>
+ 98:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">undelete</span>(<span class="ruby-identifier">title</span>)
+ 99:       <span class="ruby-identifier">token</span> = <span class="ruby-identifier">get_undelete_token</span>(<span class="ruby-identifier">title</span>)
+100:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">token</span>
+101:         <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'undelete'</span>, <span class="ruby-value str">'title'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">title</span>, <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">token</span> }
+102:         <span class="ruby-identifier">xml</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+103:         <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;undelete&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;revisions&quot;</span>].<span class="ruby-identifier">to_i</span>
+104:       <span class="ruby-keyword kw">else</span>
+105:         <span class="ruby-value">0</span> <span class="ruby-comment cmt"># No revisions to undelete</span>
+106:       <span class="ruby-keyword kw">end</span>
+107:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -739,48 +870,129 @@ Returns number of revisions undeleted.
       
         <div class="method-description">
           <p>
-Upload file to <a href="../MediaWiki.html">MediaWiki</a> Requires Mediawiki
-1.16+
+Upload a file, or <a href="Gateway.html#M000005">get</a> the status of
+pending uploads. Several methods are available:
 </p>
-<dl>
-<dt>path</dt><dd>Path to file to <a href="Gateway.html#M000012">upload</a>
+<ul>
+<li>Upload file contents directly.
 
-</dd>
-<dt>options</dt><dd>Hash of additional options
+</li>
+<li>Have the <a href="../MediaWiki.html">MediaWiki</a> server fetch a file from
+a URL, using the &quot;url&quot; parameter
 
-</dd>
-</dl>
+</li>
+</ul>
+<p>
+Requires Mediawiki 1.16+
+</p>
+<p>
+Arguments:
+</p>
+<ul>
+<li>[path] Path to file to <a href="Gateway.html#M000012">upload</a>. Set to
+nil if uploading from URL.
+
+</li>
+<li>[options] Hash of additional options
+
+</li>
+</ul>
+<p>
+Note that queries using session keys must be done in the same <a
+href="Gateway.html#M000004">login</a> session as the query that originally
+returned the key (i.e. do not log out and then log back in).
+</p>
 <p>
 Options:
 </p>
 <ul>
-<li>[description] Description of this file
+<li>&#8216;filename&#8217; - Target filename (defaults to local name if not
+given, options[:target] is alias for this.
 
 </li>
-<li>[target] Target filename, defaults to local name if not given
+<li>&#8216;comment&#8217; - Upload comment. Also used as the initial page text
+for <a href="Gateway.html#M000003">new</a> files if &quot;text&quot; is not
+specified.
 
 </li>
-<li>[summary] Edit summary for history
+<li>&#8216;text&#8217; - Initial page text for <a
+href="Gateway.html#M000003">new</a> files
+
+</li>
+<li>&#8216;watch&#8217; - Watch the page
+
+</li>
+<li>&#8216;ignorewarnings&#8217; - Ignore any warnings
+
+</li>
+<li>&#8216;url&#8217; - Url to fetch the file from. Set path to nil
+
+<pre>
+                   if you want to use this.
+</pre>
+</li>
+</ul>
+<p>
+Deprecated but still supported options:
+</p>
+<ul>
+<li>:description - Description of this file. Used as &#8216;text&#8217;.
+
+</li>
+<li>:target - Target filename, same as &#8216;filename&#8217;.
+
+</li>
+<li>:summary - Edit summary for history. Used as &#8216;comment&#8217;. Also
+used as &#8216;text&#8217; if neither it or :description is specified.
 
 </li>
 </ul>
+<p>
+Examples:
+</p>
+<pre>
+  mw.upload('/path/to/local/file.jpg', 'filename' =&gt; &quot;RemoteFile.jpg&quot;)
+  mw.upload(nil, 'filename' =&gt; &quot;RemoteFile2.jpg&quot;,
+    'url' =&gt; 'http://remote.com/server/file.jpg')
+</pre>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000012-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000012-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 166</span>
-166:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">upload</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">options</span>={})
-167:       <span class="ruby-identifier">comment</span> = (<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;Uploaded by MediaWiki::Gateway&quot;</span>)
-168:       <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">path</span>)
-169:       <span class="ruby-identifier">filename</span> = (<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:target</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">path</span>))
-170:       <span class="ruby-identifier">form_data</span> = { <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'upload'</span>,
-171:         <span class="ruby-value str">'filename'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">filename</span>,
-172:         <span class="ruby-value str">'file'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file</span>,
-173:         <span class="ruby-value str">'token'</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'edit'</span>, <span class="ruby-identifier">filename</span>),
-174:         <span class="ruby-value str">'text'</span> =<span class="ruby-operator">&gt;</span> (<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:description</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>]),
-175:         <span class="ruby-value str">'comment'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">comment</span>}
-176:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-177:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 191</span>
+191:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">upload</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">options</span>={})
+192:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:description</span>]
+193:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">'text'</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:description</span>]
+194:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:description</span>)
+195:       <span class="ruby-keyword kw">end</span>
+196: 
+197:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:target</span>]
+198:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">'filename'</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:target</span>]
+199:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:target</span>)
+200:       <span class="ruby-keyword kw">end</span>
+201: 
+202:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>]
+203:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">'text'</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>]
+204:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">'comment'</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:summary</span>]
+205:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:summary</span>)
+206:       <span class="ruby-keyword kw">end</span>
+207: 
+208:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">'comment'</span>] <span class="ruby-operator">||=</span> <span class="ruby-value str">&quot;Uploaded by MediaWiki::Gateway&quot;</span>
+209:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">'file'</span>] = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">path</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">path</span>
+210:       <span class="ruby-identifier">full_name</span> = <span class="ruby-identifier">path</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'url'</span>]
+211:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">'filename'</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">full_name</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">full_name</span>
+212: 
+213:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(
+214:         <span class="ruby-value str">&quot;One of the 'file', 'url' or 'sessionkey' options must be specified!&quot;</span>
+215:       ) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'file'</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'url'</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'sessionkey'</span>]
+216: 
+217:       <span class="ruby-identifier">form_data</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(
+218:         <span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'upload'</span>,
+219:         <span class="ruby-value str">'token'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-value str">'edit'</span>, <span class="ruby-identifier">options</span>[<span class="ruby-value str">'filename'</span>])
+220:       )
+221: 
+222:       <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+223:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -788,11 +1000,11 @@ Options:
 
       <h3 class="section-bar">Private Instance methods</h3>
 
-      <div id="method-M000021" class="method-detail">
-        <a name="M000021"></a>
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
 
         <div class="method-heading">
-          <a href="#M000021" class="method-signature">
+          <a href="#M000023" class="method-signature">
           <span class="method-name">get_response</span><span class="method-args">(res)</span>
           </a>
         </div>
@@ -803,84 +1015,21 @@ Get API XML response If there are errors, print and bail out Otherwise
 return XML root
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000021-source">
+            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000023-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 295</span>
-295:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_response</span>(<span class="ruby-identifier">res</span>)
-296:       <span class="ruby-identifier">doc</span> = <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">Document</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">res</span>).<span class="ruby-identifier">root</span>
-297:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;RES: #{doc}&quot;</span>)
-298:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error, response does not contain Mediawiki API XML: #{res}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;api&quot;</span>
-299:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>]
-300:         <span class="ruby-identifier">code</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;code&quot;</span>]
-301:         <span class="ruby-identifier">info</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;info&quot;</span>]
-302:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error: code '#{code}', info '#{info}'&quot;</span>
-303:       <span class="ruby-keyword kw">end</span>
-304:       <span class="ruby-identifier">doc</span>
-305:     <span class="ruby-keyword kw">end</span>
-</pre>
-          </div>
-        </div>
-      </div>
-
-      <div id="method-M000018" class="method-detail">
-        <a name="M000018"></a>
-
-        <div class="method-heading">
-          <a href="#M000018" class="method-signature">
-          <span class="method-name">get_token</span><span class="method-args">(type, page_titles)</span>
-          </a>
-        </div>
-      
-        <div class="method-description">
-          <p>
-Fetch token (type &#8216;<a href="Gateway.html#M000008">delete</a>&#8217;,
-&#8216;edit&#8217;, &#8216;<a
-href="Gateway.html#M000013">import</a>&#8217;)
-</p>
-          <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000018-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000018-source">
-<pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 246</span>
-246:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">page_titles</span>)
-247:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'info'</span>, <span class="ruby-value str">'intoken'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">type</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_titles</span>}
-248:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-249:       <span class="ruby-identifier">token</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/pages/page&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-identifier">type</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;token&quot;</span>]
-250:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;User is not permitted to perform this operation: #{type}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">token</span>.<span class="ruby-identifier">nil?</span>
-251:       <span class="ruby-identifier">token</span>
-252:     <span class="ruby-keyword kw">end</span>
-</pre>
-          </div>
-        </div>
-      </div>
-
-      <div id="method-M000019" class="method-detail">
-        <a name="M000019"></a>
-
-        <div class="method-heading">
-          <a href="#M000019" class="method-signature">
-          <span class="method-name">get_undelete_token</span><span class="method-args">(page_titles)</span>
-          </a>
-        </div>
-      
-        <div class="method-description">
-          <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000019-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000019-source">
-<pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 254</span>
-254:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_undelete_token</span>(<span class="ruby-identifier">page_titles</span>)
-255:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'list'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'deletedrevs'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'info'</span>, <span class="ruby-value str">'drprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'token'</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_titles</span>}
-256:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-257:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/deletedrevs/page&quot;</span>]
-258:         <span class="ruby-identifier">token</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/deletedrevs/page&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;token&quot;</span>]
-259:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;User is not permitted to perform this operation: #{type}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">token</span>.<span class="ruby-identifier">nil?</span>
-260:         <span class="ruby-identifier">token</span>
-261:       <span class="ruby-keyword kw">else</span>
-262:         <span class="ruby-keyword kw">nil</span>
-263:       <span class="ruby-keyword kw">end</span>
-264:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 409</span>
+409:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_response</span>(<span class="ruby-identifier">res</span>)
+410:       <span class="ruby-identifier">doc</span> = <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">Document</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">res</span>).<span class="ruby-identifier">root</span>
+411:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;RES: #{doc}&quot;</span>)
+412:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error, response does not contain Mediawiki API XML: #{res}&quot;</span> <span class="ruby-keyword kw">unless</span> [ <span class="ruby-value str">&quot;api&quot;</span>, <span class="ruby-value str">&quot;mediawiki&quot;</span> ].<span class="ruby-identifier">include?</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">name</span>
+413:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>]
+414:         <span class="ruby-identifier">code</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;code&quot;</span>]
+415:         <span class="ruby-identifier">info</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;info&quot;</span>]
+416:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error: code '#{code}', info '#{info}'&quot;</span>
+417:       <span class="ruby-keyword kw">end</span>
+418:       <span class="ruby-identifier">doc</span>
+419:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -891,6 +1040,69 @@ href="Gateway.html#M000013">import</a>&#8217;)
 
         <div class="method-heading">
           <a href="#M000020" class="method-signature">
+          <span class="method-name">get_token</span><span class="method-args">(type, page_titles)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Fetch token (type &#8216;<a href="Gateway.html#M000008">delete</a>&#8217;,
+&#8216;edit&#8217;, &#8216;<a
+href="Gateway.html#M000015">import</a>&#8217;)
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000020-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 360</span>
+360:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">page_titles</span>)
+361:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'info'</span>, <span class="ruby-value str">'intoken'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">type</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_titles</span>}
+362:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+363:       <span class="ruby-identifier">token</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/pages/page&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-identifier">type</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;token&quot;</span>]
+364:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;User is not permitted to perform this operation: #{type}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">token</span>.<span class="ruby-identifier">nil?</span>
+365:       <span class="ruby-identifier">token</span>
+366:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
+
+        <div class="method-heading">
+          <a href="#M000021" class="method-signature">
+          <span class="method-name">get_undelete_token</span><span class="method-args">(page_titles)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000021-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 368</span>
+368:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_undelete_token</span>(<span class="ruby-identifier">page_titles</span>)
+369:       <span class="ruby-identifier">form_data</span> = {<span class="ruby-value str">'action'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'query'</span>, <span class="ruby-value str">'list'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'deletedrevs'</span>, <span class="ruby-value str">'prop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'info'</span>, <span class="ruby-value str">'drprop'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'token'</span>, <span class="ruby-value str">'titles'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">page_titles</span>}
+370:       <span class="ruby-identifier">res</span> = <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+371:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/deletedrevs/page&quot;</span>]
+372:         <span class="ruby-identifier">token</span> = <span class="ruby-identifier">res</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;query/deletedrevs/page&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;token&quot;</span>]
+373:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;User is not permitted to perform this operation: #{type}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">token</span>.<span class="ruby-identifier">nil?</span>
+374:         <span class="ruby-identifier">token</span>
+375:       <span class="ruby-keyword kw">else</span>
+376:         <span class="ruby-keyword kw">nil</span>
+377:       <span class="ruby-keyword kw">end</span>
+378:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
+
+        <div class="method-heading">
+          <a href="#M000022" class="method-signature">
           <span class="method-name">make_api_request</span><span class="method-args">(form_data)</span>
           </a>
         </div>
@@ -908,30 +1120,30 @@ Make generic request to API
 Returns XML document
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000020-source">
+            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000022-source">
 <pre>
-     <span class="ruby-comment cmt"># File media_wiki/gateway.rb, line 271</span>
-271:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
-272:       <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'format'</span>] = <span class="ruby-value str">'xml'</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">form_data</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Hash</span>
-273:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;REQ: #{form_data.inspect}, #{@cookies.inspect}&quot;</span>)
-274:       <span class="ruby-constant">RestClient</span>.<span class="ruby-identifier">post</span>(<span class="ruby-ivar">@wiki_url</span>, <span class="ruby-identifier">form_data</span>, <span class="ruby-ivar">@headers</span>.<span class="ruby-identifier">merge</span>({<span class="ruby-identifier">:cookies</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@cookies</span>})) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">response</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span><span class="ruby-operator">|</span> 
-275:         <span class="ruby-comment cmt"># Check response for errors and return XML</span>
-276:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error, bad response: #{response}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">code</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-value">200</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">code</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">300</span> 
-277:         <span class="ruby-identifier">doc</span> = <span class="ruby-identifier">get_response</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">dup</span>)
-278:         <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'action'</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'login'</span>)
-279:           <span class="ruby-identifier">login_result</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;login&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">'result'</span>]
-280:           <span class="ruby-ivar">@cookies</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">cookies</span>)
-281:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">login_result</span>
-282:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;Success&quot;</span> <span class="ruby-keyword kw">then</span> <span class="ruby-comment cmt"># do nothing</span>
-283:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;NeedToken&quot;</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value str">'lgtoken'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;login&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;token&quot;</span>]))
-284:             <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Login failed: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">login_result</span>
-285:           <span class="ruby-keyword kw">end</span>
-286:         <span class="ruby-keyword kw">end</span>
-287:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">doc</span>
-288:       <span class="ruby-keyword kw">end</span>
-289: 
-290:     <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 385</span>
+385:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)
+386:       <span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'format'</span>] = <span class="ruby-value str">'xml'</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">form_data</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Hash</span>
+387:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;REQ: #{form_data.inspect}, #{@cookies.inspect}&quot;</span>)
+388:       <span class="ruby-constant">RestClient</span>.<span class="ruby-identifier">post</span>(<span class="ruby-ivar">@wiki_url</span>, <span class="ruby-identifier">form_data</span>, <span class="ruby-ivar">@headers</span>.<span class="ruby-identifier">merge</span>({<span class="ruby-identifier">:cookies</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@cookies</span>})) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">response</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span><span class="ruby-operator">|</span> 
+389:         <span class="ruby-comment cmt"># Check response for errors and return XML</span>
+390:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error, bad response: #{response}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">code</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-value">200</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">code</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">300</span> 
+391:         <span class="ruby-identifier">doc</span> = <span class="ruby-identifier">get_response</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">dup</span>)
+392:         <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">form_data</span>[<span class="ruby-value str">'action'</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'login'</span>)
+393:           <span class="ruby-identifier">login_result</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;login&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">'result'</span>]
+394:           <span class="ruby-ivar">@cookies</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">cookies</span>)
+395:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">login_result</span>
+396:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;Success&quot;</span> <span class="ruby-keyword kw">then</span> <span class="ruby-comment cmt"># do nothing</span>
+397:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;NeedToken&quot;</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value str">'lgtoken'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;login&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;token&quot;</span>]))
+398:             <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Login failed: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">login_result</span>
+399:           <span class="ruby-keyword kw">end</span>
+400:         <span class="ruby-keyword kw">end</span>
+401:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">doc</span>
+402:       <span class="ruby-keyword kw">end</span>
+403: 
+404:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>

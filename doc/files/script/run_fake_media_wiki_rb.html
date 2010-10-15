@@ -5,7 +5,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>File: gateway.rb</title>
+  <title>File: run_fake_media_wiki.rb</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <meta http-equiv="Content-Script-Type" content="text/javascript" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
@@ -47,16 +47,16 @@
 
 
   <div id="fileHeader">
-    <h1>gateway.rb</h1>
+    <h1>run_fake_media_wiki.rb</h1>
     <table class="header-table">
     <tr class="top-aligned-row">
       <td><strong>Path:</strong></td>
-      <td>media_wiki/gateway.rb
+      <td>script/run_fake_media_wiki.rb
       </td>
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Sun Aug 15 21:09:33 +1000 2010</td>
+      <td>Thu Sep 30 20:40:04 +1000 2010</td>
     </tr>
     </table>
   </div>
@@ -68,17 +68,21 @@
 
   <div id="contextContent">
 
+    <div id="description">
+      <p>
+Helper script for running a live FakeMediaWiki instance instead of just
+shamracking it.
+</p>
+
+    </div>
 
     <div id="requires-list">
       <h3 class="section-bar">Required files</h3>
 
       <div class="name-list">
       rubygems&nbsp;&nbsp;
-      logger&nbsp;&nbsp;
-      rest_client&nbsp;&nbsp;
-      rexml/document&nbsp;&nbsp;
-      uri&nbsp;&nbsp;
-      <a href="utils_rb.html">media_wiki/utils</a>&nbsp;&nbsp;
+      sinatra/base&nbsp;&nbsp;
+      spec/fake_media_wiki/app&nbsp;&nbsp;
       </div>
     </div>
 

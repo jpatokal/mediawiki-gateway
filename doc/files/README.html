@@ -5,10 +5,10 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>File: utils.rb</title>
+  <title>File: README</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <meta http-equiv="Content-Script-Type" content="text/javascript" />
-  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
   <script type="text/javascript">
   // <![CDATA[
 
@@ -47,16 +47,16 @@
 
 
   <div id="fileHeader">
-    <h1>utils.rb</h1>
+    <h1>README</h1>
     <table class="header-table">
     <tr class="top-aligned-row">
       <td><strong>Path:</strong></td>
-      <td>media_wiki/utils.rb
+      <td>README
       </td>
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Thu Aug 05 18:02:41 +1000 2010</td>
+      <td>Fri Oct 01 18:42:56 +1000 2010</td>
     </tr>
     </table>
   </div>
@@ -68,6 +68,25 @@
 
   <div id="contextContent">
 
+    <div id="description">
+      <h1><a href="../classes/MediaWiki/Gateway.html">MediaWiki::Gateway</a></h1>
+<pre>
+ Ruby framework for MediaWiki API manipulation
+
+ Gem:  http://rubygems.org/gems/mediawiki-gateway
+ RDoc: http://rubydoc.info/gems/mediawiki-gateway
+</pre>
+<h2>Example</h2>
+<pre>
+ Simple page creation script:
+
+ require 'media_wiki'
+ mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
+ mw.login('RubyBot', 'pa$$w0rd')
+ mw.create('PageTitle', 'Hello world!', 'Comment: My first page')
+</pre>
+
+    </div>
 
 
    </div>
