@@ -54,7 +54,11 @@ module MediaWiki
     # Render a MediaWiki page as HTML
     #
     # [page_title] Page title to fetch
+    # [options] Hash of additional options
     #
+    # Options:
+    # * [noimages] strips all +img+ tags from the rendered text if set to +true+
+    # 
     # Returns nil if the page does not exist
     def render(page_title, options = {})
       form_data = {'action' => 'parse', 'page' => page_title}
