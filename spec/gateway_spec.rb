@@ -1,4 +1,9 @@
+# :nodoc: Rails 2.3.x: Hash#to_xml is defined in active_support
 require 'active_support'
+# :nodoc: Rails 3: #to_xml is defined in ActiveModel::Serializers::Xml
+require 'active_model'
+Hash.send(:include, ActiveModel::Serializers::Xml)
+
 require 'rr'
 require 'sham_rack'
 
@@ -206,15 +211,33 @@ describe MediaWiki::Gateway do
   describe "#render" do
     
     describe "for an existing wiki page" do
-  
+
       before do
         @pages = @gateway.render('Main Page')
       end
 
-      it "should return the page content" do
-        expected = "Sample <B>HTML</B> content"
+      it "should return the page content" do  
+        expected = 'Sample <B>HTML</B> content.<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>'
         @pages.to_s.should == expected
       end
+
+    end
+
+    describe "for an existing wiki page with textonly option" do
+
+      it "should raise an ArgumentError on illegal options" do
+        lambda do
+          @gateway.render("Main Page", :doesnotexist => :at_all)
+        end.should raise_error(ArgumentError)
+      end
+
+      it "should strip img tags" do
+        @pages = @gateway.render('Main Page', :noimages => true)
+
+        expected = "Sample <B>HTML</B> content."
+        @pages.to_s.should == expected
+      end
+
     end
     
     describe "for a missing wiki page" do
@@ -544,7 +567,7 @@ describe MediaWiki::Gateway do
     end
 
     it "should return an HTML string" do
-      @response.should == "Sample <B>HTML</B> content"
+      @response.should == 'Sample <B>HTML</B> content.<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>'
     end
     
   end

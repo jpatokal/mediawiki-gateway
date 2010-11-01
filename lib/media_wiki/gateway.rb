@@ -56,14 +56,23 @@ module MediaWiki
     # [page_title] Page title to fetch
     #
     # Returns nil if the page does not exist
-    def render(page_title)
+    def render(page_title, options = {})
       form_data = {'action' => 'parse', 'page' => page_title}
+
+      valid_options = %w(noimages)
+      # Check options
+      options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
+
+      rendered = nil
       parsed = make_api_request(form_data).elements["parse"]
       if parsed.attributes["revid"] != '0'
-        return parsed.elements["text"].text.gsub(/<!--(.|\s)*?-->/, '')
-      else
-        nil
+        rendered = parsed.elements["text"].text.gsub(/<!--(.|\s)*?-->/, '')
+        # OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o
+        if options["noimages"] or options[:noimages]
+          rendered = rendered.gsub(/<img.*\/>/, '')
+        end
       end
+      rendered
     end
         
     # Create a new page, or overwrite an existing one

@@ -144,7 +144,7 @@ module FakeMediaWiki
       page = @pages.get(params[:page])
       api_response do |_|
         _.parse({ :revid => page ?  page[:pageid] : 0}) do
-          _.text("Sample <B>HTML</B> content")
+          _.text('Sample <B>HTML</B> content.<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>')
         end
       end
     end
