@@ -57,13 +57,15 @@ module MediaWiki
     # [options] Hash of additional options
     #
     # Options:
+    # * [linkbase] supply a String to prefix all internal (relative) links with. '/wiki/' is assumed to be the base of a relative link
+    # * [noeditsections] strips all edit-links if set to +true+
     # * [noimages] strips all +img+ tags from the rendered text if set to +true+
     # 
     # Returns nil if the page does not exist
     def render(page_title, options = {})
       form_data = {'action' => 'parse', 'page' => page_title}
 
-      valid_options = %w(noimages)
+      valid_options = %w(linkbase noeditsections noimages)
       # Check options
       options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
 
@@ -72,6 +74,13 @@ module MediaWiki
       if parsed.attributes["revid"] != '0'
         rendered = parsed.elements["text"].text.gsub(/<!--(.|\s)*?-->/, '')
         # OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o
+        if options["linkbase"] or options[:linkbase]
+          linkbase = options["linkbase"] || options[:linkbase]
+          rendered = rendered.gsub(/\shref="\/wiki\/(.*)"/, ' href="' + linkbase + '/wiki/\1"')
+        end
+        if options["noeditsections"] or options[:noeditsections]
+          rendered = rendered.gsub(/<span class="editsection">\[.+\]<\/span>/, '')
+        end
         if options["noimages"] or options[:noimages]
           rendered = rendered.gsub(/<img.*\/>/, '')
         end

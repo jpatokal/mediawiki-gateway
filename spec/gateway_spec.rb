@@ -217,13 +217,9 @@ describe MediaWiki::Gateway do
       end
 
       it "should return the page content" do  
-        expected = 'Sample <B>HTML</B> content.<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>'
+        expected = 'Sample <B>HTML</B> content.'
         @pages.to_s.should == expected
       end
-
-    end
-
-    describe "for an existing wiki page with textonly option" do
 
       it "should raise an ArgumentError on illegal options" do
         lambda do
@@ -231,11 +227,36 @@ describe MediaWiki::Gateway do
         end.should raise_error(ArgumentError)
       end
 
-      it "should strip img tags" do
-        @pages = @gateway.render('Main Page', :noimages => true)
+      describe "with option" do
 
-        expected = "Sample <B>HTML</B> content."
-        @pages.to_s.should == expected
+        it "should strip img tags" do
+          @pages = @gateway.render('Foopage', :noimages => true)
+
+          expected = 'Sample <B>HTML</B> content.'\
+            '<span class="editsection">[<a title="Edit section: Nomenclature" href="/w/index.php?title=Seat_of_local_government&amp;action=edit&amp;section=1">edit</a>]</span>'\
+            '<a title="Interpreted language" href="/wiki/Interpreted_language">interpreted language</a>'
+          @pages.to_s.should == expected
+        end
+
+        it "should strip edit sections" do
+          @pages = @gateway.render('Foopage', :noeditsections => true)
+
+          expected = 'Sample <B>HTML</B> content.' \
+            '<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>' \
+            '<a title="Interpreted language" href="/wiki/Interpreted_language">interpreted language</a>'
+          @pages.to_s.should == expected
+        end
+
+        it "should make all links absolute" do
+          @pages = @gateway.render('Foopage', :linkbase => "http://en.wikipedia.org")
+
+          expected = 'Sample <B>HTML</B> content.' \
+            '<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>' \
+            '<span class="editsection">[<a title="Edit section: Nomenclature" href="/w/index.php?title=Seat_of_local_government&amp;action=edit&amp;section=1">edit</a>]</span>'\
+            '<a title="Interpreted language" href="http://en.wikipedia.org/wiki/Interpreted_language">interpreted language</a>'
+          @pages.to_s.should == expected
+        end
+
       end
 
     end
@@ -269,7 +290,7 @@ describe MediaWiki::Gateway do
       it "should create the page" do
         expected = <<-XML
           <api>
-            <edit new='' result='Success' pageid='5' title='A New Page' oldrevid='0' newrevid='5'/>
+            <edit new='' result='Success' pageid='6' title='A New Page' oldrevid='0' newrevid='6'/>
           </api>
         XML
         Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
@@ -292,7 +313,7 @@ describe MediaWiki::Gateway do
         it "should overwrite the existing page" do
           expected = <<-XML
             <api>
-              <edit result='Success' pageid='5' title='Main Page' oldrevid='1' newrevid='5'/>
+              <edit result='Success' pageid='6' title='Main Page' oldrevid='1' newrevid='6'/>
             </api>
           XML
           Hash.from_xml(@new_page.to_s).should == Hash.from_xml(expected)
@@ -458,7 +479,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should list all pages" do
-        @list.sort.should == [ "Book:Italy", "Level/Level/Index", "Main 2", "Main Page" ]
+        @list.sort.should == [ "Book:Italy", "Foopage", "Level/Level/Index", "Main 2", "Main Page" ]
       end
       
     end
@@ -567,7 +588,7 @@ describe MediaWiki::Gateway do
     end
 
     it "should return an HTML string" do
-      @response.should == 'Sample <B>HTML</B> content.<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>'
+      @response.should == 'Sample <B>HTML</B> content.'
     end
     
   end

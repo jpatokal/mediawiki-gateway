@@ -32,6 +32,7 @@ module FakeMediaWiki
       @pages.add_namespace(100, "Book")
       @pages.add('Book:Italy', 'Introduction')
       @pages.add_namespace(200, "Sandbox")
+      @pages.add('Foopage', 'Content')
 
       @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2' }
       
@@ -144,7 +145,15 @@ module FakeMediaWiki
       page = @pages.get(params[:page])
       api_response do |_|
         _.parse({ :revid => page ?  page[:pageid] : 0}) do
-          _.text('Sample <B>HTML</B> content.<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>')
+          if params[:page] == "Foopage"
+            _.text('Sample <B>HTML</B> content.' \
+              '<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>' \
+              '<span class="editsection">[<a title="Edit section: Nomenclature" href="/w/index.php?title=Seat_of_local_government&amp;action=edit&amp;section=1">edit</a>]</span>' \
+              '<a title="Interpreted language" href="/wiki/Interpreted_language">interpreted language</a>'
+            )
+          else
+            _.text('Sample <B>HTML</B> content.')
+          end
         end
       end
     end
