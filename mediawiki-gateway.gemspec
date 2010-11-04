@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.1.3.cz.2"
+  s.version = "0.1.4"
 
-  s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2010-11-02}
+  s.date = %q{2010-11-04}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -80,11 +80,14 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rest-client>, [">= 0"])
+      s.add_development_dependency(%q<shamrack>, [">= 0"])
     else
       s.add_dependency(%q<rest-client>, [">= 0"])
+      s.add_dependency(%q<shamrack>, [">= 0"])
     end
   else
     s.add_dependency(%q<rest-client>, [">= 0"])
+    s.add_dependency(%q<shamrack>, [">= 0"])
   end
 end
 

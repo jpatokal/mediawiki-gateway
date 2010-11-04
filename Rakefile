@@ -35,6 +35,7 @@ begin
     gemspec.homepage = "http://github.com/jpatokal/media_wiki_gateway"
     gemspec.authors = ["Jani Patokallio"]
     gemspec.add_dependency 'rest-client'
+    gemspec.add_development_dependency 'shamrack'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
