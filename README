@@ -14,3 +14,7 @@
  mw.login('RubyBot', 'pa$$w0rd')
  mw.create('PageTitle', 'Hello world!', 'Comment: My first page')
 
+== Credits
+
+Thanks to John Carney, Mike Williams, Dan Heath and the rest of the Lonely Planet Atlas team.
+
