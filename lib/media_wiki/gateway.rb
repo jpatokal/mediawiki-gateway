@@ -424,12 +424,16 @@ module MediaWiki
     end
     
     # Get API XML response
-    # If there are errors, print and bail out
+    # If there are errors, raise exception
     # Otherwise return XML root
     def get_response(res)
-      doc = REXML::Document.new(res).root
+      begin
+        doc = REXML::Document.new(res).root
+      rescue REXML::ParseException => e
+        raise "Response is not XML.  Are you sure you are pointing to api.php?"
+      end
       @log.debug("RES: #{doc}")
-      raise "API error, response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
+      raise "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
       if doc.elements["error"]
         code = doc.elements["error"].attributes["code"]
         info = doc.elements["error"].attributes["info"]
