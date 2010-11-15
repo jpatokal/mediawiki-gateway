@@ -76,7 +76,7 @@ module MediaWiki
         # OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o
         if options["linkbase"] or options[:linkbase]
           linkbase = options["linkbase"] || options[:linkbase]
-          rendered = rendered.gsub(/\shref="\/wiki\/(.*)"/, ' href="' + linkbase + '/wiki/\1"')
+          rendered = rendered.gsub(/\shref="\/wiki\/([\w\(\)_\-\.%\d:,]*)"/, ' href="' + linkbase + '/wiki/\1"')
         end
         if options["noeditsections"] or options[:noeditsections]
           rendered = rendered.gsub(/<span class="editsection">\[.+\]<\/span>/, '')
