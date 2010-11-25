@@ -1,3 +1,7 @@
+#!/usr/bin/env ruby
+#
+# Sample script for uploading files to Mediawiki Commons (interactive)
+
 require 'lib/media_wiki'
 
 config = MediaWiki::Config.new(ARGV, "upload")
