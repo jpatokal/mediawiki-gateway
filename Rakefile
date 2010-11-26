@@ -32,7 +32,7 @@ begin
     gemspec.summary = "Connect to the mediawiki API"
     gemspec.description = ""
     gemspec.email = "jpatokal@iki.fi"
-    gemspec.homepage = "http://github.com/jpatokal/media_wiki_gateway"
+    gemspec.homepage = "http://github.com/jpatokal/mediawiki-gateway"
     gemspec.authors = ["Jani Patokallio"]
     gemspec.add_dependency 'rest-client'
     gemspec.add_development_dependency 'sham_rack'
