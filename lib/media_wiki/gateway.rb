@@ -47,7 +47,7 @@ module MediaWiki
       if ! page or page.attributes["missing"]
         nil
       else
-        page.elements["revisions/rev"].text
+        page.elements["revisions/rev"].text || ""
       end
     end
 
