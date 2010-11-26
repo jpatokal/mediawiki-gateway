@@ -86,27 +86,27 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000007">create</a>&nbsp;&nbsp;
-      <a href="#M000008">delete</a>&nbsp;&nbsp;
-      <a href="#M000014">download</a>&nbsp;&nbsp;
-      <a href="#M000016">export</a>&nbsp;&nbsp;
-      <a href="#M000018">extensions</a>&nbsp;&nbsp;
-      <a href="#M000005">get</a>&nbsp;&nbsp;
-      <a href="#M000023">get_response</a>&nbsp;&nbsp;
-      <a href="#M000020">get_token</a>&nbsp;&nbsp;
-      <a href="#M000021">get_undelete_token</a>&nbsp;&nbsp;
-      <a href="#M000013">image_info</a>&nbsp;&nbsp;
-      <a href="#M000015">import</a>&nbsp;&nbsp;
-      <a href="#M000010">list</a>&nbsp;&nbsp;
-      <a href="#M000004">login</a>&nbsp;&nbsp;
-      <a href="#M000022">make_api_request</a>&nbsp;&nbsp;
-      <a href="#M000017">namespaces_by_prefix</a>&nbsp;&nbsp;
-      <a href="#M000003">new</a>&nbsp;&nbsp;
-      <a href="#M000006">render</a>&nbsp;&nbsp;
-      <a href="#M000011">search</a>&nbsp;&nbsp;
-      <a href="#M000019">semantic_query</a>&nbsp;&nbsp;
-      <a href="#M000009">undelete</a>&nbsp;&nbsp;
-      <a href="#M000012">upload</a>&nbsp;&nbsp;
+      <a href="#M000008">create</a>&nbsp;&nbsp;
+      <a href="#M000009">delete</a>&nbsp;&nbsp;
+      <a href="#M000015">download</a>&nbsp;&nbsp;
+      <a href="#M000017">export</a>&nbsp;&nbsp;
+      <a href="#M000019">extensions</a>&nbsp;&nbsp;
+      <a href="#M000006">get</a>&nbsp;&nbsp;
+      <a href="#M000024">get_response</a>&nbsp;&nbsp;
+      <a href="#M000021">get_token</a>&nbsp;&nbsp;
+      <a href="#M000022">get_undelete_token</a>&nbsp;&nbsp;
+      <a href="#M000014">image_info</a>&nbsp;&nbsp;
+      <a href="#M000016">import</a>&nbsp;&nbsp;
+      <a href="#M000011">list</a>&nbsp;&nbsp;
+      <a href="#M000005">login</a>&nbsp;&nbsp;
+      <a href="#M000023">make_api_request</a>&nbsp;&nbsp;
+      <a href="#M000018">namespaces_by_prefix</a>&nbsp;&nbsp;
+      <a href="#M000004">new</a>&nbsp;&nbsp;
+      <a href="#M000007">render</a>&nbsp;&nbsp;
+      <a href="#M000012">search</a>&nbsp;&nbsp;
+      <a href="#M000020">semantic_query</a>&nbsp;&nbsp;
+      <a href="#M000010">undelete</a>&nbsp;&nbsp;
+      <a href="#M000013">upload</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -141,11 +141,11 @@
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000003" class="method-detail">
-        <a name="M000003"></a>
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
 
         <div class="method-heading">
-          <a href="#M000003" class="method-signature">
+          <a href="#M000004" class="method-signature">
           <span class="method-name">new</span><span class="method-args">(url, loglevel = Logger::WARN)</span>
           </a>
         </div>
@@ -166,8 +166,8 @@ href="http://en.wikipedia.org/w/api.php">en.wikipedia.org/w/api.php</a>&quot;)
 </dd>
 </dl>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000003-source">
+            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000004-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 15</span>
 15:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">url</span>, <span class="ruby-identifier">loglevel</span> = <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">WARN</span>)
@@ -184,22 +184,22 @@ href="http://en.wikipedia.org/w/api.php">en.wikipedia.org/w/api.php</a>&quot;)
 
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000007" class="method-detail">
-        <a name="M000007"></a>
+      <div id="method-M000008" class="method-detail">
+        <a name="M000008"></a>
 
         <div class="method-heading">
-          <a href="#M000007" class="method-signature">
+          <a href="#M000008" class="method-signature">
           <span class="method-name">create</span><span class="method-args">(title, content, options={})</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Create a <a href="Gateway.html#M000003">new</a> page, or overwrite an
+Create a <a href="Gateway.html#M000004">new</a> page, or overwrite an
 existing one
 </p>
 <dl>
-<dt>title</dt><dd>Page title to <a href="Gateway.html#M000007">create</a> or overwrite,
+<dt>title</dt><dd>Page title to <a href="Gateway.html#M000008">create</a> or overwrite,
 string
 
 </dd>
@@ -221,13 +221,13 @@ Options:
 
 </li>
 <li>[token] Use this existing edit token instead requesting a <a
-href="Gateway.html#M000003">new</a> one (useful for bulk loads)
+href="Gateway.html#M000004">new</a> one (useful for bulk loads)
 
 </li>
 </ul>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000007-source">
+            onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000008-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 101</span>
 101:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create</span>(<span class="ruby-identifier">title</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>={})
@@ -240,11 +240,11 @@ href="Gateway.html#M000003">new</a> one (useful for bulk loads)
         </div>
       </div>
 
-      <div id="method-M000008" class="method-detail">
-        <a name="M000008"></a>
+      <div id="method-M000009" class="method-detail">
+        <a name="M000009"></a>
 
         <div class="method-heading">
-          <a href="#M000008" class="method-signature">
+          <a href="#M000009" class="method-signature">
           <span class="method-name">delete</span><span class="method-args">(title)</span>
           </a>
         </div>
@@ -255,13 +255,13 @@ Delete one page. (<a href="../MediaWiki.html">MediaWiki</a> API does not
 support deleting multiple pages at a time.)
 </p>
 <dl>
-<dt>title</dt><dd>Title of page to <a href="Gateway.html#M000008">delete</a>
+<dt>title</dt><dd>Title of page to <a href="Gateway.html#M000009">delete</a>
 
 </dd>
 </dl>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000008-source">
+            onclick="toggleCode('M000009-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000009-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 110</span>
 110:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">title</span>)
@@ -273,11 +273,11 @@ support deleting multiple pages at a time.)
         </div>
       </div>
 
-      <div id="method-M000014" class="method-detail">
-        <a name="M000014"></a>
+      <div id="method-M000015" class="method-detail">
+        <a name="M000015"></a>
 
         <div class="method-heading">
-          <a href="#M000014" class="method-signature">
+          <a href="#M000015" class="method-signature">
           <span class="method-name">download</span><span class="method-args">(file_name, options={})</span>
           </a>
         </div>
@@ -285,14 +285,14 @@ support deleting multiple pages at a time.)
         <div class="method-description">
           <p>
 Download <em>file_name</em>. Returns file contents. All options are passed
-to <a href="Gateway.html#M000013">image_info</a> however
+to <a href="Gateway.html#M000014">image_info</a> however
 options[&#8216;iiprop&#8217;] is forced to url. You can still set other
 options to control what file you want to <a
-href="Gateway.html#M000014">download</a>.
+href="Gateway.html#M000015">download</a>.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000014-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000014-source">
+            onclick="toggleCode('M000015-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000015-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 302</span>
 302:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">download</span>(<span class="ruby-identifier">file_name</span>, <span class="ruby-identifier">options</span>={})
@@ -310,11 +310,11 @@ href="Gateway.html#M000014">download</a>.
         </div>
       </div>
 
-      <div id="method-M000016" class="method-detail">
-        <a name="M000016"></a>
+      <div id="method-M000017" class="method-detail">
+        <a name="M000017"></a>
 
         <div class="method-heading">
-          <a href="#M000016" class="method-signature">
+          <a href="#M000017" class="method-signature">
           <span class="method-name">export</span><span class="method-args">(page_titles)</span>
           </a>
         </div>
@@ -332,8 +332,8 @@ Exports a page or set of pages
 Returns <a href="../MediaWiki.html">MediaWiki</a> XML dump
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000016-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000016-source">
+            onclick="toggleCode('M000017-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000017-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 333</span>
 333:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">export</span>(<span class="ruby-identifier">page_titles</span>)
@@ -345,27 +345,27 @@ Returns <a href="../MediaWiki.html">MediaWiki</a> XML dump
         </div>
       </div>
 
-      <div id="method-M000018" class="method-detail">
-        <a name="M000018"></a>
+      <div id="method-M000019" class="method-detail">
+        <a name="M000019"></a>
 
         <div class="method-heading">
-          <a href="#M000018" class="method-signature">
+          <a href="#M000019" class="method-signature">
           <span class="method-name">extensions</span><span class="method-args">()</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Get a <a href="Gateway.html#M000010">list</a> of all installed (and
-registered) <a href="Gateway.html#M000018">extensions</a>
+Get a <a href="Gateway.html#M000011">list</a> of all installed (and
+registered) <a href="Gateway.html#M000019">extensions</a>
 </p>
 <p>
-Returns array of <a href="Gateway.html#M000018">extensions</a> (name =&gt;
+Returns array of <a href="Gateway.html#M000019">extensions</a> (name =&gt;
 version)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000018-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000018-source">
+            onclick="toggleCode('M000019-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000019-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 354</span>
 354:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extensions</span>
@@ -382,11 +382,11 @@ version)
         </div>
       </div>
 
-      <div id="method-M000005" class="method-detail">
-        <a name="M000005"></a>
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
 
         <div class="method-heading">
-          <a href="#M000005" class="method-signature">
+          <a href="#M000006" class="method-signature">
           <span class="method-name">get</span><span class="method-args">(page_title)</span>
           </a>
         </div>
@@ -405,8 +405,8 @@ href="../MediaWiki.html">MediaWiki</a> format
 Returns nil if the page does not exist
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000005-source">
+            onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000006-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 44</span>
 44:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">page_title</span>)
@@ -415,7 +415,7 @@ Returns nil if the page does not exist
 47:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span> <span class="ruby-identifier">page</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">page</span>.<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;missing&quot;</span>]
 48:         <span class="ruby-keyword kw">nil</span>
 49:       <span class="ruby-keyword kw">else</span>
-50:         <span class="ruby-identifier">page</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;revisions/rev&quot;</span>].<span class="ruby-identifier">text</span>
+50:         <span class="ruby-identifier">page</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;revisions/rev&quot;</span>].<span class="ruby-identifier">text</span> <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
 51:       <span class="ruby-keyword kw">end</span>
 52:     <span class="ruby-keyword kw">end</span>
 </pre>
@@ -423,11 +423,11 @@ Returns nil if the page does not exist
         </div>
       </div>
 
-      <div id="method-M000013" class="method-detail">
-        <a name="M000013"></a>
+      <div id="method-M000014" class="method-detail">
+        <a name="M000014"></a>
 
         <div class="method-heading">
-          <a href="#M000013" class="method-signature">
+          <a href="#M000014" class="method-signature">
           <span class="method-name">image_info</span><span class="method-args">(file_name_or_page_id, options={})</span>
           </a>
         </div>
@@ -479,8 +479,8 @@ Output:
   &quot;user&quot; =&gt; &quot;Valdas&quot;
 </pre>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000013-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000013-source">
+            onclick="toggleCode('M000014-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000014-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 271</span>
 271:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">image_info</span>(<span class="ruby-identifier">file_name_or_page_id</span>, <span class="ruby-identifier">options</span>={})
@@ -515,11 +515,11 @@ Output:
         </div>
       </div>
 
-      <div id="method-M000015" class="method-detail">
-        <a name="M000015"></a>
+      <div id="method-M000016" class="method-detail">
+        <a name="M000016"></a>
 
         <div class="method-heading">
-          <a href="#M000015" class="method-signature">
+          <a href="#M000016" class="method-signature">
           <span class="method-name">import</span><span class="method-args">(xmlfile)</span>
           </a>
         </div>
@@ -535,13 +535,13 @@ Imports a <a href="../MediaWiki.html">MediaWiki</a> XML dump
 </dl>
 <p>
 Returns XML array &lt;api&gt;&lt;<a
-href="Gateway.html#M000015">import</a>&gt;&lt;page/&gt;&lt;page/&gt;&#8230;
+href="Gateway.html#M000016">import</a>&gt;&lt;page/&gt;&lt;page/&gt;&#8230;
 &lt;page revisions=&quot;1&quot;&gt; (or more) means successfully imported
 &lt;page revisions=&quot;0&quot;&gt; means duplicate, not imported
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000015-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000015-source">
+            onclick="toggleCode('M000016-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000016-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 320</span>
 320:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">import</span>(<span class="ruby-identifier">xmlfile</span>)
@@ -556,18 +556,18 @@ href="Gateway.html#M000015">import</a>&gt;&lt;page/&gt;&lt;page/&gt;&#8230;
         </div>
       </div>
 
-      <div id="method-M000010" class="method-detail">
-        <a name="M000010"></a>
+      <div id="method-M000011" class="method-detail">
+        <a name="M000011"></a>
 
         <div class="method-heading">
-          <a href="#M000010" class="method-signature">
+          <a href="#M000011" class="method-signature">
           <span class="method-name">list</span><span class="method-args">(key)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Get a <a href="Gateway.html#M000010">list</a> of matching page titles
+Get a <a href="Gateway.html#M000011">list</a> of matching page titles
 </p>
 <dl>
 <dt>key</dt><dd>Search key, matched as a prefix (^key.*). May contain or equal a namespace.
@@ -578,8 +578,8 @@ Get a <a href="Gateway.html#M000010">list</a> of matching page titles
 Returns array of page titles (empty if no matches)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000010-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000010-source">
+            onclick="toggleCode('M000011-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000011-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 136</span>
 136:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">list</span>(<span class="ruby-identifier">key</span>)
@@ -606,11 +606,11 @@ Returns array of page titles (empty if no matches)
         </div>
       </div>
 
-      <div id="method-M000004" class="method-detail">
-        <a name="M000004"></a>
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
 
         <div class="method-heading">
-          <a href="#M000004" class="method-signature">
+          <a href="#M000005" class="method-signature">
           <span class="method-name">login</span><span class="method-args">(username, password, domain = 'local')</span>
           </a>
         </div>
@@ -632,11 +632,11 @@ defaults to &#8216;local&#8217; if not given
 </dd>
 </dl>
 <p>
-Throws error if <a href="Gateway.html#M000004">login</a> fails
+Throws error if <a href="Gateway.html#M000005">login</a> fails
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000004-source">
+            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000005-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 32</span>
 32:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">login</span>(<span class="ruby-identifier">username</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">domain</span> = <span class="ruby-value str">'local'</span>)
@@ -650,25 +650,25 @@ Throws error if <a href="Gateway.html#M000004">login</a> fails
         </div>
       </div>
 
-      <div id="method-M000017" class="method-detail">
-        <a name="M000017"></a>
+      <div id="method-M000018" class="method-detail">
+        <a name="M000018"></a>
 
         <div class="method-heading">
-          <a href="#M000017" class="method-signature">
+          <a href="#M000018" class="method-signature">
           <span class="method-name">namespaces_by_prefix</span><span class="method-args">()</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Get a <a href="Gateway.html#M000010">list</a> of all known namespaces
+Get a <a href="Gateway.html#M000011">list</a> of all known namespaces
 </p>
 <p>
 Returns array of namespaces (name =&gt; id)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000017-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000017-source">
+            onclick="toggleCode('M000018-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000018-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 341</span>
 341:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">namespaces_by_prefix</span>
@@ -685,11 +685,11 @@ Returns array of namespaces (name =&gt; id)
         </div>
       </div>
 
-      <div id="method-M000006" class="method-detail">
-        <a name="M000006"></a>
+      <div id="method-M000007" class="method-detail">
+        <a name="M000007"></a>
 
         <div class="method-heading">
-          <a href="#M000006" class="method-signature">
+          <a href="#M000007" class="method-signature">
           <span class="method-name">render</span><span class="method-args">(page_title, options = {})</span>
           </a>
         </div>
@@ -726,8 +726,8 @@ Options:
 Returns nil if the page does not exist
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000006-source">
+            onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000007-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 65</span>
 65:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">render</span>(<span class="ruby-identifier">page_title</span>, <span class="ruby-identifier">options</span> = {})
@@ -744,7 +744,7 @@ Returns nil if the page does not exist
 76:         <span class="ruby-comment cmt"># OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o</span>
 77:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;linkbase&quot;</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:linkbase</span>]
 78:           <span class="ruby-identifier">linkbase</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;linkbase&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:linkbase</span>]
-79:           <span class="ruby-identifier">rendered</span> = <span class="ruby-identifier">rendered</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\shref=&quot;\/wiki\/(.*)&quot;/</span>, <span class="ruby-value str">' href=&quot;'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">linkbase</span> <span class="ruby-operator">+</span> <span class="ruby-value str">'/wiki/\1&quot;'</span>)
+79:           <span class="ruby-identifier">rendered</span> = <span class="ruby-identifier">rendered</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\shref=&quot;\/wiki\/([\w\(\)_\-\.%\d:,]*)&quot;/</span>, <span class="ruby-value str">' href=&quot;'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">linkbase</span> <span class="ruby-operator">+</span> <span class="ruby-value str">'/wiki/\1&quot;'</span>)
 80:         <span class="ruby-keyword kw">end</span>
 81:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;noeditsections&quot;</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:noeditsections</span>]
 82:           <span class="ruby-identifier">rendered</span> = <span class="ruby-identifier">rendered</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&lt;span class=&quot;editsection&quot;&gt;\[.+\]&lt;\/span&gt;/</span>, <span class="ruby-value str">''</span>)
@@ -760,25 +760,25 @@ Returns nil if the page does not exist
         </div>
       </div>
 
-      <div id="method-M000011" class="method-detail">
-        <a name="M000011"></a>
+      <div id="method-M000012" class="method-detail">
+        <a name="M000012"></a>
 
         <div class="method-heading">
-          <a href="#M000011" class="method-signature">
+          <a href="#M000012" class="method-signature">
           <span class="method-name">search</span><span class="method-args">(key, namespaces=nil, limit=10)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Get a <a href="Gateway.html#M000010">list</a> of pages with matching
+Get a <a href="Gateway.html#M000011">list</a> of pages with matching
 content in given namespaces
 </p>
 <dl>
 <dt>key</dt><dd>Search key
 
 </dd>
-<dt>namespaces</dt><dd>Array of namespace names to <a href="Gateway.html#M000011">search</a>
+<dt>namespaces</dt><dd>Array of namespace names to <a href="Gateway.html#M000012">search</a>
 (defaults to NS_MAIN only)
 
 </dd>
@@ -790,8 +790,8 @@ content in given namespaces
 Returns array of page titles (empty if no matches)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000011-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000011-source">
+            onclick="toggleCode('M000012-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000012-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 163</span>
 163:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">namespaces</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">limit</span>=<span class="ruby-value">10</span>)
@@ -812,11 +812,11 @@ Returns array of page titles (empty if no matches)
         </div>
       </div>
 
-      <div id="method-M000019" class="method-detail">
-        <a name="M000019"></a>
+      <div id="method-M000020" class="method-detail">
+        <a name="M000020"></a>
 
         <div class="method-heading">
-          <a href="#M000019" class="method-signature">
+          <a href="#M000020" class="method-signature">
           <span class="method-name">semantic_query</span><span class="method-args">(query, params = [])</span>
           </a>
         </div>
@@ -838,8 +838,8 @@ Execute Semantic Mediawiki query
 Returns result as an HTML string
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000019-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000019-source">
+            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000020-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 370</span>
 370:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">semantic_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">params</span> = [])
@@ -853,11 +853,11 @@ Returns result as an HTML string
         </div>
       </div>
 
-      <div id="method-M000009" class="method-detail">
-        <a name="M000009"></a>
+      <div id="method-M000010" class="method-detail">
+        <a name="M000010"></a>
 
         <div class="method-heading">
-          <a href="#M000009" class="method-signature">
+          <a href="#M000010" class="method-signature">
           <span class="method-name">undelete</span><span class="method-args">(title)</span>
           </a>
         </div>
@@ -867,7 +867,7 @@ Returns result as an HTML string
 Undelete all revisions of one page.
 </p>
 <dl>
-<dt>title</dt><dd>Title of page to <a href="Gateway.html#M000009">undelete</a>
+<dt>title</dt><dd>Title of page to <a href="Gateway.html#M000010">undelete</a>
 
 </dd>
 </dl>
@@ -875,8 +875,8 @@ Undelete all revisions of one page.
 Returns number of revisions undeleted.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000009-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000009-source">
+            onclick="toggleCode('M000010-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000010-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 120</span>
 120:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">undelete</span>(<span class="ruby-identifier">title</span>)
@@ -894,18 +894,18 @@ Returns number of revisions undeleted.
         </div>
       </div>
 
-      <div id="method-M000012" class="method-detail">
-        <a name="M000012"></a>
+      <div id="method-M000013" class="method-detail">
+        <a name="M000013"></a>
 
         <div class="method-heading">
-          <a href="#M000012" class="method-signature">
+          <a href="#M000013" class="method-signature">
           <span class="method-name">upload</span><span class="method-args">(path, options={})</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Upload a file, or <a href="Gateway.html#M000005">get</a> the status of
+Upload a file, or <a href="Gateway.html#M000006">get</a> the status of
 pending uploads. Several methods are available:
 </p>
 <ul>
@@ -924,7 +924,7 @@ Requires Mediawiki 1.16+
 Arguments:
 </p>
 <ul>
-<li>[path] Path to file to <a href="Gateway.html#M000012">upload</a>. Set to
+<li>[path] Path to file to <a href="Gateway.html#M000013">upload</a>. Set to
 nil if uploading from URL.
 
 </li>
@@ -934,7 +934,7 @@ nil if uploading from URL.
 </ul>
 <p>
 Note that queries using session keys must be done in the same <a
-href="Gateway.html#M000004">login</a> session as the query that originally
+href="Gateway.html#M000005">login</a> session as the query that originally
 returned the key (i.e. do not log out and then log back in).
 </p>
 <p>
@@ -946,12 +946,12 @@ given), options[:target] is alias for this.
 
 </li>
 <li>&#8216;comment&#8217; - Upload comment. Also used as the initial page text
-for <a href="Gateway.html#M000003">new</a> files if &quot;text&quot; is not
+for <a href="Gateway.html#M000004">new</a> files if &quot;text&quot; is not
 specified.
 
 </li>
 <li>&#8216;text&#8217; - Initial page text for <a
-href="Gateway.html#M000003">new</a> files
+href="Gateway.html#M000004">new</a> files
 
 </li>
 <li>&#8216;watch&#8217; - Watch the page
@@ -988,8 +988,8 @@ Examples:
   mw.upload(nil, 'filename' =&gt; &quot;RemoteFile2.jpg&quot;, 'url' =&gt; 'http://remote.com/server/file.jpg')
 </pre>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000012-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000012-source">
+            onclick="toggleCode('M000013-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000013-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 211</span>
 211:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">upload</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">options</span>={})
@@ -1032,59 +1032,63 @@ Examples:
 
       <h3 class="section-bar">Private Instance methods</h3>
 
-      <div id="method-M000023" class="method-detail">
-        <a name="M000023"></a>
+      <div id="method-M000024" class="method-detail">
+        <a name="M000024"></a>
 
         <div class="method-heading">
-          <a href="#M000023" class="method-signature">
+          <a href="#M000024" class="method-signature">
           <span class="method-name">get_response</span><span class="method-args">(res)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Get API XML response If there are errors, print and bail out Otherwise
-return XML root
+Get API XML response If there are errors, raise exception Otherwise return
+XML root
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000023-source">
+            onclick="toggleCode('M000024-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000024-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 429</span>
 429:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_response</span>(<span class="ruby-identifier">res</span>)
-430:       <span class="ruby-identifier">doc</span> = <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">Document</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">res</span>).<span class="ruby-identifier">root</span>
-431:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;RES: #{doc}&quot;</span>)
-432:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error, response does not contain Mediawiki API XML: #{res}&quot;</span> <span class="ruby-keyword kw">unless</span> [ <span class="ruby-value str">&quot;api&quot;</span>, <span class="ruby-value str">&quot;mediawiki&quot;</span> ].<span class="ruby-identifier">include?</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">name</span>
-433:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>]
-434:         <span class="ruby-identifier">code</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;code&quot;</span>]
-435:         <span class="ruby-identifier">info</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;info&quot;</span>]
-436:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error: code '#{code}', info '#{info}'&quot;</span>
-437:       <span class="ruby-keyword kw">end</span>
-438:       <span class="ruby-identifier">doc</span>
-439:     <span class="ruby-keyword kw">end</span>
+430:       <span class="ruby-keyword kw">begin</span>
+431:         <span class="ruby-identifier">doc</span> = <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">Document</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">res</span>).<span class="ruby-identifier">root</span>
+432:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+433:         <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Response is not XML.  Are you sure you are pointing to api.php?&quot;</span>
+434:       <span class="ruby-keyword kw">end</span>
+435:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;RES: #{doc}&quot;</span>)
+436:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Response does not contain Mediawiki API XML: #{res}&quot;</span> <span class="ruby-keyword kw">unless</span> [ <span class="ruby-value str">&quot;api&quot;</span>, <span class="ruby-value str">&quot;mediawiki&quot;</span> ].<span class="ruby-identifier">include?</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">name</span>
+437:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>]
+438:         <span class="ruby-identifier">code</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;code&quot;</span>]
+439:         <span class="ruby-identifier">info</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;error&quot;</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">&quot;info&quot;</span>]
+440:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;API error: code '#{code}', info '#{info}'&quot;</span>
+441:       <span class="ruby-keyword kw">end</span>
+442:       <span class="ruby-identifier">doc</span>
+443:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
       </div>
 
-      <div id="method-M000020" class="method-detail">
-        <a name="M000020"></a>
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
 
         <div class="method-heading">
-          <a href="#M000020" class="method-signature">
+          <a href="#M000021" class="method-signature">
           <span class="method-name">get_token</span><span class="method-args">(type, page_titles)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Fetch token (type &#8216;<a href="Gateway.html#M000008">delete</a>&#8217;,
+Fetch token (type &#8216;<a href="Gateway.html#M000009">delete</a>&#8217;,
 &#8216;edit&#8217;, &#8216;<a
-href="Gateway.html#M000015">import</a>&#8217;)
+href="Gateway.html#M000016">import</a>&#8217;)
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000020-source">
+            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000021-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 380</span>
 380:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_token</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">page_titles</span>)
@@ -1099,19 +1103,19 @@ href="Gateway.html#M000015">import</a>&#8217;)
         </div>
       </div>
 
-      <div id="method-M000021" class="method-detail">
-        <a name="M000021"></a>
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
 
         <div class="method-heading">
-          <a href="#M000021" class="method-signature">
+          <a href="#M000022" class="method-signature">
           <span class="method-name">get_undelete_token</span><span class="method-args">(page_titles)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000021-source">
+            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000022-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 388</span>
 388:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_undelete_token</span>(<span class="ruby-identifier">page_titles</span>)
@@ -1130,11 +1134,11 @@ href="Gateway.html#M000015">import</a>&#8217;)
         </div>
       </div>
 
-      <div id="method-M000022" class="method-detail">
-        <a name="M000022"></a>
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
 
         <div class="method-heading">
-          <a href="#M000022" class="method-signature">
+          <a href="#M000023" class="method-signature">
           <span class="method-name">make_api_request</span><span class="method-args">(form_data)</span>
           </a>
         </div>
@@ -1152,8 +1156,8 @@ Make generic request to API
 Returns XML document
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000022-source">
+            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000023-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/media_wiki/gateway.rb, line 405</span>
 405:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">make_api_request</span>(<span class="ruby-identifier">form_data</span>)

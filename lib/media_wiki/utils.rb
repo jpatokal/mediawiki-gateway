@@ -4,7 +4,7 @@ module MediaWiki
 
     # TODO sync this automatically with Gem version
     def version
-      "0.1.5"
+      "0.1.6"
     end
     
     # Convert a Wiki page name ("getting there & away") to URI-safe format ("getting_there_%26_away"),

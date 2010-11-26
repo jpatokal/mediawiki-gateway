@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.1.5"
+  s.version = "0.1.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
@@ -58,9 +58,10 @@ Gem::Specification.new do |s|
     "spec/fake_media_wiki/app.rb",
     "spec/fake_media_wiki/query_handling.rb",
     "spec/gateway_spec.rb",
-    "spec/import-test-data.xml"
+    "spec/import-test-data.xml",
+    "spec/utils_spec.rb"
   ]
-  s.homepage = %q{http://github.com/jpatokal/media_wiki_gateway}
+  s.homepage = %q{http://github.com/jpatokal/mediawiki-gateway}
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Connect to the mediawiki API}
@@ -68,7 +69,8 @@ Gem::Specification.new do |s|
     "spec/fake_media_wiki/api_pages.rb",
     "spec/fake_media_wiki/app.rb",
     "spec/fake_media_wiki/query_handling.rb",
-    "spec/gateway_spec.rb"
+    "spec/gateway_spec.rb",
+    "spec/utils_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
