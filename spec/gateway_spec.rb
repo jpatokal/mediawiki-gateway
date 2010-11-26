@@ -22,30 +22,6 @@ describe MediaWiki::Gateway do
     $fake_media_wiki.reset
   end
 
-  describe '.wiki_to_uri' do
-
-    it "should underscore spaces" do
-      MediaWiki.wiki_to_uri('getting there').should == 'getting_there'
-    end
-
-    it "should escape ampersands" do
-      MediaWiki.wiki_to_uri('getting there & away').should == 'getting_there_%26_away'
-    end
-
-    it "should escape UTF-8" do
-      MediaWiki.wiki_to_uri('Phở').should == 'Ph%E1%BB%9F'      
-    end
-
-    it "should escape each path component but leave slashes untouched" do
-      MediaWiki.wiki_to_uri('Phở/B&r/B z').should == 'Ph%E1%BB%9F/B%26r/B_z'
-    end
-
-    it "should pass through nil" do
-      MediaWiki.wiki_to_uri(nil).should == nil
-    end
-    
-  end
-  
   describe '#login' do
   
     describe "with a valid username & password" do

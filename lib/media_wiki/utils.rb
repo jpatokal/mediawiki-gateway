@@ -13,6 +13,12 @@ module MediaWiki
       wiki.to_s.split('/').map {|chunk| CGI.escape(chunk.tr(' ', '_')) }.join('/') if wiki
     end
 
+    # Convert URL-ized page name ("getting_there_%26_away") into Wiki display format page name ("getting there & away")
+    # [wiki] Page name string in URL
+    def uri_to_wiki(uri)
+      CGI.unescape(uri).tr('_', ' ') if uri
+    end
+
   end
   
 end
