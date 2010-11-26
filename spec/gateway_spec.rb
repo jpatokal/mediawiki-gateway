@@ -192,6 +192,14 @@ describe MediaWiki::Gateway do
 
     end
 
+    describe "for an existing empty wiki page" do
+
+      it "returns an empty string" do
+        @gateway.get("Empty").should == ""
+      end
+
+    end
+
     describe "for a missing wiki page" do
 
       it "returns nil" do
@@ -292,7 +300,7 @@ describe MediaWiki::Gateway do
       it "should create the page" do
         expected = <<-XML
           <api>
-            <edit new='' result='Success' pageid='6' title='A New Page' oldrevid='0' newrevid='6'/>
+            <edit new='' result='Success' pageid='7' title='A New Page' oldrevid='0' newrevid='7'/>
           </api>
         XML
         Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
@@ -315,7 +323,7 @@ describe MediaWiki::Gateway do
         it "should overwrite the existing page" do
           expected = <<-XML
             <api>
-              <edit result='Success' pageid='6' title='Main Page' oldrevid='1' newrevid='6'/>
+              <edit result='Success' pageid='7' title='Main Page' oldrevid='1' newrevid='7'/>
             </api>
           XML
           Hash.from_xml(@new_page.to_s).should == Hash.from_xml(expected)
@@ -481,7 +489,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should list all pages" do
-        @list.sort.should == [ "Book:Italy", "Foopage", "Level/Level/Index", "Main 2", "Main Page" ]
+        @list.sort.should == [ "Book:Italy", "Empty", "Foopage", "Level/Level/Index", "Main 2", "Main Page" ]
       end
       
     end

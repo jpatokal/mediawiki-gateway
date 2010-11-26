@@ -28,14 +28,16 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "carpodaster-mediawiki-gateway"
+    gemspec.name = "mediawiki-gateway"
     gemspec.summary = "Connect to the mediawiki API"
     gemspec.description = ""
     gemspec.email = "jpatokal@iki.fi"
-    gemspec.homepage = "http://github.com/carpodaster/media_wiki_gateway"
-    gemspec.authors = ["Jani Patokallio", "Carsten Zimmermann"]
+    gemspec.homepage = "http://github.com/jpatokal/media_wiki_gateway"
+    gemspec.authors = ["Jani Patokallio"]
     gemspec.add_dependency 'rest-client'
     gemspec.add_development_dependency 'sham_rack'
+    gemspec.add_development_dependency 'jeweler'
+    gemspec.add_development_dependency 'activesupport'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
