@@ -171,9 +171,7 @@ module MediaWiki
           'blfilterredir' => filter,
           'bllimit' => API_MAX_LIMIT }
         form_data['blcontinue'] = blcontinue if blcontinue
-        puts form_data.inspect
         res = make_api_request(form_data)
-        puts res
         blcontinue = res.elements['query-continue'] ? res.elements['query-continue/backlinks'].attributes['blcontinue'] : nil
         titles += REXML::XPath.match(res, "//bl").map { |x| x.attributes["title"] }
       end while blcontinue
