@@ -28,6 +28,7 @@ module FakeMediaWiki
       @pages = ApiPages.new
       @pages.add('Main Page', 'Content')
       @pages.add('Main 2', 'Content')
+      @pages.add('Empty', '')
       @pages.add('Level/Level/Index', '{{#include:Foo}} {{#include:Bar}}')
       @pages.add_namespace(100, "Book")
       @pages.add('Book:Italy', 'Introduction')

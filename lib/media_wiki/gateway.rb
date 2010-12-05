@@ -7,6 +7,7 @@ require 'uri'
 module MediaWiki
 
   class Gateway
+    API_MAX_LIMIT = 500
 
     # Set up a MediaWiki::Gateway for a given MediaWiki installation
     #
@@ -40,14 +41,14 @@ module MediaWiki
     #
     # [page_title] Page title to fetch
     #
-    # Returns nil if the page does not exist
+    # Returns content of page as string, nil if the page does not exist
     def get(page_title)
       form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'content', 'titles' => page_title}
       page = make_api_request(form_data).elements["query/pages/page"]
       if ! page or page.attributes["missing"]
         nil
       else
-        page.elements["revisions/rev"].text
+        page.elements["revisions/rev"].text || ""
       end
     end
 
@@ -61,7 +62,7 @@ module MediaWiki
     # * [noeditsections] strips all edit-links if set to +true+
     # * [noimages] strips all +img+ tags from the rendered text if set to +true+
     # 
-    # Returns nil if the page does not exist
+    # Returns rendered page as string, or nil if the page does not exist
     def render(page_title, options = {})
       form_data = {'action' => 'parse', 'page' => page_title}
 
@@ -116,7 +117,7 @@ module MediaWiki
     #
     # [title] Title of page to undelete
     #
-    # Returns number of revisions undeleted.
+    # Returns number of revisions undeleted, or zero if nothing to undelete
     def undelete(title)
       token = get_undelete_token(title)
       if token
@@ -144,12 +145,36 @@ module MediaWiki
           'list' => 'allpages',
           'apfrom' => apfrom,
           'apprefix' => key,
-          'aplimit' => 500, # max allowed by API
+          'aplimit' => API_MAX_LIMIT,
           'apnamespace' => namespace}
         res = make_api_request(form_data)
         apfrom = res.elements['query-continue'] ? res.elements['query-continue/allpages'].attributes['apfrom'] : nil
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
       end while apfrom
+      titles
+    end
+
+    # Get a list of pages that link to a target page
+    #
+    # [title] Link target page
+    # [filter] "all" links (default), "redirects" only, or "nonredirects" (plain links only)
+    #
+    # Returns array of page titles (empty if no matches)
+    def backlinks(title, filter = "all")
+      titles = []
+      blcontinue = nil
+      begin
+        form_data =
+          {'action' => 'query',
+          'list' => 'backlinks',
+          'bltitle' => title,
+          'blfilterredir' => filter,
+          'bllimit' => API_MAX_LIMIT }
+        form_data['blcontinue'] = blcontinue if blcontinue
+        res = make_api_request(form_data)
+        blcontinue = res.elements['query-continue'] ? res.elements['query-continue/backlinks'].attributes['blcontinue'] : nil
+        titles += REXML::XPath.match(res, "//bl").map { |x| x.attributes["title"] }
+      end while blcontinue
       titles
     end
 
@@ -441,6 +466,5 @@ module MediaWiki
       end
       doc
     end
-
   end
 end

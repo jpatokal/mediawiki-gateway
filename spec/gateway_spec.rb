@@ -22,30 +22,6 @@ describe MediaWiki::Gateway do
     $fake_media_wiki.reset
   end
 
-  describe '.wiki_to_uri' do
-
-    it "should underscore spaces" do
-      MediaWiki.wiki_to_uri('getting there').should == 'getting_there'
-    end
-
-    it "should escape ampersands" do
-      MediaWiki.wiki_to_uri('getting there & away').should == 'getting_there_%26_away'
-    end
-
-    it "should escape UTF-8" do
-      MediaWiki.wiki_to_uri('Phở').should == 'Ph%E1%BB%9F'      
-    end
-
-    it "should escape each path component but leave slashes untouched" do
-      MediaWiki.wiki_to_uri('Phở/B&r/B z').should == 'Ph%E1%BB%9F/B%26r/B_z'
-    end
-
-    it "should pass through nil" do
-      MediaWiki.wiki_to_uri(nil).should == nil
-    end
-    
-  end
-  
   describe '#login' do
   
     describe "with a valid username & password" do
@@ -192,6 +168,14 @@ describe MediaWiki::Gateway do
 
     end
 
+    describe "for an existing empty wiki page" do
+
+      it "returns an empty string" do
+        @gateway.get("Empty").should == ""
+      end
+
+    end
+
     describe "for a missing wiki page" do
 
       it "returns nil" do
@@ -292,7 +276,7 @@ describe MediaWiki::Gateway do
       it "should create the page" do
         expected = <<-XML
           <api>
-            <edit new='' result='Success' pageid='6' title='A New Page' oldrevid='0' newrevid='6'/>
+            <edit new='' result='Success' pageid='7' title='A New Page' oldrevid='0' newrevid='7'/>
           </api>
         XML
         Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
@@ -315,7 +299,7 @@ describe MediaWiki::Gateway do
         it "should overwrite the existing page" do
           expected = <<-XML
             <api>
-              <edit result='Success' pageid='6' title='Main Page' oldrevid='1' newrevid='6'/>
+              <edit result='Success' pageid='7' title='Main Page' oldrevid='1' newrevid='7'/>
             </api>
           XML
           Hash.from_xml(@new_page.to_s).should == Hash.from_xml(expected)
@@ -481,7 +465,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should list all pages" do
-        @list.sort.should == [ "Book:Italy", "Foopage", "Level/Level/Index", "Main 2", "Main Page" ]
+        @list.sort.should == [ "Book:Italy", "Empty", "Foopage", "Level/Level/Index", "Main 2", "Main Page" ]
       end
       
     end

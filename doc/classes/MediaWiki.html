@@ -59,12 +59,12 @@
                 lib/media_wiki/config.rb
                 </a>
         <br />
-                <a href="../files/lib/media_wiki/gateway_rb.html">
-                lib/media_wiki/gateway.rb
-                </a>
-        <br />
                 <a href="../files/lib/media_wiki/utils_rb.html">
                 lib/media_wiki/utils.rb
+                </a>
+        <br />
+                <a href="../files/lib/media_wiki/gateway_rb.html">
+                lib/media_wiki/gateway.rb
                 </a>
         <br />
             </td>
@@ -88,6 +88,7 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
+      <a href="#M000003">uri_to_wiki</a>&nbsp;&nbsp;
       <a href="#M000001">version</a>&nbsp;&nbsp;
       <a href="#M000002">wiki_to_uri</a>&nbsp;&nbsp;
       </div>
@@ -118,6 +119,38 @@ Class <a href="MediaWiki/Gateway.html" class="link">MediaWiki::Gateway</a><br />
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
+      <div id="method-M000003" class="method-detail">
+        <a name="M000003"></a>
+
+        <div class="method-heading">
+          <a href="#M000003" class="method-signature">
+          <span class="method-name">uri_to_wiki</span><span class="method-args">(uri)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Convert URL-ized page name (&quot;getting_there_%26_away&quot;) into Wiki
+display format page name (&quot;getting there &amp; away&quot;)
+</p>
+<dl>
+<dt>wiki</dt><dd>Page name string in URL
+
+</dd>
+</dl>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000003-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 19</span>
+19:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">uri_to_wiki</span>(<span class="ruby-identifier">uri</span>)
+20:       <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">uri</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">uri</span>
+21:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
       <div id="method-M000001" class="method-detail">
         <a name="M000001"></a>
 
@@ -128,14 +161,18 @@ Class <a href="MediaWiki/Gateway.html" class="link">MediaWiki::Gateway</a><br />
         </div>
       
         <div class="method-description">
+          <p>
+TODO sync this automatically with Gem <a
+href="MediaWiki.html#M000001">version</a>
+</p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000001-source">
 <pre>
-   <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 5</span>
-5:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
-6:       <span class="ruby-value str">&quot;0.0.1&quot;</span>
-7:     <span class="ruby-keyword kw">end</span>
+   <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 6</span>
+6:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
+7:       <span class="ruby-value str">&quot;0.1.5&quot;</span>
+8:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -165,10 +202,10 @@ slashes
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 12</span>
-12:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
-13:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
-14:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 13</span>
+13:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
+14:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
+15:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
