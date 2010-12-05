@@ -128,9 +128,9 @@ module MediaWiki
       end
     end
 
-    # Get a list of matching page titles
+    # Get a list of matching page titles in a namespace
     #
-    # [key] Search key, matched as a prefix (^key.*).  May contain or equal a namespace.
+    # [key] Search key, matched as a prefix (^key.*).  May contain or equal a namespace, defaults to main (namespace 0) if none given.
     #
     # Returns array of page titles (empty if no matches)
     def list(key)
