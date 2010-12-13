@@ -2,6 +2,34 @@ require 'media_wiki'
 
 describe MediaWiki do
 
+  describe '.get_path_to_subpage' do
+    it "should return the everything before the subpage if there are subpages" do
+      MediaWiki.get_path_to_subpage('namespace:base/base/subpage').should == 'namespace:base/base'
+    end
+
+    it "should return nil if there is no subpage" do
+      MediaWiki.get_path_to_subpage('namespace:subpage').should be_nil
+    end
+    
+    it "should pass through nil" do
+      MediaWiki.get_path_to_subpage(nil).should be_nil
+    end    
+  end
+
+  describe '.get_subpage' do
+    it "should return subpage name if there are subpages" do
+      MediaWiki.get_subpage('namespace:base/base/subpage').should == 'subpage'
+    end
+
+    it "should return entire name if there are no subpages" do
+      MediaWiki.get_subpage('namespace:subpage').should == 'namespace:subpage'
+    end
+    
+    it "should pass through nil" do
+      MediaWiki.get_subpage(nil).should be_nil
+    end
+  end
+
   describe '.wiki_to_uri' do
 
     it "should underscore spaces" do
@@ -21,7 +49,7 @@ describe MediaWiki do
     end
 
     it "should pass through nil" do
-      MediaWiki.wiki_to_uri(nil).should == nil
+      MediaWiki.wiki_to_uri(nil).should be_nil
     end
     
   end
@@ -41,7 +69,7 @@ describe MediaWiki do
     end
 
     it "should pass through nil" do
-      MediaWiki.uri_to_wiki(nil).should == nil
+      MediaWiki.uri_to_wiki(nil).should be_nil
     end
     
   end
