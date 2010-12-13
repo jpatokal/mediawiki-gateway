@@ -2,6 +2,7 @@ require 'rake'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
+require 'lib/media_wiki'
 
 task :default => ['spec']
 
@@ -34,6 +35,7 @@ begin
     gemspec.email = "jpatokal@iki.fi"
     gemspec.homepage = "http://github.com/jpatokal/mediawiki-gateway"
     gemspec.authors = ["Jani Patokallio"]
+    gemspec.version = MediaWiki::VERSION
     gemspec.add_dependency 'rest-client'
     gemspec.add_development_dependency 'sham_rack'
     gemspec.add_development_dependency 'jeweler'
