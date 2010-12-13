@@ -24,10 +24,12 @@ module MediaWiki
       title.split('/').last if title
     end
 
-    # Convert URL-ized page name ("getting_there_%26_away") into Wiki display format page name ("getting there & away")
+    # Convert URL-ized page name ("getting_there_%26_away") into Wiki display format page name ("getting there & away").
+    # Also strips out any illegal characters (#<>[]|{}, cf. http://meta.wikimedia.org/wiki/Help:Page_name#Restrictions).
+    #
     # [wiki] Page name string in URL
     def uri_to_wiki(uri)
-      CGI.unescape(uri).tr('_', ' ') if uri
+      CGI.unescape(uri).tr('_', ' ').tr('#<>[]|{}', '') if uri
     end
     
     # Convert a Wiki page name ("getting there & away") to URI-safe format ("getting_there_%26_away"),

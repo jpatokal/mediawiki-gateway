@@ -68,6 +68,10 @@ describe MediaWiki do
       MediaWiki.uri_to_wiki('Ph%E1%BB%9F').should == 'Phở'
     end
 
+    it "should strip out illegal characters" do
+      MediaWiki.uri_to_wiki('A#B<C>D[E]F|G{H}I').should == 'ABCDEFGHI'
+    end
+    
     it "should pass through nil" do
       MediaWiki.uri_to_wiki(nil).should be_nil
     end
