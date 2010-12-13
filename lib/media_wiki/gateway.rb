@@ -105,6 +105,23 @@ module MediaWiki
       make_api_request(form_data)
     end
     
+    # Move a page to a new title
+    #
+    # [from] Old page name
+    # [to] New page name
+    # [options] Hash of additional options
+    #
+    # Options:
+    # * [movesubpages] Move associated subpages
+    # * [movetalk] Move associated talkpages
+    def move(from, to, options={})
+      valid_options = %w(movesubpages movetalk)
+      options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
+      
+      form_data = options.merge({'action' => 'move', 'from' => from, 'to' => to, 'token' => get_token('move', from)})
+      make_api_request(form_data)
+    end
+    
     # Delete one page. (MediaWiki API does not support deleting multiple pages at a time.)
     #
     # [title] Title of page to delete
@@ -401,7 +418,7 @@ module MediaWiki
 
     private
 
-    # Fetch token (type 'delete', 'edit', 'import')
+    # Fetch token (type 'delete', 'edit', 'import', 'move')
     def get_token(type, page_titles)
       form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
       res = make_api_request(form_data)
