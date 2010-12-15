@@ -3,5 +3,5 @@ require File.dirname(__FILE__) + '/media_wiki/utils'
 require File.dirname(__FILE__) + '/media_wiki/gateway'
 
 module MediaWiki
-  VERSION = "0.2.2"
+  VERSION = "0.2.3"
 end
