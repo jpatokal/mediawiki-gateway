@@ -114,8 +114,12 @@ module MediaWiki
     # Options:
     # * [movesubpages] Move associated subpages
     # * [movetalk] Move associated talkpages
+    # * [noredirect] Do not create a redirect page from old name.  Requires the 'suppressredirect' user right, otherwise MW will silently ignore the option and create the redirect anyway.
+    # * [reason] Reason for move
+    # * [watch] Add page and any redirect to watchlist
+    # * [unwatch] Remove page and any redirect from watchlist
     def move(from, to, options={})
-      valid_options = %w(movesubpages movetalk)
+      valid_options = %w(movesubpages movetalk noredirect reason watch unwatch)
       options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
       
       form_data = options.merge({'action' => 'move', 'from' => from, 'to' => to, 'token' => get_token('move', from)})
