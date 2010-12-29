@@ -17,7 +17,7 @@ module MediaWiki
       @log = Logger.new(STDERR)
       @log.level = loglevel
       @wiki_url = url
-      @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki.version}" }
+      @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}" }
       @cookies = {}
     end
     
