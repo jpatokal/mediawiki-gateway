@@ -33,10 +33,10 @@ module MediaWiki
     end
     
     # Convert a Wiki page name ("getting there & away") to URI-safe format ("getting_there_%26_away"),
-    # taking care not to mangle slashes
+    # taking care not to mangle slashes or colons
     # [wiki] Page name string in Wiki format
     def wiki_to_uri(wiki)
-      wiki.to_s.split(/[\:]/).map {|chunk| CGI.escape(chunk.tr(' ', '_')) }.join('/') if wiki
+      wiki.to_s.split('/').map {|chunk| CGI.escape(chunk.tr(' ', '_')) }.join('/').gsub('%3A', ':') if wiki
     end
 
     # Return current version of MediaWiki::Gateway
