@@ -36,7 +36,7 @@ module MediaWiki
     # taking care not to mangle slashes
     # [wiki] Page name string in Wiki format
     def wiki_to_uri(wiki)
-      wiki.to_s.split('/').map {|chunk| CGI.escape(chunk.tr(' ', '_')) }.join('/') if wiki
+      wiki.to_s.split(/[\:]/).map {|chunk| CGI.escape(chunk.tr(' ', '_')) }.join('/') if wiki
     end
 
     # Return current version of MediaWiki::Gateway

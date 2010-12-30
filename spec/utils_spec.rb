@@ -44,8 +44,8 @@ describe MediaWiki do
       MediaWiki.wiki_to_uri('Phở').should == 'Ph%E1%BB%9F'      
     end
 
-    it "should escape each path component but leave slashes untouched" do
-      MediaWiki.wiki_to_uri('Phở/B&r/B z').should == 'Ph%E1%BB%9F/B%26r/B_z'
+    it "should escape each path component but leave slashes and colons untouched" do
+      MediaWiki.wiki_to_uri('Zoo:Phở/B&r/B z').should == 'Zoo:Ph%E1%BB%9F/B%26r/B_z'
     end
 
     it "should pass through nil" do
