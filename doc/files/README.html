@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Fri Nov 26 10:40:15 +1100 2010</td>
+      <td>Thu Jan 13 14:03:08 +1100 2011</td>
     </tr>
     </table>
   </div>
@@ -70,16 +70,40 @@
 
     <div id="description">
       <h1><a href="../classes/MediaWiki/Gateway.html">MediaWiki::Gateway</a></h1>
-<pre>
- Ruby framework for MediaWiki API manipulation
+<p>
+A Ruby framework for <a href="../classes/MediaWiki.html">MediaWiki</a> API
+manipulation. Features out of the box:
+</p>
+<ul>
+<li>Simple, elegant syntax for common operations
 
- Gem:  http://rubygems.org/gems/mediawiki-gateway
- RDoc: http://rubydoc.info/gems/mediawiki-gateway
-</pre>
+</li>
+<li>Handles login, edit, move etc tokens for you
+
+</li>
+<li>Support for maxlag detection and automated retries on 503
+
+</li>
+<li>Integrated logging
+
+</li>
+<li>Tested up to <a href="../classes/MediaWiki.html">MediaWiki</a> 1.16
+
+</li>
+</ul>
+<p>
+Gem: <a
+href="http://rubygems.org/gems/mediawiki-gateway">rubygems.org/gems/mediawiki-gateway</a>
+RDoc: <a
+href="http://rubydoc.info/gems/mediawiki-gateway">rubydoc.info/gems/mediawiki-gateway</a>
+Git: <a
+href="https://github.com/jpatokal/mediawiki-gateway">github.com/jpatokal/mediawiki-gateway</a>
+</p>
 <h2>Example</h2>
+<p>
+Simple page creation script:
+</p>
 <pre>
- Simple page creation script:
-
  require 'media_wiki'
  mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
  mw.login('RubyBot', 'pa$$w0rd')
@@ -87,8 +111,11 @@
 </pre>
 <h2>Credits</h2>
 <p>
-Thanks to John Carney, Mike Williams, Dan Heath and the rest of the Lonely
-Planet Atlas team.
+Maintained by Jani Patokallio.
+</p>
+<p>
+Thanks to John Carney, Mike Williams, Daniel Heath and the rest of the
+Lonely Planet Atlas team.
 </p>
 
     </div>

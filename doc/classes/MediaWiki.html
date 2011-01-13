@@ -211,7 +211,9 @@ href="MediaWiki.html#M000002">get_subpage</a>(&quot;Namespace:Foo&quot;)
         <div class="method-description">
           <p>
 Convert URL-ized page name (&quot;getting_there_%26_away&quot;) into Wiki
-display format page name (&quot;getting there &amp; away&quot;)
+display format page name (&quot;getting there &amp; away&quot;). Also
+strips out any illegal characters (#&lt;&gt;[]|{}, cf. <a
+href="http://meta.wikimedia.org/wiki/Help:Page_name#Restrictions">meta.wikimedia.org/wiki/Help:Page_name#Restrictions</a>).
 </p>
 <dl>
 <dt>wiki</dt><dd>Page name string in URL
@@ -222,10 +224,10 @@ display format page name (&quot;getting there &amp; away&quot;)
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 29</span>
-29:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">uri_to_wiki</span>(<span class="ruby-identifier">uri</span>)
-30:       <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">uri</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">uri</span>
-31:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 31</span>
+31:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">uri_to_wiki</span>(<span class="ruby-identifier">uri</span>)
+32:       <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">uri</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'#&lt;&gt;[]|{}'</span>, <span class="ruby-value str">''</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">uri</span>
+33:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -249,10 +251,10 @@ href="MediaWiki/Gateway.html">MediaWiki::Gateway</a>
             onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 41</span>
-41:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
-42:       <span class="ruby-constant">MediaWiki</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>
-43:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 43</span>
+43:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
+44:       <span class="ruby-constant">MediaWiki</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>
+45:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -271,7 +273,7 @@ href="MediaWiki/Gateway.html">MediaWiki::Gateway</a>
           <p>
 Convert a Wiki page name (&quot;getting there &amp; away&quot;) to URI-safe
 format (&quot;getting_there_%26_away&quot;), taking care not to mangle
-slashes
+slashes or colons
 </p>
 <dl>
 <dt>wiki</dt><dd>Page name string in Wiki format
@@ -282,10 +284,10 @@ slashes
             onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 36</span>
-36:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
-37:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
-38:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 38</span>
+38:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
+39:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'%3A'</span>, <span class="ruby-value str">':'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
+40:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
