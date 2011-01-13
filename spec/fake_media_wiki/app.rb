@@ -57,9 +57,11 @@ module FakeMediaWiki
     def logged_in(username)
       @logged_in_users.include?(username)
     end
-        
+
     post "/w/api.php" do
       begin
+        halt(503, "Maxlag exceeded") if params[:maxlag].to_i < 0 
+
         @token = ApiToken.new(params)
         action = params[:action]
         if respond_to?(action)

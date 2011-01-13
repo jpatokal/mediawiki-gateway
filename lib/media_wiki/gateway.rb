@@ -5,18 +5,33 @@ require 'rexml/document'
 require 'uri'
 
 module MediaWiki
-
+  
   class Gateway
-    API_MAX_LIMIT = 500
-
+    attr_reader :log
+    
     # Set up a MediaWiki::Gateway for a given MediaWiki installation
     #
     # [url] Path to API of target MediaWiki (eg. "http://en.wikipedia.org/w/api.php")
-    # [loglevel] Log level to use (optional, defaults to Logger::WARN)
-    def initialize(url, loglevel = Logger::WARN)
-      @log = Logger.new(STDERR)
-      @log.level = loglevel
+    # [options] Hash of options
+    #
+    # Options:
+    # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
+    # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
+    # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
+    # [:retry_count] Number of times to try before giving up if MediaWiki returns 503 Service Unavailable, defaults to 3 (original request plus two retries).
+    # [:retry_delay] Seconds to wait before retry if MediaWiki returns 503 Service Unavailable, defaults to 10 seconds.
+    def initialize(url, options={})
+      default_options = {
+        :limit => 500,
+        :loglevel => Logger::WARN,
+        :maxlag => 5,
+        :retry_count => 3,
+        :retry_delay => 10
+      }
+      @options = default_options.merge(options)
       @wiki_url = url
+      @log = Logger.new(STDERR)
+      @log.level = @options[:loglevel]
       @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}" }
       @cookies = {}
     end
@@ -58,9 +73,9 @@ module MediaWiki
     # [options] Hash of additional options
     #
     # Options:
-    # * [linkbase] supply a String to prefix all internal (relative) links with. '/wiki/' is assumed to be the base of a relative link
-    # * [noeditsections] strips all edit-links if set to +true+
-    # * [noimages] strips all +img+ tags from the rendered text if set to +true+
+    # * [:linkbase] supply a String to prefix all internal (relative) links with. '/wiki/' is assumed to be the base of a relative link
+    # * [:noeditsections] strips all edit-links if set to +true+
+    # * [:noimages] strips all +img+ tags from the rendered text if set to +true+
     # 
     # Returns rendered page as string, or nil if the page does not exist
     def render(page_title, options = {})
@@ -96,9 +111,9 @@ module MediaWiki
     # [options] Hash of additional options
     #
     # Options:
-    # * [overwrite] Allow overwriting existing pages
-    # * [summary] Edit summary for history, string
-    # * [token] Use this existing edit token instead requesting a new one (useful for bulk loads)
+    # * [:overwrite] Allow overwriting existing pages
+    # * [:summary] Edit summary for history, string
+    # * [:token] Use this existing edit token instead requesting a new one (useful for bulk loads)
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
       form_data['createonly'] = "" unless options[:overwrite]
@@ -112,12 +127,12 @@ module MediaWiki
     # [options] Hash of additional options
     #
     # Options:
-    # * [movesubpages] Move associated subpages
-    # * [movetalk] Move associated talkpages
-    # * [noredirect] Do not create a redirect page from old name.  Requires the 'suppressredirect' user right, otherwise MW will silently ignore the option and create the redirect anyway.
-    # * [reason] Reason for move
-    # * [watch] Add page and any redirect to watchlist
-    # * [unwatch] Remove page and any redirect from watchlist
+    # * [:movesubpages] Move associated subpages
+    # * [:movetalk] Move associated talkpages
+    # * [:noredirect] Do not create a redirect page from old name.  Requires the 'suppressredirect' user right, otherwise MW will silently ignore the option and create the redirect anyway.
+    # * [:reason] Reason for move
+    # * [:watch] Add page and any redirect to watchlist
+    # * [:unwatch] Remove page and any redirect from watchlist
     def move(from, to, options={})
       valid_options = %w(movesubpages movetalk noredirect reason watch unwatch)
       options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
@@ -166,7 +181,7 @@ module MediaWiki
           'list' => 'allpages',
           'apfrom' => apfrom,
           'apprefix' => key,
-          'aplimit' => API_MAX_LIMIT,
+          'aplimit' => @options[:limit],
           'apnamespace' => namespace}
         res = make_api_request(form_data)
         apfrom = res.elements['query-continue'] ? res.elements['query-continue/allpages'].attributes['apfrom'] : nil
@@ -190,7 +205,7 @@ module MediaWiki
           'list' => 'backlinks',
           'bltitle' => title,
           'blfilterredir' => filter,
-          'bllimit' => API_MAX_LIMIT }
+          'bllimit' => @options[:limit] }
         form_data['blcontinue'] = blcontinue if blcontinue
         res = make_api_request(form_data)
         blcontinue = res.elements['query-continue'] ? res.elements['query-continue/backlinks'].attributes['blcontinue'] : nil
@@ -448,10 +463,18 @@ module MediaWiki
     # [form_data] hash or string of attributes to post
     #
     # Returns XML document
-    def make_api_request(form_data)
-      form_data['format'] = 'xml' if form_data.kind_of? Hash
-      @log.debug("REQ: #{form_data.inspect}, #{@cookies.inspect}")
-      RestClient.post(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block| 
+    def make_api_request(form_data, retry_count=1)
+      if form_data.kind_of? Hash
+        form_data['format'] = 'xml'
+        form_data['maxlag'] = @options[:maxlag]
+      end
+      log.debug("REQ: #{form_data.inspect}, #{@cookies.inspect}")
+      RestClient.post(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
+        if response.code == 503 and retry_count < @options[:retry_count]
+          log.warn("503 Service Unavailable: #{response.body}.  Retry in #{@options[:retry_delay]} seconds.")
+          sleep @options[:retry_delay]
+          make_api_request(form_data, retry_count + 1)
+        end
         # Check response for errors and return XML
         raise "API error, bad response: #{response}" unless response.code >= 200 and response.code < 300 
         doc = get_response(response.dup)
@@ -478,7 +501,7 @@ module MediaWiki
       rescue REXML::ParseException => e
         raise "Response is not XML.  Are you sure you are pointing to api.php?"
       end
-      @log.debug("RES: #{doc}")
+      log.debug("RES: #{doc}")
       raise "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
       if doc.elements["error"]
         code = doc.elements["error"].attributes["code"]

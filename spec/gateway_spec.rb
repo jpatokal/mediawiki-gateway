@@ -186,13 +186,18 @@ describe MediaWiki::Gateway do
     describe "when wiki returns 503" do
 
       before do
-        pending
-        stub(Logger).warn(anything) { }
-        @gateway.get("").should be_nil
+        @log = Object.new
+        stub(@log).debug { }
+        stub(@log).warn { }
+        @fail_gateway = MediaWiki::Gateway.new('http://dummy-wiki.example/w/api.php', {:maxlag => -1, :retry_delay => 0})
+        stub(@fail_gateway).log { @log }
       end
 
-      it "should retry 3 times" do
-        Logger.should have_received.warn("foo").times(3)
+      it "should retry twice and fail" do
+        lambda {
+          @fail_gateway.get("")
+        }.should raise_error
+        @log.should have_received.warn("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").times(2)
       end
 
     end
