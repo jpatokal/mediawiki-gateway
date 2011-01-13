@@ -1,13 +1,20 @@
 = MediaWiki::Gateway
 
- Ruby framework for MediaWiki API manipulation
+A Ruby framework for MediaWiki API manipulation.  Features out of the box:
 
- Gem:  http://rubygems.org/gems/mediawiki-gateway
- RDoc: http://rubydoc.info/gems/mediawiki-gateway
+* Simple, elegant syntax for common operations
+* Handles login, edit, move etc tokens for you
+* Support for maxlag detection and automated retries on 503
+* Integrated logging
+* Tested up to MediaWiki 1.16
+
+Gem:  http://rubygems.org/gems/mediawiki-gateway
+RDoc: http://rubydoc.info/gems/mediawiki-gateway
+Git:  https://github.com/jpatokal/mediawiki-gateway
 
 == Example
 
- Simple page creation script:
+Simple page creation script:
 
  require 'media_wiki'
  mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
@@ -16,5 +23,7 @@
 
 == Credits
 
-Thanks to John Carney, Mike Williams, Dan Heath and the rest of the Lonely Planet Atlas team.
+Maintained by Jani Patokallio.
+
+Thanks to John Carney, Mike Williams, Daniel Heath and the rest of the Lonely Planet Atlas team.
 
