@@ -1,4 +1,4 @@
-require 'media_wiki'
+require 'spec_helper'
 
 describe MediaWiki do
 

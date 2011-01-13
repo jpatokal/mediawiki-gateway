@@ -37,9 +37,10 @@ begin
     gemspec.authors = ["Jani Patokallio"]
     gemspec.version = MediaWiki::VERSION
     gemspec.add_dependency 'rest-client'
-    gemspec.add_development_dependency 'sham_rack'
-    gemspec.add_development_dependency 'jeweler'
     gemspec.add_development_dependency 'activesupport'
+    gemspec.add_development_dependency 'jeweler'
+    gemspec.add_development_dependency 'sham_rack'
+    gemspec.add_development_dependency 'rr'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"

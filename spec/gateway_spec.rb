@@ -1,17 +1,8 @@
-require 'active_support/version'
-if ActiveSupport::VERSION::MAJOR >= 3
-  # :nodoc: Rails 3: #to_xml is defined in ActiveModel::Serializers::Xml
-  require 'active_model'
-  Hash.send(:include, ActiveModel::Serializers::Xml)
-else
-  # :nodoc: Rails 2.3.x: Hash#to_xml is defined in active_support
-  require 'active_support'
-end
+require 'spec_helper'
+
+# Kickstart fake media wiki app
 require 'sham_rack'
-
-require 'media_wiki'
 require 'spec/fake_media_wiki/app'
-
 $fake_media_wiki = FakeMediaWiki::App.new
 ShamRack.mount($fake_media_wiki, 'dummy-wiki.example')
 
@@ -192,6 +183,20 @@ describe MediaWiki::Gateway do
 
     end
 
+    describe "when wiki returns 503" do
+
+      before do
+        pending
+        stub(Logger).warn(anything) { }
+        @gateway.get("").should be_nil
+      end
+
+      it "should retry 3 times" do
+        Logger.should have_received.warn("foo").times(3)
+      end
+
+    end
+
   end
 
   describe "#render" do
@@ -330,7 +335,6 @@ describe MediaWiki::Gateway do
     describe "when uploading a new file" do
     
       before do
-        pending "stubbing broken in mysterious ways"
         stub(File).new(anything) { "SAMPLEIMAGEDATA" }
         @page = @gateway.upload("some/path/sample_image.jpg")
       end
