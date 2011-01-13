@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.2.6"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2010-12-30}
+  s.date = %q{2011-01-13}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -58,6 +58,7 @@ Gem::Specification.new do |s|
     "spec/fake_media_wiki/query_handling.rb",
     "spec/gateway_spec.rb",
     "spec/import-test-data.xml",
+    "spec/spec_helper.rb",
     "spec/utils_spec.rb"
   ]
   s.homepage = %q{http://github.com/jpatokal/mediawiki-gateway}
@@ -69,6 +70,7 @@ Gem::Specification.new do |s|
     "spec/fake_media_wiki/app.rb",
     "spec/fake_media_wiki/query_handling.rb",
     "spec/gateway_spec.rb",
+    "spec/spec_helper.rb",
     "spec/utils_spec.rb"
   ]
 
@@ -78,20 +80,23 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rest-client>, [">= 0"])
-      s.add_development_dependency(%q<sham_rack>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<activesupport>, [">= 0"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
+      s.add_development_dependency(%q<sham_rack>, [">= 0"])
+      s.add_development_dependency(%q<rr>, [">= 0"])
     else
       s.add_dependency(%q<rest-client>, [">= 0"])
-      s.add_dependency(%q<sham_rack>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 0"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
+      s.add_dependency(%q<sham_rack>, [">= 0"])
+      s.add_dependency(%q<rr>, [">= 0"])
     end
   else
     s.add_dependency(%q<rest-client>, [">= 0"])
-    s.add_dependency(%q<sham_rack>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 0"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
+    s.add_dependency(%q<sham_rack>, [">= 0"])
+    s.add_dependency(%q<rr>, [">= 0"])
   end
 end
 
