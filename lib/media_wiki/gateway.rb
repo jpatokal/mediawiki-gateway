@@ -59,7 +59,7 @@ module MediaWiki
     # Returns content of page as string, nil if the page does not exist
     def get(page_title)
       form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'content', 'titles' => page_title}
-      page = make_api_request(form_data).elements["query/pages/page"]
+      page = make_api_request(form_data).first.elements["query/pages/page"]
       if ! page or page.attributes["missing"]
         nil
       else
@@ -86,7 +86,7 @@ module MediaWiki
       options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
 
       rendered = nil
-      parsed = make_api_request(form_data).elements["parse"]
+      parsed = make_api_request(form_data).first.elements["parse"]
       if parsed.attributes["revid"] != '0'
         rendered = parsed.elements["text"].text.gsub(/<!--(.|\s)*?-->/, '')
         # OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o
@@ -158,8 +158,7 @@ module MediaWiki
       token = get_undelete_token(title)
       if token
         form_data = {'action' => 'undelete', 'title' => title, 'token' => token }
-        xml = make_api_request(form_data)
-        xml.elements["undelete"].attributes["revisions"].to_i
+        make_api_request(form_data).first.elements["undelete"].attributes["revisions"].to_i
       else
         0 # No revisions to undelete
       end
@@ -183,8 +182,7 @@ module MediaWiki
           'apprefix' => key,
           'aplimit' => @options[:limit],
           'apnamespace' => namespace}
-        res = make_api_request(form_data)
-        apfrom = res.elements['query-continue'] ? res.elements['query-continue/allpages'].attributes['apfrom'] : nil
+        res, apfrom = make_api_request(form_data, '//query-continue/allpages/@apfrom')
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
       end while apfrom
       titles
@@ -207,8 +205,7 @@ module MediaWiki
           'blfilterredir' => filter,
           'bllimit' => @options[:limit] }
         form_data['blcontinue'] = blcontinue if blcontinue
-        res = make_api_request(form_data)
-        blcontinue = res.elements['query-continue'] ? res.elements['query-continue/backlinks'].attributes['blcontinue'] : nil
+        res, blcontinue = make_api_request(form_data, '//query-continue/backlinks/@blcontinue')
         titles += REXML::XPath.match(res, "//bl").map { |x| x.attributes["title"] }
       end while blcontinue
       titles
@@ -217,22 +214,31 @@ module MediaWiki
     # Get a list of pages with matching content in given namespaces
     #
     # [key] Search key
-    # [namespaces] Array of namespace names to search (defaults to NS_MAIN only)
-    # [limit] Max number of hits to return
+    # [namespaces] Array of namespace names to search (defaults to main only)
+    # [limit] Maximum number of hits to ask for (defaults to 500; note that Wikimedia Foundation wikis allow only 50 for normal users)
     #
     # Returns array of page titles (empty if no matches)
-    def search(key, namespaces=nil, limit=10)
+    def search(key, namespaces=nil, limit=@options[:limit])
       titles = []
+      offset = nil
+      in_progress = true
+
       form_data = { 'action' => 'query',
         'list' => 'search',
         'srwhat' => 'text',
         'srsearch' => key,
-        'srlimit' => limit}
+        'srlimit' => limit
+      }
       if namespaces
         namespaces = [ namespaces ] unless namespaces.kind_of? Array
         form_data['srnamespace'] = namespaces.map! do |ns| namespaces_by_prefix[ns] end.join('|')
       end
-      titles += REXML::XPath.match(make_api_request(form_data), "//p").map { |x| x.attributes["title"] }
+      begin
+        form_data['sroffset'] = offset if offset
+        res, offset = make_api_request(form_data, '//query-continue/search/@sroffset')
+        titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
+      end while offset
+      titles
     end
 
     # Upload a file, or get the status of pending uploads. Several 
@@ -345,7 +351,7 @@ module MediaWiki
         form_data['titles'] = "File:#{file_name_or_page_id}"
       end
 
-      xml = make_api_request(form_data)
+      xml, dummy = make_api_request(form_data)
       page = xml.elements["query/pages/page"]
       if ! page or page.attributes["missing"]
         nil
@@ -431,7 +437,7 @@ module MediaWiki
     def semantic_query(query, params = [])
       params << "format=list"
       form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
-      xml = make_api_request(form_data)
+      xml, dummy = make_api_request(form_data)
       return xml.elements["parse/text"].text
     end
 
@@ -440,7 +446,7 @@ module MediaWiki
     # Fetch token (type 'delete', 'edit', 'import', 'move')
     def get_token(type, page_titles)
       form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
-      res = make_api_request(form_data)
+      res, dummy = make_api_request(form_data)
       token = res.elements["query/pages/page"].attributes[type + "token"]
       raise "User is not permitted to perform this operation: #{type}" if token.nil?
       token
@@ -448,7 +454,7 @@ module MediaWiki
 
     def get_undelete_token(page_titles)
       form_data = {'action' => 'query', 'list' => 'deletedrevs', 'prop' => 'info', 'drprop' => 'token', 'titles' => page_titles}
-      res = make_api_request(form_data)
+      res, dummy = make_api_request(form_data)
       if res.elements["query/deletedrevs/page"]
         token = res.elements["query/deletedrevs/page"].attributes["token"]
         raise "User is not permitted to perform this operation: #{type}" if token.nil?
@@ -461,9 +467,11 @@ module MediaWiki
     # Make generic request to API
     #
     # [form_data] hash or string of attributes to post
+    # [continue_xpath] XPath selector for query continue parameter
+    # [retry_count] Counter for retries
     #
     # Returns XML document
-    def make_api_request(form_data, retry_count=1)
+    def make_api_request(form_data, continue_xpath=nil, retry_count=1)
       if form_data.kind_of? Hash
         form_data['format'] = 'xml'
         form_data['maxlag'] = @options[:maxlag]
@@ -473,7 +481,7 @@ module MediaWiki
         if response.code == 503 and retry_count < @options[:retry_count]
           log.warn("503 Service Unavailable: #{response.body}.  Retry in #{@options[:retry_delay]} seconds.")
           sleep @options[:retry_delay]
-          make_api_request(form_data, retry_count + 1)
+          make_api_request(form_data, continue_xpath, retry_count + 1)
         end
         # Check response for errors and return XML
         raise "API error, bad response: #{response}" unless response.code >= 200 and response.code < 300 
@@ -487,13 +495,13 @@ module MediaWiki
             else raise "Login failed: " + login_result
           end
         end
-        return doc
+        continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath).value : nil
+        return [doc, continue]
       end
-
     end
     
     # Get API XML response
-    # If there are errors, raise exception
+    # If there are errors or warnings, raise exception
     # Otherwise return XML root
     def get_response(res)
       begin
@@ -507,6 +515,9 @@ module MediaWiki
         code = doc.elements["error"].attributes["code"]
         info = doc.elements["error"].attributes["info"]
         raise "API error: code '#{code}', info '#{info}'"
+      end
+      if doc.elements["warnings"] and !@options[:ignorewarnings]
+        raise "API warning: #{doc.elements["warnings"].children.map {|e| e.text}.join(", ")}"
       end
       doc
     end
