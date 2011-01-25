@@ -36,7 +36,7 @@ begin
     gemspec.homepage = "http://github.com/jpatokal/mediawiki-gateway"
     gemspec.authors = ["Jani Patokallio"]
     gemspec.version = MediaWiki::VERSION
-    gemspec.add_dependency 'rest-client'
+    gemspec.add_dependency 'rest-client', '>= 1.3.0'
     gemspec.add_development_dependency 'activesupport'
     gemspec.add_development_dependency 'jeweler'
     gemspec.add_development_dependency 'sham_rack'
