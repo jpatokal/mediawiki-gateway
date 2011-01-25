@@ -1,6 +1,17 @@
 module MediaWiki
   class << self
 
+    # Extract base name.  If there are no subpages, return page name.
+    #
+    # Examples:
+    # get_base_name("Namespace:Foo/Bar/Baz") -> "Namespace:Foo"
+    # get_base_name("Namespace:Foo") -> "Namespace:Foo"
+    #
+    # [title] Page name string in Wiki format 
+    def get_base_name(title)
+      title.split('/').first if title
+    end
+
     # Extract path leading up to subpage.  If title does not contain a subpage, returns nil.
     #
     # Examples:

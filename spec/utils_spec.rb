@@ -30,6 +30,20 @@ describe MediaWiki do
     end
   end
 
+  describe '.get_base_name' do
+    it "should return page's base name if there are subpages" do
+      MediaWiki.get_base_name('namespace:root/path/subpage').should == 'namespace:root'
+    end
+
+    it "should return entire name if there are no subpages" do
+      MediaWiki.get_base_name('namespace:root').should == 'namespace:root'
+    end
+    
+    it "should pass through nil" do
+      MediaWiki.get_base_name(nil).should be_nil
+    end
+  end
+
   describe '.wiki_to_uri' do
 
     it "should underscore spaces" do
