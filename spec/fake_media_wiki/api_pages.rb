@@ -20,21 +20,22 @@ module FakeMediaWiki
       @namespaces.invert
     end
   
-    def add(title, content)
+    def add(title, content, redirect=false)
       @page_id += 1
       dummy, prefix = title.split(":", 2).reverse
       @pages[title] = {
         :pageid => @page_id,
         :namespace => namespaces_by_prefix[prefix || ""],
         :title => title,
-        :content => content
+        :content => content,
+        :redirect => redirect
       }
     end
     
     def get(title)
       @pages[title]
     end
-
+    
     def list(prefix) 
       @pages.select do |key, page|
         key =~ /^#{prefix}/

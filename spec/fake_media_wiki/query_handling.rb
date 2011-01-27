@@ -13,7 +13,8 @@ module FakeMediaWiki
     def prop
       return get_revisions if params[:prop] == "revisions"
       return get_undelete_token if params[:drprop] == 'token'
-      return get_token if params[:prop] == "info"
+      return get_token if params[:intoken]
+      return get_info if params[:prop] == "info"
     end
 
     def export

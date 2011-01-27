@@ -34,6 +34,7 @@ module FakeMediaWiki
       @pages.add('Book:Italy', 'Introduction')
       @pages.add_namespace(200, "Sandbox")
       @pages.add('Foopage', 'Content')
+      @pages.add('Redirect', '#REDIRECT', true)
 
       @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2' }
       
@@ -190,6 +191,18 @@ module FakeMediaWiki
         end
       end
     end
+
+    def get_info
+      query_pages do |_, title, page|
+        attributes = { :title => title, :ns => '0'}
+        if page.nil?
+          attributes[:missing] = ""
+        else
+          attributes[:redirect] = "" if page[:redirect]
+        end
+        _.page(nil, attributes)
+      end
+    end
     
     def get_revisions
       query_pages do |_, title, page|
@@ -205,7 +218,6 @@ module FakeMediaWiki
           end
         end
       end
-
     end
 
     def user

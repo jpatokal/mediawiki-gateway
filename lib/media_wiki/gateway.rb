@@ -52,11 +52,11 @@ module MediaWiki
       @username = username
     end
     
-    # Fetch MediaWiki page in MediaWiki format
+    # Fetch MediaWiki page in MediaWiki format.  Does not follow redirects.
     #
     # [page_title] Page title to fetch
     #
-    # Returns content of page as string, nil if the page does not exist
+    # Returns content of page as string, nil if the page does not exist.
     def get(page_title)
       form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'content', 'titles' => page_title}
       page = make_api_request(form_data).first.elements["query/pages/page"]
@@ -307,6 +307,17 @@ module MediaWiki
       )
 
       make_api_request(form_data)
+    end
+
+    # Checks if page is a redirect.
+    #
+    # [page_title] Page title to fetch
+    #
+    # Returns true if the page is a redirect, false if it is not or the page does not exist.
+    def redirect?(page_title)
+      form_data = {'action' => 'query', 'prop' => 'info', 'titles' => page_title}
+      page = make_api_request(form_data).first.elements["query/pages/page"]
+      !!(page and page.attributes["redirect"])
     end
     
     # Requests image info from MediaWiki. Follows redirects.

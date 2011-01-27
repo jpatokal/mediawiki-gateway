@@ -204,6 +204,34 @@ describe MediaWiki::Gateway do
 
   end
 
+  describe "#redirect?" do
+
+    describe "for an existing redirect page" do
+
+      it "returns true" do
+        @gateway.redirect?("Redirect").should be_true
+      end
+
+    end
+
+    describe "for an existing non-redirect page" do
+
+      it "returns false" do
+        @gateway.redirect?("Main Page").should be_false
+      end
+
+    end
+
+    describe "for a missing wiki page" do
+
+      it "returns false" do
+        @gateway.redirect?("page/missing").should be_false
+      end
+
+    end
+
+  end
+
   describe "#render" do
     
     describe "for an existing wiki page" do
@@ -286,7 +314,7 @@ describe MediaWiki::Gateway do
       it "should create the page" do
         expected = <<-XML
           <api>
-            <edit new='' result='Success' pageid='7' title='A New Page' oldrevid='0' newrevid='7'/>
+            <edit new='' result='Success' pageid='8' title='A New Page' oldrevid='0' newrevid='8'/>
           </api>
         XML
         Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
@@ -309,7 +337,7 @@ describe MediaWiki::Gateway do
         it "should overwrite the existing page" do
           expected = <<-XML
             <api>
-              <edit result='Success' pageid='7' title='Main Page' oldrevid='1' newrevid='7'/>
+              <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
             </api>
           XML
           Hash.from_xml(@new_page.to_s).should == Hash.from_xml(expected)
@@ -474,7 +502,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should list all pages" do
-        @list.sort.should == [ "Book:Italy", "Empty", "Foopage", "Level/Level/Index", "Main 2", "Main Page" ]
+        @list.sort.should == [ "Book:Italy", "Empty", "Foopage", "Level/Level/Index", "Main 2", "Main Page", "Redirect" ]
       end
       
     end
