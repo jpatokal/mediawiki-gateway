@@ -88,11 +88,12 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000001">get_path_to_subpage</a>&nbsp;&nbsp;
-      <a href="#M000002">get_subpage</a>&nbsp;&nbsp;
-      <a href="#M000003">uri_to_wiki</a>&nbsp;&nbsp;
-      <a href="#M000005">version</a>&nbsp;&nbsp;
-      <a href="#M000004">wiki_to_uri</a>&nbsp;&nbsp;
+      <a href="#M000001">get_base_name</a>&nbsp;&nbsp;
+      <a href="#M000002">get_path_to_subpage</a>&nbsp;&nbsp;
+      <a href="#M000003">get_subpage</a>&nbsp;&nbsp;
+      <a href="#M000004">uri_to_wiki</a>&nbsp;&nbsp;
+      <a href="#M000006">version</a>&nbsp;&nbsp;
+      <a href="#M000005">wiki_to_uri</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -126,21 +127,20 @@ Class <a href="MediaWiki/Gateway.html" class="link">MediaWiki::Gateway</a><br />
 
         <div class="method-heading">
           <a href="#M000001" class="method-signature">
-          <span class="method-name">get_path_to_subpage</span><span class="method-args">(title)</span>
+          <span class="method-name">get_base_name</span><span class="method-args">(title)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Extract path leading up to subpage. If title does not contain a subpage,
-returns nil.
+Extract base name. If there are no subpages, return page name.
 </p>
 <p>
 Examples: <a
-href="MediaWiki.html#M000001">get_path_to_subpage</a>(&quot;Namespace:Foo/Bar/Baz&quot;)
--&gt; &quot;Namespace:Foo/Bar&quot; <a
-href="MediaWiki.html#M000001">get_path_to_subpage</a>(&quot;Namespace:Foo&quot;)
--&gt; nil
+href="MediaWiki.html#M000001">get_base_name</a>(&quot;Namespace:Foo/Bar/Baz&quot;)
+-&gt; &quot;Namespace:Foo&quot; <a
+href="MediaWiki.html#M000001">get_base_name</a>(&quot;Namespace:Foo&quot;)
+-&gt; &quot;Namespace:Foo&quot;
 </p>
 <dl>
 <dt>title</dt><dd>Page name string in Wiki format
@@ -152,10 +152,9 @@ href="MediaWiki.html#M000001">get_path_to_subpage</a>(&quot;Namespace:Foo&quot;)
           <div class="method-source-code" id="M000001-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 11</span>
-11:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_path_to_subpage</span>(<span class="ruby-identifier">title</span>)
-12:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">title</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">title</span>.<span class="ruby-identifier">include?</span> <span class="ruby-value str">'/'</span>
-13:       <span class="ruby-identifier">parts</span> = <span class="ruby-identifier">title</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/\/([^\/]*)$/</span>).<span class="ruby-identifier">first</span>
-14:     <span class="ruby-keyword kw">end</span>
+11:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_base_name</span>(<span class="ruby-identifier">title</span>)
+12:       <span class="ruby-identifier">title</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">first</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">title</span>
+13:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -166,20 +165,21 @@ href="MediaWiki.html#M000001">get_path_to_subpage</a>(&quot;Namespace:Foo&quot;)
 
         <div class="method-heading">
           <a href="#M000002" class="method-signature">
-          <span class="method-name">get_subpage</span><span class="method-args">(title)</span>
+          <span class="method-name">get_path_to_subpage</span><span class="method-args">(title)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Extract subpage name. If there is no hierarchy above, return page name.
+Extract path leading up to subpage. If title does not contain a subpage,
+returns nil.
 </p>
 <p>
 Examples: <a
-href="MediaWiki.html#M000002">get_subpage</a>(&quot;Namespace:Foo/Bar/Baz&quot;)
--&gt; &quot;Baz&quot; <a
-href="MediaWiki.html#M000002">get_subpage</a>(&quot;Namespace:Foo&quot;)
--&gt; &quot;Namespace:Foo&quot;
+href="MediaWiki.html#M000002">get_path_to_subpage</a>(&quot;Namespace:Foo/Bar/Baz&quot;)
+-&gt; &quot;Namespace:Foo/Bar&quot; <a
+href="MediaWiki.html#M000002">get_path_to_subpage</a>(&quot;Namespace:Foo&quot;)
+-&gt; nil
 </p>
 <dl>
 <dt>title</dt><dd>Page name string in Wiki format
@@ -190,9 +190,10 @@ href="MediaWiki.html#M000002">get_subpage</a>(&quot;Namespace:Foo&quot;)
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 23</span>
-23:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_subpage</span>(<span class="ruby-identifier">title</span>)
-24:       <span class="ruby-identifier">title</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">last</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">title</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 22</span>
+22:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_path_to_subpage</span>(<span class="ruby-identifier">title</span>)
+23:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">title</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">title</span>.<span class="ruby-identifier">include?</span> <span class="ruby-value str">'/'</span>
+24:       <span class="ruby-identifier">parts</span> = <span class="ruby-identifier">title</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/\/([^\/]*)$/</span>).<span class="ruby-identifier">first</span>
 25:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
@@ -204,6 +205,44 @@ href="MediaWiki.html#M000002">get_subpage</a>(&quot;Namespace:Foo&quot;)
 
         <div class="method-heading">
           <a href="#M000003" class="method-signature">
+          <span class="method-name">get_subpage</span><span class="method-args">(title)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Extract subpage name. If there is no hierarchy above, return page name.
+</p>
+<p>
+Examples: <a
+href="MediaWiki.html#M000003">get_subpage</a>(&quot;Namespace:Foo/Bar/Baz&quot;)
+-&gt; &quot;Baz&quot; <a
+href="MediaWiki.html#M000003">get_subpage</a>(&quot;Namespace:Foo&quot;)
+-&gt; &quot;Namespace:Foo&quot;
+</p>
+<dl>
+<dt>title</dt><dd>Page name string in Wiki format
+
+</dd>
+</dl>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000003-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 34</span>
+34:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_subpage</span>(<span class="ruby-identifier">title</span>)
+35:       <span class="ruby-identifier">title</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">last</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">title</span>
+36:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
+
+        <div class="method-heading">
+          <a href="#M000004" class="method-signature">
           <span class="method-name">uri_to_wiki</span><span class="method-args">(uri)</span>
           </a>
         </div>
@@ -221,13 +260,40 @@ href="http://meta.wikimedia.org/wiki/Help:Page_name#Restrictions">meta.wikimedia
 </dd>
 </dl>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000003-source">
+            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 31</span>
-31:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">uri_to_wiki</span>(<span class="ruby-identifier">uri</span>)
-32:       <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">uri</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'#&lt;&gt;[]|{}'</span>, <span class="ruby-value str">''</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">uri</span>
-33:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 42</span>
+42:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">uri_to_wiki</span>(<span class="ruby-identifier">uri</span>)
+43:       <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">uri</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'_'</span>, <span class="ruby-value str">' '</span>).<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'#&lt;&gt;[]|{}'</span>, <span class="ruby-value str">''</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">uri</span>
+44:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
+
+        <div class="method-heading">
+          <a href="#M000006" class="method-signature">
+          <span class="method-name">version</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Return current <a href="MediaWiki.html#M000006">version</a> of <a
+href="MediaWiki/Gateway.html">MediaWiki::Gateway</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000006-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 54</span>
+54:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
+55:       <span class="ruby-constant">MediaWiki</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>
+56:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -238,33 +304,6 @@ href="http://meta.wikimedia.org/wiki/Help:Page_name#Restrictions">meta.wikimedia
 
         <div class="method-heading">
           <a href="#M000005" class="method-signature">
-          <span class="method-name">version</span><span class="method-args">()</span>
-          </a>
-        </div>
-      
-        <div class="method-description">
-          <p>
-Return current <a href="MediaWiki.html#M000005">version</a> of <a
-href="MediaWiki/Gateway.html">MediaWiki::Gateway</a>
-</p>
-          <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000005-source">
-<pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 43</span>
-43:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
-44:       <span class="ruby-constant">MediaWiki</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>
-45:     <span class="ruby-keyword kw">end</span>
-</pre>
-          </div>
-        </div>
-      </div>
-
-      <div id="method-M000004" class="method-detail">
-        <a name="M000004"></a>
-
-        <div class="method-heading">
-          <a href="#M000004" class="method-signature">
           <span class="method-name">wiki_to_uri</span><span class="method-args">(wiki)</span>
           </a>
         </div>
@@ -281,13 +320,13 @@ slashes or colons
 </dd>
 </dl>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000004-source">
+            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 38</span>
-38:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
-39:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'%3A'</span>, <span class="ruby-value str">':'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
-40:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/media_wiki/utils.rb, line 49</span>
+49:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wiki_to_uri</span>(<span class="ruby-identifier">wiki</span>)
+50:       <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">chunk</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'_'</span>)) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'/'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'%3A'</span>, <span class="ruby-value str">':'</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">wiki</span>
+51:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
