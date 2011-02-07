@@ -362,7 +362,7 @@ describe MediaWiki::Gateway do
   describe "#edit" do
     before do
       $fake_media_wiki.reset
-      @edit_page = @gateway.edit("Main Page", "Some new content", :summary => "The summary")
+      @edit_page = @gateway.edit("Main Page", "Some new content")
     end
         
     it "should overwrite the existing page" do

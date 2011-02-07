@@ -122,7 +122,7 @@ module MediaWiki
     # Edit page
     #
     # Same options as create, but always overwrites existing pages (and creates them if they don't exist already).
-    def edit(title, content, options)
+    def edit(title, content, options={})
       create(title, content, {:overwrite => true}.merge(options))
     end
 
