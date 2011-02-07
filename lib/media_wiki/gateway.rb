@@ -15,6 +15,7 @@ module MediaWiki
     # [options] Hash of options
     #
     # Options:
+    # [:ignorewarnings] Log API warnings and invalid page titles, instead of aborting with an error.
     # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
     # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
@@ -60,9 +61,7 @@ module MediaWiki
     def get(page_title)
       form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'content', 'titles' => page_title}
       page = make_api_request(form_data).first.elements["query/pages/page"]
-      if ! page or page.attributes["missing"]
-        nil
-      else
+      if valid_page? page
         page.elements["revisions/rev"].text || ""
       end
     end
@@ -317,7 +316,7 @@ module MediaWiki
     def redirect?(page_title)
       form_data = {'action' => 'query', 'prop' => 'info', 'titles' => page_title}
       page = make_api_request(form_data).first.elements["query/pages/page"]
-      !!(page and page.attributes["redirect"])
+      !!(valid_page?(page) and page.attributes["redirect"])
     end
     
     # Requests image info from MediaWiki. Follows redirects.
@@ -364,13 +363,15 @@ module MediaWiki
 
       xml, dummy = make_api_request(form_data)
       page = xml.elements["query/pages/page"]
-      if ! page or page.attributes["missing"]
-        nil
-      elsif xml.elements["query/redirects/r"]
-        # We're dealing with redirect here.
-        image_info(page.attributes["pageid"].to_i, options)
+      if valid_page? page
+        if xml.elements["query/redirects/r"]
+          # We're dealing with redirect here.
+          image_info(page.attributes["pageid"].to_i, options)
+        else
+          page.elements["imageinfo/ii"].attributes
+        end
       else
-        page.elements["imageinfo/ii"].attributes
+        nil
       end
     end
 
@@ -527,10 +528,29 @@ module MediaWiki
         info = doc.elements["error"].attributes["info"]
         raise "API error: code '#{code}', info '#{info}'"
       end
-      if doc.elements["warnings"] and !@options[:ignorewarnings]
-        raise "API warning: #{doc.elements["warnings"].children.map {|e| e.text}.join(", ")}"
+      if doc.elements["warnings"]
+        warning("API warning: #{doc.elements["warnings"].children.map {|e| e.text}.join(", ")}")
       end
       doc
+    end
+    
+    def valid_page?(page)
+      return false unless page
+      return false if page.attributes["missing"]
+      if page.attributes["invalid"]
+        warning("Invalid title '#{page.attributes["title"]}'")
+      else
+        true
+      end
+    end
+    
+    def warning(msg)
+      if @options[:ignorewarnings]
+        log.warn(msg)
+        return false
+      else
+        raise msg
+      end
     end
   end
 end
