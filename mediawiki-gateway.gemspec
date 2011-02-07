@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.3.3"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2011-01-27}
+  s.date = %q{2011-02-07}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "doc/files/script/get_page_rb.html",
     "doc/files/script/import_xml_rb.html",
     "doc/files/script/run_fake_media_wiki_rb.html",
+    "doc/files/script/search_content_rb.html",
     "doc/files/script/upload_commons_rb.html",
     "doc/files/script/upload_file_rb.html",
     "doc/fr_class_index.html",
