@@ -118,7 +118,14 @@ module MediaWiki
       form_data['createonly'] = "" unless options[:overwrite]
       make_api_request(form_data)
     end
-    
+
+    # Edit page
+    #
+    # Same options as create, but always overwrites existing pages (and creates them if they don't exist already).
+    def edit(title, content, options)
+      create(title, content, {:overwrite => true}.merge(options))
+    end
+
     # Move a page to a new title
     #
     # [from] Old page name

@@ -359,6 +359,23 @@ describe MediaWiki::Gateway do
   
   end
 
+  describe "#edit" do
+    before do
+      $fake_media_wiki.reset
+      @edit_page = @gateway.edit("Main Page", "Some new content", :summary => "The summary")
+    end
+        
+    it "should overwrite the existing page" do
+      expected = <<-XML
+      <api>
+        <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
+      </api>
+      XML
+      Hash.from_xml(@edit_page.to_s).should == Hash.from_xml(expected)
+    end
+      
+  end
+
   describe "#upload" do
   
     before do
