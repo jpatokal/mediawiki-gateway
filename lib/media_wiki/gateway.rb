@@ -483,6 +483,33 @@ module MediaWiki
       end
     end
 
+    # User rights management (aka group assignment)
+    def get_userrights_token(username)
+      form_data = {'action' => 'query', 'list' => 'users', 'ustoken' => 'userrights', 'ususers' => username}
+      res, dummy = make_api_request(form_data)
+      token = res.elements["query/users/user"].attributes["userrightstoken"]
+      raise "User is not permitted to perform this operation: #{type}" if token.nil?
+      token
+    end
+    
+    def userrights(username, token, groups_to_add, groups_to_remove, reason)
+      # groups_to_add and groups_to_remove can be a string or an array. Turn them into MediaWiki's pipe-delimited list format.
+      if groups_to_add.is_a? Array
+        groups_to_add = groups_to_add.join('|')
+      end
+      if groups_to_remove.is_a? Array
+        groups_to_remove = groups_to_remove.join('|')
+      end
+
+      form_data = {'action' => 'userrights', 'user' => username, 'token' => token,
+        'add' => groups_to_add,
+        'remove' => groups_to_remove,
+        'reason' => reason
+      }
+      res, dummy = make_api_request(form_data)
+      res
+    end
+
     # Make generic request to API
     #
     # [form_data] hash or string of attributes to post

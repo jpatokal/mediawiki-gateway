@@ -144,7 +144,7 @@ describe MediaWiki::Gateway do
         end
         
       end
-  
+
     end
   
   end
@@ -732,6 +732,65 @@ describe MediaWiki::Gateway do
     form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => @gateway.send(:get_token, 'edit', title)}
     form_data['createonly'] = "" unless options[:overwrite]
     @gateway.send(:make_api_request, form_data)
+  end
+  
+  describe "#user_rights" do
+    
+    describe "when logged in as admin" do
+      before do
+        @gateway.login("atlasmw", "wombat")
+      end
+      
+      describe "requesting a userrights token for an existing user" do
+
+        before do
+          @token = @gateway.send(:get_userrights_token, 'nonadmin')
+        end
+
+        it "should return a token" do
+          @token.should_not == nil
+          @token.should_not == "+\\"
+        end
+      end
+      
+      describe "requesting a userrights token for an nonexistant user" do
+
+        it "should raise an error" do
+          lambda do
+            @gateway.send(:get_userrights_token, 'nosuchuser')
+          end.should raise_error(StandardError)
+        end
+      end
+      
+      describe "changing a user's groups with a valid token" do
+        
+        def userrights_response
+          <<-XML
+            <api>
+              <userrights user="nonadmin">
+                <removed>
+                  <group>oldgroup</group>
+                </removed>
+                <added>
+                  <group>newgroup</group>
+                </added>
+              </userrights>
+            </api>
+          XML
+        end
+        
+        before do
+          @token = @gateway.send(:get_userrights_token, 'nonadmin')
+          @result = @gateway.send(:userrights, 'nonadmin', @token, 'newgroup', 'oldgroup', 'because I can')
+        end
+        
+        it "should return a result matching the input" do
+          Hash.from_xml(@result.to_s).should == Hash.from_xml(userrights_response)
+        end
+        
+      end
+      
+    end
   end
 
 end

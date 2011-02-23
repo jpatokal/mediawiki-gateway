@@ -252,6 +252,27 @@ module FakeMediaWiki
       end
     end
 
+    def get_userrights_token(username)
+      @token.set_type 'userrights'
+      token_str = @token.request(user)
+      
+      user_to_manage = @users[username]
+      
+      if user_to_manage
+        api_response do |_|
+          _.query do
+            _.users do
+              _.user(nil, { :name => user_to_manage[:username], :userrightstoken => token_str })
+            end
+          end
+        end
+      else
+        api_response do |_|
+          _.error(nil, { :code => 'nosuchuser', :info => "The user '#{params[:ususer].to_s}' does not exist"} )
+        end
+      end
+    end    
+
     def login
       user = @users[params[:lgname]]
       if user and user[:domain] == params[:lgdomain]
@@ -268,6 +289,23 @@ module FakeMediaWiki
 
       api_response do |_|
         _.login(nil, result)
+      end
+    end
+
+    def userrights
+      api_response do |_|
+        _.userrights({:user => params[:user]}) do
+          _.removed do
+            params[:remove].split('|').each do |removed_group|
+              _.group(removed_group)
+            end
+          end
+          _.added do
+            params[:add].split('|').each do |added_group|
+              _.group(added_group)
+            end
+          end
+        end
       end
     end
 
