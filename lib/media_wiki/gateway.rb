@@ -459,6 +459,16 @@ module MediaWiki
       xml, dummy = make_api_request(form_data)
       return xml.elements["parse/text"].text
     end
+    
+    # Set groups for a user
+    #
+    # [username] Username of user to modify
+    # [groups_to_add] Groups to add user to, as an array or a string if a single group (optional)
+    # [groups_to_remove] Groups to remove user from, as an array or a string if a single group (optional)
+    def set_groups(username, groups_to_add = [], groups_to_remove = [])
+      token = get_userrights_token
+      userrights(username, token, groups_to_add, groups_to_remove)
+    end
 
     private
 
