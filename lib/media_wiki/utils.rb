@@ -35,15 +35,15 @@ module MediaWiki
       title.split('/').last if title
     end
 
-    # Convert URL-ized page name ("getting_there_%26_away") into Wiki display format page name ("getting there & away").
-    # Also strips out any illegal characters (#<>[]|{}, cf. http://meta.wikimedia.org/wiki/Help:Page_name#Restrictions).
+    # Convert URL-ized page name ("getting_there_%26_away") into Wiki display format page name ("Getting there & away").
+    # Also capitalizes first letter, replaces underscores with spaces and strips out any illegal characters (#<>[]|{}, cf. http://meta.wikimedia.org/wiki/Help:Page_name#Restrictions).
     #
     # [wiki] Page name string in URL
     def uri_to_wiki(uri)
-      CGI.unescape(uri).tr('_', ' ').tr('#<>[]|{}', '') if uri
+      upcase_first_char(CGI.unescape(uri).tr('_', ' ').tr('#<>[]|{}', '')) if uri
     end
     
-    # Convert a Wiki page name ("getting there & away") to URI-safe format ("getting_there_%26_away"),
+    # Convert a Wiki page name ("Getting there & away") to URI-safe format ("Getting_there_%26_away"),
     # taking care not to mangle slashes or colons
     # [wiki] Page name string in Wiki format
     def wiki_to_uri(wiki)
@@ -53,6 +53,12 @@ module MediaWiki
     # Return current version of MediaWiki::Gateway
     def version
       MediaWiki::VERSION
+    end
+    
+    private
+    
+    def upcase_first_char(str)
+      [ ActiveSupport::Multibyte::Chars.new(str.mb_chars.slice(0,1)).upcase.to_s, str.mb_chars.slice(1..-1) ].join
     end
   end
   

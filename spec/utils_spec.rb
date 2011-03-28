@@ -71,11 +71,11 @@ describe MediaWiki do
   describe '.uri_to_wiki' do
 
     it "should replace underscores with spaces" do
-      MediaWiki.uri_to_wiki('getting_there').should == 'getting there'
+      MediaWiki.uri_to_wiki('getting_there').should == 'Getting there'
     end
 
     it "should unescape ampersands" do
-      MediaWiki.uri_to_wiki('getting_there_%26_away').should == 'getting there & away'
+      MediaWiki.uri_to_wiki('getting_there_%26_away').should == 'Getting there & away'
     end
 
     it "should decode escaped UTF-8" do
@@ -84,6 +84,12 @@ describe MediaWiki do
 
     it "should strip out illegal characters" do
       MediaWiki.uri_to_wiki('A#B<C>D[E]F|G{H}I').should == 'ABCDEFGHI'
+    end
+
+    it "should capitalize the first character, even if UTF-8" do
+      MediaWiki.uri_to_wiki('óboy').should == 'Óboy'
+      MediaWiki.uri_to_wiki('%C3%B3boy').should == 'Óboy'
+      MediaWiki.uri_to_wiki('%E1%BB%9Fboy').should == 'Ởboy'
     end
     
     it "should pass through nil" do
