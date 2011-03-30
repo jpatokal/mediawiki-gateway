@@ -37,7 +37,7 @@ module MediaWiki
       @cookies = {}
     end
     
-    attr_reader :base_url
+    attr_reader :base_url, :cookies
     
     # Login to MediaWiki
     #
@@ -459,6 +459,16 @@ module MediaWiki
       xml, dummy = make_api_request(form_data)
       return xml.elements["parse/text"].text
     end
+    
+    # Set groups for a user
+    #
+    # [user] Username of user to modify
+    # [groups_to_add] Groups to add user to, as an array or a string if a single group (optional)
+    # [groups_to_remove] Groups to remove user from, as an array or a string if a single group (optional)
+    def set_groups(user, groups_to_add = [], groups_to_remove = [], comment = '')
+      token = get_userrights_token(user)
+      userrights(user, token, groups_to_add, groups_to_remove, comment)
+    end
 
     private
 
@@ -481,6 +491,42 @@ module MediaWiki
       else
         nil
       end
+    end
+
+    # User rights management (aka group assignment)
+    def get_userrights_token(user)
+      form_data = {'action' => 'query', 'list' => 'users', 'ustoken' => 'userrights', 'ususers' => user}
+      res, dummy = make_api_request(form_data)
+      token = res.elements["query/users/user"].attributes["userrightstoken"]
+
+      @log.debug("RESPONSE: #{res.to_s}")
+      if token.nil?
+        if res.elements["query/users/user"].attributes["missing"]
+          raise "User '#{user}' was not found (get_userrights_token)"
+        else
+          raise "User '#{@username}' is not permitted to perform this operation: get_userrights_token"
+        end
+      end
+      
+      token
+    end
+    
+    def userrights(user, token, groups_to_add, groups_to_remove, reason)
+      # groups_to_add and groups_to_remove can be a string or an array. Turn them into MediaWiki's pipe-delimited list format.
+      if groups_to_add.is_a? Array
+        groups_to_add = groups_to_add.join('|')
+      end
+      if groups_to_remove.is_a? Array
+        groups_to_remove = groups_to_remove.join('|')
+      end
+
+      form_data = {'action' => 'userrights', 'user' => user, 'token' => token,
+        'add' => groups_to_add,
+        'remove' => groups_to_remove,
+        'reason' => reason
+      }
+      res, dummy = make_api_request(form_data)
+      res
     end
 
     # Make generic request to API

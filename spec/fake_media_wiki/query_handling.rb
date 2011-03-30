@@ -3,6 +3,13 @@ module FakeMediaWiki
   
   module QueryHandling
 
+    def action
+      [:userrights].each do |action_type|
+        return send(action_type)
+      end
+      halt(404, "Page not found")
+    end
+
     def query
       [:prop, :export, :list, :meta].each do |query_type|
         return send(query_type) if params[query_type]
@@ -37,6 +44,14 @@ module FakeMediaWiki
     
     def list
       list_type = params[:list].to_sym
+
+      # api.php?action=query&list=users&ususers=Bob&ustoken=userrights
+      if list_type == :users && params[:ustoken] && params[:ususers]
+        # This "list" is actually a request for a user rights token
+        return get_userrights_token(params[:ususers])
+      end
+      
+      # This is a real list
       return send(list_type) if respond_to?(list_type)
       halt(404, "Page not found")
     end
@@ -108,6 +123,7 @@ module FakeMediaWiki
         end
       end
     end
+    
   end
 
 end
