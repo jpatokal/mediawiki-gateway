@@ -66,6 +66,19 @@ module MediaWiki
       end
     end
 
+    # Fetch latest revision ID of a MediaWiki page.  Does not follow redirects.
+    #
+    # [page_title] Page title to fetch
+    #
+    # Returns revision ID as a string, nil if the page does not exist.
+    def revision(page_title)
+      form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'ids', 'rvlimit' => 1, 'titles' => page_title}
+      page = make_api_request(form_data).first.elements["query/pages/page"]
+      if valid_page? page
+        page.elements["revisions/rev"].attributes["revid"]
+      end
+    end
+
     # Render a MediaWiki page as HTML
     #
     # [page_title] Page title to fetch
@@ -470,6 +483,20 @@ module MediaWiki
       userrights(user, token, groups_to_add, groups_to_remove, comment)
     end
 
+    # Review current revision of an article (requires FlaggedRevisions extension, see http://www.mediawiki.org/wiki/Extension:FlaggedRevs)
+    #
+    # [title] Title of article to review
+    # [flags] Hash of flags and values to set, eg. { "accuracy" => "1", "depth" => "2" }
+    # [comment] Comment to add to review (optional)
+    def review(title, flags, comment = "Reviewed by MediaWiki::Gateway")
+      raise "No article found" unless revid = revision(title)
+      form_data = {'action' => 'review', 'revid' => revid, 'token' => get_token('edit', title), 'comment' => comment}
+      form_data.merge!( Hash[flags.map {|k,v| ["flag_#{k}", v]}] )
+      puts form_data.inspect
+      res, dummy = make_api_request(form_data)
+      res
+    end
+
     private
 
     # Fetch token (type 'delete', 'edit', 'import', 'move')
@@ -528,7 +555,7 @@ module MediaWiki
       res, dummy = make_api_request(form_data)
       res
     end
-
+    
     # Make generic request to API
     #
     # [form_data] hash or string of attributes to post
