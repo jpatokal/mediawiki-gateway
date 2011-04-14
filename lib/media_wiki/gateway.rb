@@ -492,7 +492,6 @@ module MediaWiki
       raise "No article found" unless revid = revision(title)
       form_data = {'action' => 'review', 'revid' => revid, 'token' => get_token('edit', title), 'comment' => comment}
       form_data.merge!( Hash[flags.map {|k,v| ["flag_#{k}", v]}] )
-      puts form_data.inspect
       res, dummy = make_api_request(form_data)
       res
     end
