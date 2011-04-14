@@ -1,5 +1,9 @@
 module MediaWiki
-  require 'activesupport'
+  begin
+    require 'active_support'
+  rescue
+    require 'activesupport'
+  end
 
   class << self
 
