@@ -44,7 +44,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.login('bogususer', 'sekrit')
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::Unauthorized)
       end
   
     end
@@ -54,7 +54,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.login('atlasmw', 'sekrit')
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::Unauthorized)
       end
   
     end
@@ -64,7 +64,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.login('atlasmw', 'wombat', 'bogusdomain')
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::Unauthorized)
       end
   
     end
@@ -93,7 +93,7 @@ describe MediaWiki::Gateway do
         it "should raise an error" do
           lambda do
             @gateway.send(:get_token, 'import', 'Main Page')
-          end.should raise_error(StandardError)
+          end.should raise_error(MediaWiki::Unauthorized)
         end
         
       end
@@ -350,7 +350,7 @@ describe MediaWiki::Gateway do
         it "should raise an error" do
           lambda do
             @gateway.create("Main Page", "Some new content")
-          end.should raise_error(StandardError)
+          end.should raise_error(MediaWiki::APIError)
         end
         
       end
@@ -440,7 +440,7 @@ describe MediaWiki::Gateway do
         it "should raise an error" do
           lambda do
             @gateway.delete("Missing Page")
-          end.should raise_error(StandardError)
+          end.should raise_error(MediaWiki::APIError)
         end
       end
     end
@@ -454,7 +454,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.delete("Deletable Page")
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::Unauthorized)
       end
 
     end
@@ -499,7 +499,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.undelete("Undeletable Page")
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::APIError)
       end
 
     end
@@ -565,7 +565,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.search("")
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::APIError)
       end
    
     end
@@ -644,7 +644,7 @@ describe MediaWiki::Gateway do
       it "should raise an error" do
         lambda do
           @gateway.import(import_file)
-        end.should raise_error(StandardError)
+        end.should raise_error(MediaWiki::Unauthorized)
       end
 
     end
@@ -758,7 +758,7 @@ describe MediaWiki::Gateway do
         it "should raise an error" do
           lambda do
             @gateway.send(:get_userrights_token, 'nosuchuser')
-          end.should raise_error(StandardError)
+          end.should raise_error(MediaWiki::APIError)
         end
       end
       

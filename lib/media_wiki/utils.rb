@@ -1,10 +1,4 @@
 module MediaWiki
-  begin
-    require 'active_support'
-  rescue
-    require 'activesupport'
-  end
-
   class << self
 
     # Extract base name.  If there are no subpages, return page name.

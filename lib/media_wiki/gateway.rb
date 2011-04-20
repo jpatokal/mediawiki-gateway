@@ -3,6 +3,7 @@ require 'logger'
 require 'rest_client'
 require 'rexml/document'
 require 'uri'
+require 'active_support'
 
 module MediaWiki
   
@@ -15,7 +16,7 @@ module MediaWiki
     # [options] Hash of options
     #
     # Options:
-    # [:ignorewarnings] Log API warnings and invalid page titles, instead of aborting with an error.
+    # [:ignorewarnings] Log API warnings and invalid page titles, instead throwing MediaWiki::APIError
     # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
     # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
@@ -45,7 +46,7 @@ module MediaWiki
     # [password] Password
     # [domain] Domain for authentication plugin logins (eg. LDAP), optional -- defaults to 'local' if not given
     #
-    # Throws error if login fails
+    # Throws MediaWiki::Unauthorized if login fails
     def login(username, password, domain = 'local')
       form_data = {'action' => 'login', 'lgname' => username, 'lgpassword' => password, 'lgdomain' => domain}
       make_api_request(form_data)
@@ -489,7 +490,7 @@ module MediaWiki
     # [flags] Hash of flags and values to set, eg. { "accuracy" => "1", "depth" => "2" }
     # [comment] Comment to add to review (optional)
     def review(title, flags, comment = "Reviewed by MediaWiki::Gateway")
-      raise "No article found" unless revid = revision(title)
+      raise APIError.new('missingtitle', "Article #{title} not found") unless revid = revision(title)
       form_data = {'action' => 'review', 'revid' => revid, 'token' => get_token('edit', title), 'comment' => comment}
       form_data.merge!( Hash[flags.map {|k,v| ["flag_#{k}", v]}] )
       res, dummy = make_api_request(form_data)
@@ -503,7 +504,7 @@ module MediaWiki
       form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
       res, dummy = make_api_request(form_data)
       token = res.elements["query/pages/page"].attributes[type + "token"]
-      raise "User is not permitted to perform this operation: #{type}" if token.nil?
+      raise Unauthorized.new "User is not permitted to perform this operation: #{type}" if token.nil?
       token
     end
 
@@ -512,7 +513,7 @@ module MediaWiki
       res, dummy = make_api_request(form_data)
       if res.elements["query/deletedrevs/page"]
         token = res.elements["query/deletedrevs/page"].attributes["token"]
-        raise "User is not permitted to perform this operation: #{type}" if token.nil?
+        raise Unauthorized.new "User is not permitted to perform this operation: #{type}" if token.nil?
         token
       else
         nil
@@ -528,9 +529,9 @@ module MediaWiki
       @log.debug("RESPONSE: #{res.to_s}")
       if token.nil?
         if res.elements["query/users/user"].attributes["missing"]
-          raise "User '#{user}' was not found (get_userrights_token)"
+          raise APIError.new('invaliduser', "User '#{user}' was not found (get_userrights_token)")
         else
-          raise "User '#{@username}' is not permitted to perform this operation: get_userrights_token"
+          raise Unauthorized.new "User '#{@username}' is not permitted to perform this operation: get_userrights_token"
         end
       end
       
@@ -575,7 +576,7 @@ module MediaWiki
           make_api_request(form_data, continue_xpath, retry_count + 1)
         end
         # Check response for errors and return XML
-        raise "API error, bad response: #{response}" unless response.code >= 200 and response.code < 300 
+        raise MediaWiki::Exception.new "Bad response: #{response}" unless response.code >= 200 and response.code < 300 
         doc = get_response(response.dup)
         if(form_data['action'] == 'login')
           login_result = doc.elements["login"].attributes['result']
@@ -583,7 +584,7 @@ module MediaWiki
           case login_result
             when "Success" then # do nothing
             when "NeedToken" then make_api_request(form_data.merge('lgtoken' => doc.elements["login"].attributes["token"]))
-            else raise "Login failed: " + login_result
+            else raise Unauthorized.new "Login failed: " + login_result
           end
         end
         continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath).value : nil
@@ -592,20 +593,20 @@ module MediaWiki
     end
     
     # Get API XML response
-    # If there are errors or warnings, raise exception
+    # If there are errors or warnings, raise APIError
     # Otherwise return XML root
     def get_response(res)
       begin
         doc = REXML::Document.new(res).root
       rescue REXML::ParseException => e
-        raise "Response is not XML.  Are you sure you are pointing to api.php?"
+        raise MediaWiki::Exception.new "Response is not XML.  Are you sure you are pointing to api.php?"
       end
       log.debug("RES: #{doc}")
-      raise "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
+      raise MediaWiki::Exception.new "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
       if doc.elements["error"]
         code = doc.elements["error"].attributes["code"]
         info = doc.elements["error"].attributes["info"]
-        raise "API error: code '#{code}', info '#{info}'"
+        raise APIError.new(code, info)
       end
       if doc.elements["warnings"]
         warning("API warning: #{doc.elements["warnings"].children.map {|e| e.text}.join(", ")}")
@@ -628,7 +629,7 @@ module MediaWiki
         log.warn(msg)
         return false
       else
-        raise msg
+        raise APIError.new('warning', msg)
       end
     end
   end
