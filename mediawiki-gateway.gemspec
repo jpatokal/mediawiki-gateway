@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.3.8"
+  s.version = "0.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2011-04-14}
+  s.date = %q{2011-05-18}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -20,11 +20,15 @@ Gem::Specification.new do |s|
     "Rakefile",
     "config/hosts.yml",
     "doc/classes/MediaWiki.html",
+    "doc/classes/MediaWiki/APIError.html",
     "doc/classes/MediaWiki/Config.html",
+    "doc/classes/MediaWiki/Exception.html",
     "doc/classes/MediaWiki/Gateway.html",
+    "doc/classes/MediaWiki/Unauthorized.html",
     "doc/created.rid",
     "doc/files/README.html",
     "doc/files/lib/media_wiki/config_rb.html",
+    "doc/files/lib/media_wiki/exception_rb.html",
     "doc/files/lib/media_wiki/gateway_rb.html",
     "doc/files/lib/media_wiki/utils_rb.html",
     "doc/files/script/create_page_rb.html",
@@ -43,6 +47,7 @@ Gem::Specification.new do |s|
     "doc/rdoc-style.css",
     "lib/media_wiki.rb",
     "lib/media_wiki/config.rb",
+    "lib/media_wiki/exception.rb",
     "lib/media_wiki/gateway.rb",
     "lib/media_wiki/utils.rb",
     "mediawiki-gateway.gemspec",
