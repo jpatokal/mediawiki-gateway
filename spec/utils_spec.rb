@@ -62,6 +62,10 @@ describe MediaWiki do
       MediaWiki.wiki_to_uri('Zoo:Phở/B&r/B z').should == 'Zoo:Ph%E1%BB%9F/B%26r/B_z'
     end
 
+    it "should preserve any URL-encoded characters" do
+      MediaWiki.wiki_to_uri('Zoo:Ph%E1%BB%9F/B%26r/B_z').should == 'Zoo:Ph%E1%BB%9F/B%26r/B_z'
+    end
+
     it "should pass through nil" do
       MediaWiki.wiki_to_uri(nil).should be_nil
     end
