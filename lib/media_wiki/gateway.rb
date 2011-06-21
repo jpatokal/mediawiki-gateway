@@ -396,7 +396,7 @@ module MediaWiki
       end
     end
 
-    # Download _file_name_. Returns file contents. All options are passed to 
+    # Download _file_name_ (without "File:" or "Image:" prefix). Returns file contents. All options are passed to 
     # #image_info however options['iiprop'] is forced to url. You can still
     # set other options to control what file you want to download.
     def download(file_name, options={})
