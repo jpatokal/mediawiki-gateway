@@ -1,0 +1,14 @@
+Sample scripts using MediaWiki::Gateway.  These expect to be run from the MediaWiki::Gateway root directory with ./config/hosts.yml accessible and configured with real usernames, passwords etc.  Remove Logger::DEBUG from scripts for less verbose output.
+
+Examples:
+
+Check syntax for create page script
+
+  ruby script/create_page.rb
+
+Pipe the content of "content.txt" into the page 'Sandbox:MediaWikiGatewayTest' on the English Wikipedia
+
+  ruby script/create_page.rb -h en-wp -a Sandbox:MediaWikiGatewayTest <content.txt
+    *or*
+  ruby script/create_page.rb --host en-wp --article Sandbox:MediaWikiGatewayTest <content.txt
+
