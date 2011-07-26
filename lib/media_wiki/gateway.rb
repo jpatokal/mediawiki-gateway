@@ -133,6 +133,59 @@ module MediaWiki
       make_api_request(form_data)
     end
 
+    # Fetches recent changes
+    #
+    # 
+    # [options] Hash of additional options. This hash is passed as in, except for some type conversions
+    #
+    # Options:
+    # * [:rcstart] The time to start listing from
+    # * [:rcend] The time to end listing at
+    # * [:rcdir] Direction to list in
+    #    * older: List newest changes first (default). Note] rcstart has to be later than rcend.
+    #    * newer: List oldest changes first. Note] rcstart has to be before rcend.
+    # * [:rclimit] Maximum amount of changes to list (10 by default)
+    # * [:rcnamespace] Only list changes in these namespaces
+    # * [:rcuser] Only list changes made by this user
+    # * [:rcexcludeuser] Do not list changes made by this user
+    # * [:rctype] Only list certain types of changes
+    #    * edit: Regular page edits
+    #    * new: Page creations
+    #    * log: Log entries
+    # * [:rcshow] Only list items that meet these criteria. Conflicting options (such as minor and !minor) cannot be used together
+    #    * minor: Only list minor edits
+    #    * !minor: Don't list minor edits
+    #    * bot: Only list bot edits
+    #    * !bot: Don't list bot edits
+    #    * anon: Only list edits by anonymous users
+    #    * !anon: Only list edits by registered users
+    #    * redirect: Only list edits to pages that are currently redirects
+    #    * !redirect: Only list edits to pages that currently aren't redirects
+    #    * patrolled: Only list edits flagged as patrolled. Only available to users with the patrol right
+    #    * !patrolled: Only list edits not flagged as patrolled. Only available to users with the patrol right
+    # * [:rcprop] Which properties to get
+    #    * user: The user who made the change
+    #    * comment: The edit/log comment
+    #    * timestamp: The time and date of the change (default)
+    #    * title: The title the change was made to (default)
+    #    * ids: The page ID, revision ID, previous revision ID and RCID (used for patrolling) (default)
+    #    * sizes: The page size before and after the change
+    #    * redirect: Whether the changed page is currently a redirect
+    #    * patrolled: Whether the change is patrolled. Only available to users with the patrol right
+    #    * loginfo: If the change was a log event, add the logid, logtype and logaction fields and the log parameters (since >=1.13.0)
+    #    * flags:
+    #      * new: A new page was created
+    #      * minor: The change was a minor edit
+    #      * bot: The change was a bot edit
+
+    def recent_changes(options={})
+      options.merge! {'action' => 'query', 'list'=>'recentchanges'}
+      options.stringify_keys!
+      options['rcstart'] = options['rcstart'].to_i if options['rcstart'].respond_to?(:to_i)
+      options['rcend']   = options['rcend'].to_i   if options['rcend'].respond_to?(:to_i)
+      make_api_request(options)
+    end
+
     # Edit page
     #
     # Same options as create, but always overwrites existing pages (and creates them if they don't exist already).
