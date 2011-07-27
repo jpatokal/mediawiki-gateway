@@ -179,11 +179,29 @@ module MediaWiki
     #      * bot: The change was a bot edit
 
     def recent_changes(options={})
-      options.merge! {'action' => 'query', 'list'=>'recentchanges'}
-      options.stringify_keys!
-      options['rcstart'] = options['rcstart'].to_i if options['rcstart'].respond_to?(:to_i)
-      options['rcend']   = options['rcend'].to_i   if options['rcend'].respond_to?(:to_i)
-      make_api_request(options)
+      options.merge!({'action' => 'query', 'list'=>'recentchanges'})
+
+      options['rcstart'] = options['rcstart'].to_i if !options['rcstart'].nil? and options['rcstart'].respond_to?(:to_i)
+      options['rcend']   = options['rcend'].to_i   if !options['rcend'].nil?   and options['rcend'].respond_to?(:to_i)
+      results = make_api_request(options)
+      REXML::XPath.match(results, "/api/query/recentchanges/rc").map{|x| x.attributes}
+
+    end
+
+    # Fetches pages that the given page is embeded in.
+    #
+    #  * eititle: List pages including this title. The title need not exist
+    #      * einamespace: Only list pages in these namespaces
+    #      * eifilterredir: How to filter redirects
+    #            o all: List all pages regardless of their redirect flag (default)
+    #            o redirects: Only list redirects
+    #            o nonredirects: Don't list redirects
+    #      * eilimit: Maximum amount of pages to list (10 by default)
+    #      * eicontinue: Used to continue a previous request
+    def embeded_in(page_title,options={})
+      options.merge!({'action' => 'query', 'list'=>'embeddedin', 'eititle'=>page_title})
+      results = make_api_request(options)
+      REXML::XPath.match(results, "/api/query/embeddedin/ei").map{|x| x.attributes}
     end
 
     # Edit page
