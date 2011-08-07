@@ -4,6 +4,9 @@ require 'rest_client'
 require 'rexml/document'
 require 'uri'
 require 'active_support'
+require 'json'
+require 'open-uri'
+
 
 module MediaWiki
   
@@ -188,21 +191,32 @@ module MediaWiki
 
     end
 
-    # This function returns a hash of namspaces along with details about them.
-    #
-    # This function accecpts no arguments
-    #
-    # Return format: Hash, keys are namepsace names and each value are the attributes of the corresponding namespace
-    def namespaces
-      options = {'action' => 'query', 'meta'=>'siteinfo', 'siprop' => 'namespaces'}
-      results = make_api_request(options)
-
-      ret = {}
-
-      REXML::XPath.match(results, "/api/query/namespaces/ns").each{|t| ret[t.text] = t.attributes }
-     
-      ret
+    #This function returns the list of all properties in the Property namespace
+    def list_semantic_properties
+      properties = []
+      list("Property:").each do |prop|
+        ns, page = prop.split(':')
+        properties << page
+      end
+      properties
     end
+
+   #This returns the properties for the given page. A hash will be returned.
+   def semantic_properties(page_name)
+     return nil if @options[:index_page].nil? or @options[:index_page] == ''
+
+     encoded_page = URI.escape("[[#{page_name}]]", Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")).gsub('%', '-')
+
+     properties = list_semantic_properties.collect{|i| URI.escape(i, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")).gsub('%', '-') }
+     
+     uri = URI.parse(@options[:index_page])
+     ask_query = "#{encoded_page}/-3F#{properties.join('/-3F')}/limit%3D1/format%3Djson"
+
+     uri.query = "title=Special:Ask&x=#{URI.escape(ask_query, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
+    
+     JSON.parse(open(uri.to_s).read)
+   end
+
 
     # Fetches pages that the given page is embeded in.
     #
@@ -559,6 +573,11 @@ module MediaWiki
       form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
       xml, dummy = make_api_request(form_data)
       return xml.elements["parse/text"].text
+    end
+
+
+    def semantic_properties
+       list "Property:"
     end
     
     # Set groups for a user
