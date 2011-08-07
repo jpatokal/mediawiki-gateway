@@ -188,6 +188,22 @@ module MediaWiki
 
     end
 
+    # This function returns a hash of namspaces along with details about them.
+    #
+    # This function accecpts no arguments
+    #
+    # Return format: Hash, keys are namepsace names and each value are the attributes of the corresponding namespace
+    def namespaces
+      options = {'action' => 'query', 'meta'=>'siteinfo', 'siprop' => 'namespaces'}
+      results = make_api_request(options)
+
+      ret = {}
+
+      REXML::XPath.match(results, "/api/query/namespaces/ns").each{|t| ret[t.text] = t.attributes }
+     
+      ret
+    end
+
     # Fetches pages that the given page is embeded in.
     #
     #  * eititle: List pages including this title. The title need not exist
