@@ -187,21 +187,22 @@ module MediaWiki
     # Get a list of matching page titles in a namespace
     #
     # [key] Search key, matched as a prefix (^key.*).  May contain or equal a namespace, defaults to main (namespace 0) if none given.
+    # [options] Optional hash of additional options, eg. { 'apfilterredir' => 'nonredirects' }.  See http://www.mediawiki.org/wiki/API:Allpages
     #
     # Returns array of page titles (empty if no matches)
-    def list(key)
+    def list(key, options = {})
       titles = []
       apfrom = nil
       key, namespace = key.split(":", 2).reverse
       namespace = namespaces_by_prefix[namespace] || 0
       begin
-        form_data =
+        form_data = options.merge(
           {'action' => 'query',
           'list' => 'allpages',
           'apfrom' => apfrom,
           'apprefix' => key,
           'aplimit' => @options[:limit],
-          'apnamespace' => namespace}
+          'apnamespace' => namespace})
         res, apfrom = make_api_request(form_data, '//query-continue/allpages/@apfrom')
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
       end while apfrom
