@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mediawiki-gateway}
-  s.version = "0.4.1"
+  s.version = "0.4.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2011-05-18}
+  s.date = %q{2011-08-23}
   s.description = %q{}
   s.email = %q{jpatokal@iki.fi}
   s.extra_rdoc_files = [
@@ -19,40 +19,16 @@ Gem::Specification.new do |s|
     "README",
     "Rakefile",
     "config/hosts.yml",
-    "doc/classes/MediaWiki.html",
-    "doc/classes/MediaWiki/APIError.html",
-    "doc/classes/MediaWiki/Config.html",
-    "doc/classes/MediaWiki/Exception.html",
-    "doc/classes/MediaWiki/Gateway.html",
-    "doc/classes/MediaWiki/Unauthorized.html",
-    "doc/created.rid",
-    "doc/files/README.html",
-    "doc/files/lib/media_wiki/config_rb.html",
-    "doc/files/lib/media_wiki/exception_rb.html",
-    "doc/files/lib/media_wiki/gateway_rb.html",
-    "doc/files/lib/media_wiki/utils_rb.html",
-    "doc/files/script/create_page_rb.html",
-    "doc/files/script/delete_batch_rb.html",
-    "doc/files/script/export_xml_rb.html",
-    "doc/files/script/get_page_rb.html",
-    "doc/files/script/import_xml_rb.html",
-    "doc/files/script/run_fake_media_wiki_rb.html",
-    "doc/files/script/search_content_rb.html",
-    "doc/files/script/upload_commons_rb.html",
-    "doc/files/script/upload_file_rb.html",
-    "doc/fr_class_index.html",
-    "doc/fr_file_index.html",
-    "doc/fr_method_index.html",
-    "doc/index.html",
-    "doc/rdoc-style.css",
     "lib/media_wiki.rb",
     "lib/media_wiki/config.rb",
     "lib/media_wiki/exception.rb",
     "lib/media_wiki/gateway.rb",
     "lib/media_wiki/utils.rb",
     "mediawiki-gateway.gemspec",
+    "script/README",
     "script/create_page.rb",
     "script/delete_batch.rb",
+    "script/download_batch.rb",
     "script/export_xml.rb",
     "script/get_page.rb",
     "script/import_xml.rb",
