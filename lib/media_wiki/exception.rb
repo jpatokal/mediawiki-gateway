@@ -14,6 +14,10 @@ module MediaWiki
       @info = info
       @message = "API error: code '#{code}', info '#{info}'"
     end
+
+    def to_s
+      "#{self.class.to_s}: #{@message}"
+    end
   end
 
   # User is not authorized to perform this operation.  Also thrown if MediaWiki::Gateway#login fails.
