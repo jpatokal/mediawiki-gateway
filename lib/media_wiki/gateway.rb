@@ -598,6 +598,7 @@ module MediaWiki
     # Otherwise return XML root
     def get_response(res)
       begin
+        res = res.force_encoding("UTF-8") if res.respond_to?(:force_encoding)
         doc = REXML::Document.new(res).root
       rescue REXML::ParseException => e
         raise MediaWiki::Exception.new "Response is not XML.  Are you sure you are pointing to api.php?"
