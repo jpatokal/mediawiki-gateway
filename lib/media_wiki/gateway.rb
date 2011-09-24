@@ -130,6 +130,7 @@ module MediaWiki
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
       form_data['createonly'] = "" unless options[:overwrite]
+      form_data['section'] = options[:section].to_s if options[:section]
       make_api_request(form_data)
     end
 
