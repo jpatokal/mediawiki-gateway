@@ -434,7 +434,7 @@ module MediaWiki
     # Returns MediaWiki XML dump
     def export(page_titles)
       form_data = {'action' => 'query', 'titles' => [page_titles].join('|'), 'export' => nil, 'exportnowrap' => nil}
-      return make_api_request(form_data)
+      make_api_request(form_data).first
     end
 
     # Get a list of all known namespaces
