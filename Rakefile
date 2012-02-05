@@ -1,3 +1,4 @@
+require 'thread'
 require 'rake'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
