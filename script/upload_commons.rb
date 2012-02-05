@@ -2,7 +2,7 @@
 #
 # Sample script for uploading files to Mediawiki Commons (interactive)
 
-require 'lib/media_wiki'
+require './lib/media_wiki'
 
 config = MediaWiki::Config.new(ARGV, "upload")
 file = ARGV[0]

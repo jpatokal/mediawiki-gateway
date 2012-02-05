@@ -1,4 +1,4 @@
-require 'lib/media_wiki'
+require './lib/media_wiki'
 
 config = MediaWiki::Config.new ARGV 
 

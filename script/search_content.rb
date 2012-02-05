@@ -2,7 +2,7 @@
 #
 # Sample script for searching page contents in a Wiki
 #
-require 'lib/media_wiki'
+require './lib/media_wiki'
 
 config = MediaWiki::Config.new ARGV 
 config.abort("Please specify search key as article name (-a)") unless config.article
