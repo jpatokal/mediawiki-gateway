@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{mediawiki-gateway}
-  s.version = "0.4.3"
+  s.name = "mediawiki-gateway"
+  s.version = "0.4.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = %q{2011-09-07}
-  s.description = %q{}
-  s.email = %q{jpatokal@iki.fi}
+  s.date = "2012-02-05"
+  s.description = ""
+  s.email = "jpatokal@iki.fi"
   s.extra_rdoc_files = [
     "README"
   ]
@@ -44,21 +44,12 @@ Gem::Specification.new do |s|
     "spec/spec_helper.rb",
     "spec/utils_spec.rb"
   ]
-  s.homepage = %q{http://github.com/jpatokal/mediawiki-gateway}
+  s.homepage = "http://github.com/jpatokal/mediawiki-gateway"
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Connect to the mediawiki API}
-  s.test_files = [
-    "spec/fake_media_wiki/api_pages.rb",
-    "spec/fake_media_wiki/app.rb",
-    "spec/fake_media_wiki/query_handling.rb",
-    "spec/gateway_spec.rb",
-    "spec/spec_helper.rb",
-    "spec/utils_spec.rb"
-  ]
+  s.rubygems_version = "1.8.11"
+  s.summary = "Connect to the mediawiki API"
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
