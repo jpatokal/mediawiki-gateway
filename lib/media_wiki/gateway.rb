@@ -141,6 +141,67 @@ module MediaWiki
       create(title, content, {:overwrite => true}.merge(options))
     end
 
+    # Protect/unprotect a page
+    #
+    # Arguments:
+    # * [title] Page title to protect, string
+    # * [protections] Protections to apply, hash or array of hashes
+    #
+    #   Protections:
+    #   * [:action] (required) The action to protect, string
+    #   * [:group] (required) The group allowed to perform the action, string
+    #   * [:expiry] The protection expiry as a GNU timestamp, string
+    #
+    # * [options] Hash of additional options
+    #
+    #   Options:
+    #   * [:cascade] Protect pages included in this page, boolean
+    #   * [:reason] Reason for protection, string
+    #
+    # Examples:
+    # 1. mw.protect('Main Page', {:action => 'edit', :group => 'all'}, {:cascade => true})
+    # 2. prt = [{:action => 'move', :group => 'sysop', :expiry => 'never'},
+    #      {:action => 'edit', :group => 'autoconfirmed', :expiry => 'next Monday 16:04:57'}]
+    #    mw.protect('Main Page', prt, {:reason => 'awesomeness'})
+    #
+    def protect(title, protections, options={})
+      # validate and format protections
+      protections = [protections] if protections.is_a?(Hash)
+      raise ArgumentError.new("Invalid type '#{protections.class}' for protections") unless protections.is_a?(Array)
+      valid_prt_options = %w(action group expiry)
+      required_prt_options = %w(action group)
+      p,e = [],[]
+      protections.each do |prt|
+        existing_prt_options = []
+        prt.keys.each do |opt|
+          if valid_prt_options.include?(opt.to_s)
+            existing_prt_options.push(opt.to_s)
+          else
+            raise ArgumentError.new("Unknown option '#{opt}' for protections")
+          end
+        end
+        required_prt_options.each{|opt| raise ArgumentError.new("Missing required option '#{opt}' for protections") unless existing_prt_options.include?(opt)}
+        p.push("#{prt[:action]}=#{prt[:group]}")
+        if prt.has_key?(:expiry)
+          e.push(prt[:expiry].to_s)
+        else
+          e.push('never')
+        end
+      end
+
+      # validate options
+      valid_options = %w(cascade reason)
+      options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
+
+      # make API request
+      form_data = {'action' => 'protect', 'title' => title, 'token' => get_token('protect', title)}
+      form_data['protections'] = p.join('|')
+      form_data['expiry'] = e.join('|')
+      form_data['cascade'] = '' if options[:cascade] === true
+      form_data['reason'] = options[:reason].to_s if options[:reason]
+      make_api_request(form_data)
+    end
+
     # Move a page to a new title
     #
     # [from] Old page name
@@ -501,7 +562,7 @@ module MediaWiki
 
     private
 
-    # Fetch token (type 'delete', 'edit', 'import', 'move')
+    # Fetch token (type 'delete', 'edit', 'import', 'move', 'protect')
     def get_token(type, page_titles)
       form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
       res, dummy = make_api_request(form_data)
