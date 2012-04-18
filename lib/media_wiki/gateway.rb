@@ -16,6 +16,7 @@ module MediaWiki
     # [options] Hash of options
     #
     # Options:
+    # [:bot] When set to true, executes API queries with the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
     # [:ignorewarnings] Log API warnings and invalid page titles, instead throwing MediaWiki::APIError
     # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
     # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
@@ -28,7 +29,8 @@ module MediaWiki
         :loglevel => Logger::WARN,
         :maxlag => 5,
         :retry_count => 3,
-        :retry_delay => 10
+        :retry_delay => 10,
+        :bot => false
       }
       @options = default_options.merge(options)
       @wiki_url = url
@@ -630,6 +632,7 @@ module MediaWiki
       if form_data.kind_of? Hash
         form_data['format'] = 'xml'
         form_data['maxlag'] = @options[:maxlag]
+        form_data['bot']="1" if @options[:bot]
       end
       log.debug("REQ: #{form_data.inspect}, #{@cookies.inspect}")
       RestClient.post(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
