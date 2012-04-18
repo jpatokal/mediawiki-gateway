@@ -16,6 +16,7 @@ module MediaWiki
     # [options] Hash of options
     #
     # Options:
+    # [:bot] When set to true, executes API queries with the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
     # [:ignorewarnings] Log API warnings and invalid page titles, instead throwing MediaWiki::APIError
     # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
     # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
