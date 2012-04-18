@@ -28,7 +28,8 @@ module MediaWiki
         :loglevel => Logger::WARN,
         :maxlag => 5,
         :retry_count => 3,
-        :retry_delay => 10
+        :retry_delay => 10,
+        :bot => false
       }
       @options = default_options.merge(options)
       @wiki_url = url
@@ -630,6 +631,7 @@ module MediaWiki
       if form_data.kind_of? Hash
         form_data['format'] = 'xml'
         form_data['maxlag'] = @options[:maxlag]
+        form_data['bot']="1" if @options[:bot]
       end
       log.debug("REQ: #{form_data.inspect}, #{@cookies.inspect}")
       RestClient.post(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
