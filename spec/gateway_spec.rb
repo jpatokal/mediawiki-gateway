@@ -4,149 +4,153 @@ require 'spec_helper'
 require 'sham_rack'
 require 'spec/fake_media_wiki/app'
 $fake_media_wiki = FakeMediaWiki::App.new
+unless $fake_media_wiki.instance_of? FakeMediaWiki::App
+  # This is a horrible workaround for some bizarre conflict with later versions of ShamRack/Rack/Sinatra/Builder/...
+  $fake_media_wiki = $fake_media_wiki.instance_eval('@app').instance_eval('@app').app.app.app.app.app
+end
 ShamRack.mount($fake_media_wiki, 'dummy-wiki.example')
 
 describe MediaWiki::Gateway do
-  
+
   before do
     @gateway = MediaWiki::Gateway.new('http://dummy-wiki.example/w/api.php')
     $fake_media_wiki.reset
   end
 
   describe '#login' do
-  
+
     describe "with a valid username & password" do
-  
+
       before do
         @gateway.login('atlasmw', 'wombat')
       end
-  
+
       it "should login successfully with the default domain" do
         $fake_media_wiki.logged_in('atlasmw').should == true
       end
-  
+
     end
 
     describe "with a valid username, password and domain" do
-  
+
       before do
         @gateway.login('ldapuser', 'ldappass', 'ldapdomain')
       end
-  
+
       it "should login successfully" do
         $fake_media_wiki.logged_in('ldapuser').should == true
       end
-  
+
     end
-  
+
     describe "with an non-existent username" do
-  
+
       it "should raise an error" do
         lambda do
           @gateway.login('bogususer', 'sekrit')
         end.should raise_error(MediaWiki::Unauthorized)
       end
-  
+
     end
-  
+
     describe "with an incorrect password" do
-  
+
       it "should raise an error" do
         lambda do
           @gateway.login('atlasmw', 'sekrit')
         end.should raise_error(MediaWiki::Unauthorized)
       end
-  
+
     end
 
     describe "with an incorrect domain" do
-  
+
       it "should raise an error" do
         lambda do
           @gateway.login('atlasmw', 'wombat', 'bogusdomain')
         end.should raise_error(MediaWiki::Unauthorized)
       end
-  
+
     end
-  
+
   end
 
   describe "#get_token" do
-  
+
     describe "when not logged in" do
-  
+
       describe "requesting an edit token" do
-  
+
         before do
           @token = @gateway.send(:get_token, 'edit', 'Main Page')
         end
-    
+
         it "should return a blank token" do
           @token.should_not == nil
           @token.should == "+\\"
         end
-        
+
       end
-  
+
       describe "requesting an import token" do
-    
+
         it "should raise an error" do
           lambda do
             @gateway.send(:get_token, 'import', 'Main Page')
           end.should raise_error(MediaWiki::Unauthorized)
         end
-        
-      end
-  
-    end
-  
-    describe "when logged in as admin user" do
-  
-      before do
-        @gateway.login('atlasmw', 'wombat')
-      end
-  
-      describe "requesting an edit token for a single page" do
-  
-        before do
-          @token = @gateway.send(:get_token, 'edit', 'Main Page')
-        end
-    
-        it "should return a token" do
-          @token.should_not == nil
-          @token.should_not == "+\\"
-        end
-        
-      end
-  
-      describe "requesting an edit token for multiple pages" do
-  
-        before do
-          @token = @gateway.send(:get_token, 'edit', "Main Page|Another Page")
-        end
-    
-        it "should return a token" do
-          @token.should_not == nil
-          @token.should_not == "+\\"
-        end
-        
-      end
-  
-      describe "requesting an import token" do
-  
-        before do
-          @token = @gateway.send(:get_token, 'import', 'Main Page')
-        end
-    
-        it "should return a token" do
-          @token.should_not == nil
-          @token.should_not == "+\\"
-        end
-        
+
       end
 
     end
-  
+
+    describe "when logged in as admin user" do
+
+      before do
+        @gateway.login('atlasmw', 'wombat')
+      end
+
+      describe "requesting an edit token for a single page" do
+
+        before do
+          @token = @gateway.send(:get_token, 'edit', 'Main Page')
+        end
+
+        it "should return a token" do
+          @token.should_not == nil
+          @token.should_not == "+\\"
+        end
+
+      end
+
+      describe "requesting an edit token for multiple pages" do
+
+        before do
+          @token = @gateway.send(:get_token, 'edit', "Main Page|Another Page")
+        end
+
+        it "should return a token" do
+          @token.should_not == nil
+          @token.should_not == "+\\"
+        end
+
+      end
+
+      describe "requesting an import token" do
+
+        before do
+          @token = @gateway.send(:get_token, 'import', 'Main Page')
+        end
+
+        it "should return a token" do
+          @token.should_not == nil
+          @token.should_not == "+\\"
+        end
+
+      end
+
+    end
+
   end
 
   describe "#get" do
@@ -233,14 +237,14 @@ describe MediaWiki::Gateway do
   end
 
   describe "#render" do
-    
+
     describe "for an existing wiki page" do
 
       before do
         @pages = @gateway.render('Main Page')
       end
 
-      it "should return the page content" do  
+      it "should return the page content" do
         expected = 'Sample <B>HTML</B> content.'
         @pages.to_s.should == expected
       end
@@ -284,9 +288,9 @@ describe MediaWiki::Gateway do
       end
 
     end
-    
+
     describe "for a missing wiki page" do
-  
+
       before do
         @pages = @gateway.render('Invalidpage')
       end
@@ -294,23 +298,23 @@ describe MediaWiki::Gateway do
       it "should return nil" do
         @pages.should == nil
       end
-  
+
     end
 
   end
-  
+
   describe "#create" do
-  
+
     before do
       @gateway.login('atlasmw', 'wombat')
     end
 
     describe "when creating a new page" do
-    
+
       before do
         @page = @gateway.create("A New Page", "Some content")
       end
-      
+
       it "should create the page" do
         expected = <<-XML
           <api>
@@ -319,21 +323,21 @@ describe MediaWiki::Gateway do
         XML
         Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
       end
-      
+
     end
-    
+
     describe "when creating a page that already exists" do
-      
+
       before do
         $fake_media_wiki.reset
       end
-      
+
       describe "and the 'overwrite' option is set" do
-      
+
         before do
           @new_page = @gateway.create("Main Page", "Some new content", :summary => "The summary", :overwrite => true)
         end
-        
+
         it "should overwrite the existing page" do
           expected = <<-XML
             <api>
@@ -342,21 +346,21 @@ describe MediaWiki::Gateway do
           XML
           Hash.from_xml(@new_page.to_s).should == Hash.from_xml(expected)
         end
-      
+
       end
-  
+
       describe "and the 'overwrite' option is not set" do
-  
+
         it "should raise an error" do
           lambda do
             @gateway.create("Main Page", "Some new content")
           end.should raise_error(MediaWiki::APIError)
         end
-        
+
       end
-        
+
     end
-  
+
   end
 
   describe "#edit" do
@@ -364,7 +368,7 @@ describe MediaWiki::Gateway do
       $fake_media_wiki.reset
       @edit_page = @gateway.edit("Main Page", "Some new content")
     end
-        
+
     it "should overwrite the existing page" do
       expected = <<-XML
       <api>
@@ -373,22 +377,22 @@ describe MediaWiki::Gateway do
       XML
       Hash.from_xml(@edit_page.to_s).should == Hash.from_xml(expected)
     end
-      
+
   end
 
   describe "#upload" do
-  
+
     before do
       @gateway.login('atlasmw', 'wombat')
     end
 
     describe "when uploading a new file" do
-    
+
       before do
         stub(File).new(anything) { "SAMPLEIMAGEDATA" }
         @page = @gateway.upload("some/path/sample_image.jpg")
       end
-      
+
       it "should open the file" do
         File.should have_received.new("some/path/sample_image.jpg")
       end
@@ -401,9 +405,9 @@ describe MediaWiki::Gateway do
         XML
         Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
       end
-      
+
     end
-   
+
   end
 
   describe "#delete" do
@@ -418,25 +422,25 @@ describe MediaWiki::Gateway do
             </api>
          XML
         end
-      
+
         before do
           @gateway.login("atlasmw", "wombat")
-          
+
           create("Deletable Page", "Some content")
           @page = @gateway.delete("Deletable Page")
         end
 
         it "should delete the page" do
           Hash.from_xml(@page.to_s) == Hash.from_xml(delete_response)
-        end  
+        end
       end
-      
+
       describe "and the page does not exist" do
-    
+
         before do
           @gateway.login("atlasmw", "wombat")
         end
-      
+
         it "should raise an error" do
           lambda do
             @gateway.delete("Missing Page")
@@ -450,7 +454,7 @@ describe MediaWiki::Gateway do
       before do
         create("Deletable Page", "Some content")
       end
-      
+
       it "should raise an error" do
         lambda do
           @gateway.delete("Deletable Page")
@@ -458,7 +462,7 @@ describe MediaWiki::Gateway do
       end
 
     end
-    
+
   end
 
   describe "#undelete" do
@@ -468,7 +472,7 @@ describe MediaWiki::Gateway do
         $fake_media_wiki.reset
         @gateway.login("atlasmw", "wombat")
       end
-      
+
       describe "and the page no longer exists" do
         before do
           @revs = @gateway.undelete("Sandbox:Undeleted")
@@ -477,7 +481,7 @@ describe MediaWiki::Gateway do
         it "should recreate the given page" do
           @gateway.list("Sandbox:Undeleted").should == [ "Sandbox:Undeleted" ]
         end
-        
+
         it "should report one undeleted revision" do
           @revs.should == 1
         end
@@ -503,17 +507,17 @@ describe MediaWiki::Gateway do
       end
 
     end
-    
+
   end
 
   describe "#list" do
-  
+
     before do
       $fake_media_wiki.reset
     end
-    
+
     describe "with an empty key" do
-      
+
       before do
         @list = @gateway.list("")
       end
@@ -521,11 +525,11 @@ describe MediaWiki::Gateway do
       it "should list all pages" do
         @list.sort.should == [ "Book:Italy", "Empty", "Foopage", "Level/Level/Index", "Main 2", "Main Page", "Redirect" ]
       end
-      
+
     end
 
     describe "with a namespace as the key" do
-      
+
       before do
         @list = @gateway.list("Book:")
       end
@@ -533,11 +537,11 @@ describe MediaWiki::Gateway do
       it "should list all pages in the namespace" do
         @list.should == [ "Book:Italy" ]
       end
-      
+
     end
 
     describe "with a partial title as the key" do
-      
+
       before do
         @list = @gateway.list("Main")
       end
@@ -545,13 +549,13 @@ describe MediaWiki::Gateway do
       it "should list all pages in the main namespace that start with key" do
         @list.sort.should == [ "Main 2", "Main Page" ]
       end
-      
+
     end
 
   end
 
   describe "#search" do
-  
+
     before do
       $fake_media_wiki.reset
       @gateway.create("Search Test", "Foo KEY Blah")
@@ -559,31 +563,31 @@ describe MediaWiki::Gateway do
       @gateway.create("Book:Search Test", "Bar KEY Baz")
       @gateway.create("Sandbox:Search Test", "Evil KEY Evil")
     end
-    
+
     describe "with an empty key" do
-      
+
       it "should raise an error" do
         lambda do
           @gateway.search("")
         end.should raise_error(MediaWiki::APIError)
       end
-   
+
     end
 
     describe "with a valid key and no namespaces" do
-      
+
       before do
         @search = @gateway.search("KEY")
       end
 
       it "should list all matching pages in the main namespace" do
-        @search.should == [ "Search Test", "Search Test 2" ]
+        @search.should =~ [ "Search Test", "Search Test 2" ]
       end
-      
+
     end
 
     describe "with a valid key and a namespace string" do
-      
+
       before do
         @search = @gateway.search("KEY", "Book")
       end
@@ -591,25 +595,25 @@ describe MediaWiki::Gateway do
       it "should list all matching pages in the specified namespaces" do
         @search.should == [ "Book:Search Test" ]
       end
-      
+
     end
 
     describe "with a valid key and a namespace array" do
-      
+
       before do
         @search = @gateway.search("KEY", ["Book", "Sandbox"])
       end
 
       it "should list all matching pages in the specified namespaces" do
-        @search.should == [ "Sandbox:Search Test", "Book:Search Test" ]
+        @search.should =~ [ "Sandbox:Search Test", "Book:Search Test" ]
       end
-      
+
     end
 
   end
-   
+
   describe "#namespaces_by_prefix" do
-    
+
     before do
       $fake_media_wiki.reset
       @namespaces = @gateway.namespaces_by_prefix
@@ -622,7 +626,7 @@ describe MediaWiki::Gateway do
   end
 
   describe "#semantic_query" do
-    
+
     before do
       @response = @gateway.semantic_query('[[place::123]]', ['mainlabel=Page'])
     end
@@ -630,9 +634,9 @@ describe MediaWiki::Gateway do
     it "should return an HTML string" do
       @response.should == 'Sample <B>HTML</B> content.'
     end
-    
+
   end
-  
+
   describe "#import" do
 
     def import_file
@@ -640,7 +644,7 @@ describe MediaWiki::Gateway do
     end
 
     describe "when not logged in" do
-      
+
       it "should raise an error" do
         lambda do
           @gateway.import(import_file)
@@ -650,7 +654,7 @@ describe MediaWiki::Gateway do
     end
 
     describe "when logged in as admin" do
-    
+
       def import_response
         <<-XML
           <api>
@@ -661,22 +665,22 @@ describe MediaWiki::Gateway do
           </api>
         XML
       end
-      
+
       before do
         @gateway.login("atlasmw", "wombat")
         @page = @gateway.import(import_file)
       end
-      
+
       it "should import content" do
         Hash.from_xml(@page.to_s) == Hash.from_xml(import_response)
       end
-      
+
     end
-    
+
   end
-  
+
   describe "#export" do
-    
+
     def export_response
       <<-XML
         <mediawiki>
@@ -691,19 +695,19 @@ describe MediaWiki::Gateway do
         </mediawiki>
       XML
     end
-    
+
     before do
       @page = @gateway.export("Main Page")
     end
-    
+
     it "should return export data for the page" do
       Hash.from_xml(@page.to_s).should == Hash.from_xml(export_response)
     end
-  
+
   end
 
   describe "#namespaces_by_prefix" do
-    
+
     before do
       $fake_media_wiki.reset
       @namespaces = @gateway.send :namespaces_by_prefix
@@ -716,7 +720,7 @@ describe MediaWiki::Gateway do
   end
 
   describe "#extensions" do
-    
+
     before do
       $fake_media_wiki.reset
       @extensions = @gateway.extensions
@@ -733,14 +737,14 @@ describe MediaWiki::Gateway do
     form_data['createonly'] = "" unless options[:overwrite]
     @gateway.send(:make_api_request, form_data)
   end
-  
+
   describe "#user_rights" do
-    
+
     describe "when logged in as admin" do
       before do
         @gateway.login("atlasmw", "wombat")
       end
-      
+
       describe "requesting a userrights token for an existing user" do
 
         before do
@@ -752,7 +756,7 @@ describe MediaWiki::Gateway do
           @token.should_not == "+\\"
         end
       end
-      
+
       describe "requesting a userrights token for an nonexistant user" do
 
         it "should raise an error" do
@@ -761,9 +765,9 @@ describe MediaWiki::Gateway do
           end.should raise_error(MediaWiki::APIError)
         end
       end
-      
+
       describe "changing a user's groups with a valid token" do
-        
+
         def userrights_response
           <<-XML
             <api>
@@ -778,18 +782,18 @@ describe MediaWiki::Gateway do
             </api>
           XML
         end
-        
+
         before do
           @token = @gateway.send(:get_userrights_token, 'nonadmin')
           @result = @gateway.send(:userrights, 'nonadmin', @token, 'newgroup', 'oldgroup', 'because I can')
         end
-        
+
         it "should return a result matching the input" do
           Hash.from_xml(@result.to_s).should == Hash.from_xml(userrights_response)
         end
-        
+
       end
-      
+
     end
   end
 

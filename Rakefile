@@ -1,7 +1,7 @@
 require 'thread'
 require 'rake'
-require 'rake/gempackagetask'
-require 'rake/rdoctask'
+require "rubygems/package_task"
+require 'rdoc/task'
 require 'spec/rake/spectask'
 require 'lib/media_wiki'
 
@@ -9,7 +9,7 @@ task :default => ['spec']
 
 desc 'generate API documentation to doc/index.html'
 
-Rake::RDocTask.new do |rd|
+RDoc::Task.new do |rd|
   rd.rdoc_dir = 'doc'
   rd.main = 'README'
   rd.rdoc_files.include "README", "lib/media_wiki/**/*\.rb", "script/**/*\.rb"
@@ -42,6 +42,11 @@ begin
     gemspec.add_development_dependency 'jeweler'
     gemspec.add_development_dependency 'sham_rack'
     gemspec.add_development_dependency 'rr'
+    gemspec.add_development_dependency 'rcov'
+    gemspec.add_development_dependency 'rspec', '~> 1.3'
+    gemspec.add_development_dependency 'ruby-debug'
+    gemspec.add_development_dependency 'sinatra'
+    gemspec.add_development_dependency 'activemodel'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
