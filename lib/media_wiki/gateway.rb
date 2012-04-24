@@ -19,22 +19,24 @@ module MediaWiki
     # [:bot] When set to true, executes API queries with the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
     # [:ignorewarnings] Log API warnings and invalid page titles, instead throwing MediaWiki::APIError
     # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
+    # [:logdevice] Log device to use.  Defaults to STDERR    
     # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
     # [:retry_count] Number of times to try before giving up if MediaWiki returns 503 Service Unavailable, defaults to 3 (original request plus two retries).
     # [:retry_delay] Seconds to wait before retry if MediaWiki returns 503 Service Unavailable, defaults to 10 seconds.
     def initialize(url, options={})
       default_options = {
+        :bot => false,
         :limit => 500,
+        :logdevice => STDERR,
         :loglevel => Logger::WARN,
         :maxlag => 5,
         :retry_count => 3,
         :retry_delay => 10,
-        :bot => false
       }
       @options = default_options.merge(options)
       @wiki_url = url
-      @log = Logger.new(STDERR)
+      @log = Logger.new(@options[:logdevice])
       @log.level = @options[:loglevel]
       @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}" }
       @cookies = {}
