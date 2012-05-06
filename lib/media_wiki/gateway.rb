@@ -275,6 +275,28 @@ module MediaWiki
       titles
     end
 
+    # Get a list of pages that are members of a category
+    #
+    # [category] Name of the category
+    # [options] Optional hash of additional options. See http://www.mediawiki.org/wiki/API:Categorymembers
+    #
+    # Returns array of page titles (empty if no matches)
+    def list_members(category, options = {})
+      titles = []
+      apfrom = nil
+      begin
+        form_data = options.merge(
+          {'action' => 'query',
+          'list' => 'categorymembers',
+          'apfrom' => apfrom,
+          'cmtitle' => category,
+          'cmlimit' => @options[:limit]})
+        res, apfrom = make_api_request(form_data, '//query-continue/categorymembers/@apfrom')
+        titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
+      end while apfrom
+      titles
+    end
+
     # Get a list of pages that link to a target page
     #
     # [title] Link target page
