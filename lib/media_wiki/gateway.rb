@@ -293,7 +293,6 @@ module MediaWiki
           'cmlimit' => @options[:limit]})
         res, apfrom = make_api_request(form_data, '//query-continue/categorymembers/@apfrom')
         titles += REXML::XPath.match(res, "//cm").map { |x| x.attributes["title"] }
-        puts titles, res
       end while apfrom
       titles
     end
