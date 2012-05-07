@@ -281,7 +281,7 @@ module MediaWiki
     # [options] Optional hash of additional options. See http://www.mediawiki.org/wiki/API:Categorymembers
     #
     # Returns array of page titles (empty if no matches)
-    def list_members(category, options = {})
+    def category_members(category, options = {})
       titles = []
       apfrom = nil
       begin
