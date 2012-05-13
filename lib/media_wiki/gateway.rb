@@ -369,6 +369,31 @@ module MediaWiki
       end while aufrom
       names
     end
+    
+    # Get user contributions
+    #
+    # user: The user name
+    # count: Maximum number of contributions to retreive, or nil for all
+    # [options] Optional hash of options, eg. { 'ucnamespace' => 4 }.  See http://www.mediawiki.org/wiki/API:Usercontribs
+    #
+    # Returns array of hashes containing the "item" attributes defined here: http://www.mediawiki.org/wiki/API:Usercontribs
+    def contributions(user, count = nil, options = {})
+      result = []
+      ucstart = nil
+      begin
+        limit = [count, @options[:limit]].compact.min
+        form_data = options.merge(
+          {'action' => 'query',
+          'list' => 'usercontribs',
+          'ucuser' => user,
+          'ucstart' => ucstart,
+          'uclimit' => limit})
+        res, ucstart = make_api_request(form_data, '//query-continue/usercontribs/@ucstart')
+        result += REXML::XPath.match(res, "//item").map { |x| x.attributes.inject({}) { |hash, data| hash[data.first] = data.last; hash } }
+        break if count and result.size >= count
+      end while ucstart
+      result
+    end
 
     # Upload a file, or get the status of pending uploads. Several
     # methods are available:
