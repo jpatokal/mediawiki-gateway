@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "mediawiki-gateway"
-  s.version = "0.4.5"
+  s.version = "0.5.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jani Patokallio"]
-  s.date = "2012-04-18"
+  s.date = "2012-06-01"
   s.description = ""
   s.email = "jpatokal@iki.fi"
   s.extra_rdoc_files = [
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/jpatokal/mediawiki-gateway"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.10"
+  s.rubygems_version = "1.8.24"
   s.summary = "Connect to the mediawiki API"
 
   if s.respond_to? :specification_version then
