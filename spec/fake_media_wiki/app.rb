@@ -8,7 +8,7 @@ require 'spec/fake_media_wiki/query_handling'
 module FakeMediaWiki
 
   class App < Sinatra::Base
-  
+
     set :show_exceptions, false
     set :environment, :development
 
@@ -16,7 +16,7 @@ module FakeMediaWiki
       reset
       super
     end
-  
+
     def reset
       @sequence_id = 0
 
@@ -24,7 +24,7 @@ module FakeMediaWiki
       add_user('atlasmw', 'wombat', 'local', true)
       add_user('nonadmin', 'sekrit', 'local', false)
       add_user('ldapuser', 'ldappass', 'ldapdomain', false)
-      
+
       @pages = ApiPages.new
       @pages.add('Main Page', 'Content')
       @pages.add('Main 2', 'Content')
@@ -37,7 +37,7 @@ module FakeMediaWiki
       @pages.add('Redirect', '#REDIRECT', true)
 
       @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2' }
-      
+
       @logged_in_users = []
     end
 
@@ -54,14 +54,22 @@ module FakeMediaWiki
         :is_admin => is_admin
       }
     end
-    
+
     def logged_in(username)
       @logged_in_users.include?(username)
     end
 
+    get "/w/api.php" do
+      handle_request if params[:action] == 'query'
+    end
+
     post "/w/api.php" do
+      handle_request
+    end
+
+    def handle_request
       begin
-        halt(503, "Maxlag exceeded") if params[:maxlag].to_i < 0 
+        halt(503, "Maxlag exceeded") if params[:maxlag].to_i < 0
 
         @token = ApiToken.new(params)
         action = params[:action]
@@ -69,7 +77,7 @@ module FakeMediaWiki
           content_type "application/xml"
           return send(action)
         end
-  
+
         halt(404, "Page not found")
       rescue FakeMediaWiki::ApiError => e
         return api_error_response(e.code, e.message)
@@ -127,24 +135,24 @@ module FakeMediaWiki
 
     def undelete
       @token.validate_admin
-      
+
       title = params[:title]
       revisions = @pages.undelete(title)
       api_response do |_|
         _.undelete(nil, {:title => title, :revisions => revisions})
       end
     end
-  
+
     def upload
       @token.validate
-      
+
       filename = params[:filename]
       @pages.add(filename, params[:file])
       api_response do |_|
         _.upload(nil, {:filename => filename, :result => "Success"})
       end
     end
-  
+
     def parse
       page = @pages.get(params[:page])
       api_response do |_|
@@ -161,7 +169,7 @@ module FakeMediaWiki
         end
       end
     end
-    
+
     include QueryHandling
 
     def api_response
@@ -203,7 +211,7 @@ module FakeMediaWiki
         _.page(nil, attributes)
       end
     end
-    
+
     def get_revisions
       query_pages do |_, title, page|
         if page.nil?
@@ -224,11 +232,11 @@ module FakeMediaWiki
       username = request.cookies['login']
       @users[username] if logged_in(username)
     end
-    
+
     def requested_page_titles
       params[:titles].split("|")
     end
-    
+
     def get_token
       token_str = @token.request(user)
       query_pages do |_, title, page|
@@ -255,9 +263,9 @@ module FakeMediaWiki
     def get_userrights_token(username)
       @token.set_type 'userrights'
       token_str = @token.request(user)
-      
+
       user_to_manage = @users[username]
-      
+
       if user_to_manage
         api_response do |_|
           _.query do
@@ -271,7 +279,7 @@ module FakeMediaWiki
           _.error(nil, { :code => 'nosuchuser', :info => "The user '#{params[:ususer].to_s}' does not exist"} )
         end
       end
-    end    
+    end
 
     def login
       user = @users[params[:lgname]]
@@ -312,11 +320,11 @@ module FakeMediaWiki
   end
 
   class WikiPage
-    
+
     def initialize(options={})
       options.each { |k, v| send("#{k}=", v) }
     end
-    
+
     attr_accessor :content, :author
 
   end

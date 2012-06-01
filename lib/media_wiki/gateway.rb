@@ -6,10 +6,10 @@ require 'uri'
 require 'active_support'
 
 module MediaWiki
-  
+
   class Gateway
     attr_reader :log
-    
+
     # Set up a MediaWiki::Gateway for a given MediaWiki installation
     #
     # [url] Path to API of target MediaWiki (eg. "http://en.wikipedia.org/w/api.php")
@@ -19,7 +19,7 @@ module MediaWiki
     # [:bot] When set to true, executes API queries with the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
     # [:ignorewarnings] Log API warnings and invalid page titles, instead throwing MediaWiki::APIError
     # [:limit] Maximum number of results returned per search (see http://www.mediawiki.org/wiki/API:Query_-_Lists#Limits), defaults to the MediaWiki default of 500.
-    # [:logdevice] Log device to use.  Defaults to STDERR    
+    # [:logdevice] Log device to use.  Defaults to STDERR
     # [:loglevel] Log level to use, defaults to Logger::WARN.  Set to Logger::DEBUG to dump every request and response to the log.
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
     # [:retry_count] Number of times to try before giving up if MediaWiki returns 503 Service Unavailable, defaults to 3 (original request plus two retries).
@@ -41,9 +41,9 @@ module MediaWiki
       @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}" }
       @cookies = {}
     end
-    
+
     attr_reader :base_url, :cookies
-    
+
     # Login to MediaWiki
     #
     # [username] Username
@@ -57,7 +57,7 @@ module MediaWiki
       @password = password
       @username = username
     end
-    
+
     # Fetch MediaWiki page in MediaWiki format.  Does not follow redirects.
     #
     # [page_title] Page title to fetch
@@ -93,7 +93,7 @@ module MediaWiki
     # * [:linkbase] supply a String to prefix all internal (relative) links with. '/wiki/' is assumed to be the base of a relative link
     # * [:noeditsections] strips all edit-links if set to +true+
     # * [:noimages] strips all +img+ tags from the rendered text if set to +true+
-    # 
+    #
     # Returns rendered page as string, or nil if the page does not exist
     def render(page_title, options = {})
       form_data = {'action' => 'parse', 'page' => page_title}
@@ -120,7 +120,7 @@ module MediaWiki
       end
       rendered
     end
-        
+
     # Create a new page, or overwrite an existing one
     #
     # [title] Page title to create or overwrite, string
@@ -222,11 +222,11 @@ module MediaWiki
     def move(from, to, options={})
       valid_options = %w(movesubpages movetalk noredirect reason watch unwatch)
       options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
-      
+
       form_data = options.merge({'action' => 'move', 'from' => from, 'to' => to, 'token' => get_token('move', from)})
       make_api_request(form_data)
     end
-    
+
     # Delete one page. (MediaWiki API does not support deleting multiple pages at a time.)
     #
     # [title] Title of page to delete
@@ -350,11 +350,11 @@ module MediaWiki
       titles
     end
 
-    # Upload a file, or get the status of pending uploads. Several 
+    # Upload a file, or get the status of pending uploads. Several
     # methods are available:
     #
     # * Upload file contents directly.
-    # * Have the MediaWiki server fetch a file from a URL, using the 
+    # * Have the MediaWiki server fetch a file from a URL, using the
     #   "url" parameter
     #
     # Requires Mediawiki 1.16+
@@ -362,8 +362,8 @@ module MediaWiki
     # Arguments:
     # * [path] Path to file to upload. Set to nil if uploading from URL.
     # * [options] Hash of additional options
-    # 
-    # Note that queries using session keys must be done in the same login 
+    #
+    # Note that queries using session keys must be done in the same login
     # session as the query that originally returned the key (i.e. do not
     # log out and then log back in).
     #
@@ -379,7 +379,7 @@ module MediaWiki
     # * :description     - Description of this file. Used as 'text'.
     # * :target          - Target filename, same as 'filename'.
     # * :summary         - Edit summary for history. Used as 'comment'. Also used as 'text' if neither it or :description is specified.
-    # 
+    #
     # Examples:
     #   mw.upload('/path/to/local/file.jpg', 'filename' => "RemoteFile.jpg")
     #   mw.upload(nil, 'filename' => "RemoteFile2.jpg", 'url' => 'http://remote.com/server/file.jpg')
@@ -428,7 +428,7 @@ module MediaWiki
       page = make_api_request(form_data).first.elements["query/pages/page"]
       !!(valid_page?(page) and page.attributes["redirect"])
     end
-    
+
     # Requests image info from MediaWiki. Follows redirects.
     #
     # _file_name_or_page_id_ should be either:
@@ -485,12 +485,12 @@ module MediaWiki
       end
     end
 
-    # Download _file_name_ (without "File:" or "Image:" prefix). Returns file contents. All options are passed to 
+    # Download _file_name_ (without "File:" or "Image:" prefix). Returns file contents. All options are passed to
     # #image_info however options['iiprop'] is forced to url. You can still
     # set other options to control what file you want to download.
     def download(file_name, options={})
       options['iiprop'] = 'url'
-  
+
       attributes = image_info(file_name, options)
       if attributes
         RestClient.get attributes['url']
@@ -503,7 +503,7 @@ module MediaWiki
     #
     # [xml] String or array of page names to fetch
     #
-    # Returns XML array <api><import><page/><page/>... 
+    # Returns XML array <api><import><page/><page/>...
     # <page revisions="1"> (or more) means successfully imported
     # <page revisions="0"> means duplicate, not imported
     def import(xmlfile)
@@ -549,7 +549,7 @@ module MediaWiki
         extensions
       end
     end
-    
+
     # Execute Semantic Mediawiki query
     #
     # [query] Semantic Mediawiki query
@@ -562,7 +562,7 @@ module MediaWiki
       xml, dummy = make_api_request(form_data)
       return xml.elements["parse/text"].text
     end
-    
+
     # Set groups for a user
     #
     # [user] Username of user to modify
@@ -623,10 +623,10 @@ module MediaWiki
           raise Unauthorized.new "User '#{@username}' is not permitted to perform this operation: get_userrights_token"
         end
       end
-      
+
       token
     end
-    
+
     def userrights(user, token, groups_to_add, groups_to_remove, reason)
       # groups_to_add and groups_to_remove can be a string or an array. Turn them into MediaWiki's pipe-delimited list format.
       if groups_to_add.is_a? Array
@@ -644,7 +644,7 @@ module MediaWiki
       res, dummy = make_api_request(form_data)
       res
     end
-    
+
     # Make generic request to API
     #
     # [form_data] hash or string of attributes to post
@@ -658,15 +658,14 @@ module MediaWiki
         form_data['maxlag'] = @options[:maxlag]
         form_data['bot']="1" if @options[:bot]
       end
-      log.debug("REQ: #{form_data.inspect}, #{@cookies.inspect}")
-      RestClient.post(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
+      http_send(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
         if response.code == 503 and retry_count < @options[:retry_count]
           log.warn("503 Service Unavailable: #{response.body}.  Retry in #{@options[:retry_delay]} seconds.")
           sleep @options[:retry_delay]
           make_api_request(form_data, continue_xpath, retry_count + 1)
         end
         # Check response for errors and return XML
-        raise MediaWiki::Exception.new "Bad response: #{response}" unless response.code >= 200 and response.code < 300 
+        raise MediaWiki::Exception.new "Bad response: #{response}" unless response.code >= 200 and response.code < 300
         doc = get_response(response.dup)
         if(form_data['action'] == 'login')
           login_result = doc.elements["login"].attributes['result']
@@ -681,7 +680,19 @@ module MediaWiki
         return [doc, continue]
       end
     end
-    
+
+    # Execute the HTTP request using either GET or POST as appropriate
+    def http_send url, form_data, headers, &block
+      if form_data['action'] == 'query'
+        log.debug("GET: #{form_data.inspect}, #{@cookies.inspect}")
+        headers[:params] = form_data
+        RestClient.get url, headers, &block
+      else
+        log.debug("POST: #{form_data.inspect}, #{@cookies.inspect}")
+        RestClient.post url, form_data, headers, &block
+      end
+    end
+
     # Get API XML response
     # If there are errors or warnings, raise APIError
     # Otherwise return XML root
@@ -704,7 +715,7 @@ module MediaWiki
       end
       doc
     end
-    
+
     def valid_page?(page)
       return false unless page
       return false if page.attributes["missing"]
@@ -714,7 +725,7 @@ module MediaWiki
         true
       end
     end
-    
+
     def warning(msg)
       if @options[:ignorewarnings]
         log.warn(msg)
