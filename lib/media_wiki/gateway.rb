@@ -4,6 +4,9 @@ require 'rest_client'
 require 'rexml/document'
 require 'uri'
 require 'active_support'
+require 'json'
+require 'open-uri'
+
 
 module MediaWiki
   
@@ -136,6 +139,104 @@ module MediaWiki
       form_data['createonly'] = "" unless options[:overwrite]
       form_data['section'] = options[:section].to_s if options[:section]
       make_api_request(form_data)
+    end
+
+    # Fetches recent changes
+    #
+    # 
+    # [options] Hash of additional options. This hash is passed as in, except for some type conversions
+    #
+    # Options:
+    # * [:rcstart] The time to start listing from
+    # * [:rcend] The time to end listing at
+    # * [:rcdir] Direction to list in
+    #    * older: List newest changes first (default). Note] rcstart has to be later than rcend.
+    #    * newer: List oldest changes first. Note] rcstart has to be before rcend.
+    # * [:rclimit] Maximum amount of changes to list (10 by default)
+    # * [:rcnamespace] Only list changes in these namespaces
+    # * [:rcuser] Only list changes made by this user
+    # * [:rcexcludeuser] Do not list changes made by this user
+    # * [:rctype] Only list certain types of changes
+    #    * edit: Regular page edits
+    #    * new: Page creations
+    #    * log: Log entries
+    # * [:rcshow] Only list items that meet these criteria. Conflicting options (such as minor and !minor) cannot be used together
+    #    * minor: Only list minor edits
+    #    * !minor: Don't list minor edits
+    #    * bot: Only list bot edits
+    #    * !bot: Don't list bot edits
+    #    * anon: Only list edits by anonymous users
+    #    * !anon: Only list edits by registered users
+    #    * redirect: Only list edits to pages that are currently redirects
+    #    * !redirect: Only list edits to pages that currently aren't redirects
+    #    * patrolled: Only list edits flagged as patrolled. Only available to users with the patrol right
+    #    * !patrolled: Only list edits not flagged as patrolled. Only available to users with the patrol right
+    # * [:rcprop] Which properties to get
+    #    * user: The user who made the change
+    #    * comment: The edit/log comment
+    #    * timestamp: The time and date of the change (default)
+    #    * title: The title the change was made to (default)
+    #    * ids: The page ID, revision ID, previous revision ID and RCID (used for patrolling) (default)
+    #    * sizes: The page size before and after the change
+    #    * redirect: Whether the changed page is currently a redirect
+    #    * patrolled: Whether the change is patrolled. Only available to users with the patrol right
+    #    * loginfo: If the change was a log event, add the logid, logtype and logaction fields and the log parameters (since >=1.13.0)
+    #    * flags:
+    #      * new: A new page was created
+    #      * minor: The change was a minor edit
+    #      * bot: The change was a bot edit
+
+    def recent_changes(options={})
+      options.merge!({'action' => 'query', 'list'=>'recentchanges'})
+
+      options['rcstart'] = options['rcstart'].to_i if !options['rcstart'].nil? and options['rcstart'].respond_to?(:to_i)
+      options['rcend']   = options['rcend'].to_i   if !options['rcend'].nil?   and options['rcend'].respond_to?(:to_i)
+      results = make_api_request(options)
+      REXML::XPath.match(results, "/api/query/recentchanges/rc").map{|x| x.attributes}
+
+    end
+
+    #This function returns the list of all properties in the Property namespace
+    def list_semantic_properties
+      properties = []
+      list("Property:").each do |prop|
+        ns, page = prop.split(':')
+        properties << page
+      end
+      properties
+    end
+
+   #This returns the properties for the given page. A hash will be returned.
+   def semantic_properties(page_name)
+     return nil if @options[:index_page].nil? or @options[:index_page] == ''
+
+     encoded_page = URI.escape("[[#{page_name}]]", Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")).gsub('%', '-')
+
+     properties = list_semantic_properties.collect{|i| URI.escape(i, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")).gsub('%', '-') }
+     
+     uri = URI.parse(@options[:index_page])
+     ask_query = "#{encoded_page}/-3F#{properties.join('/-3F')}/limit%3D1/format%3Djson"
+
+     uri.query = "title=Special:Ask&x=#{URI.escape(ask_query, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"
+    
+     JSON.parse(open(uri.to_s).read)
+   end
+
+
+    # Fetches pages that the given page is embeded in.
+    #
+    #  * eititle: List pages including this title. The title need not exist
+    #      * einamespace: Only list pages in these namespaces
+    #      * eifilterredir: How to filter redirects
+    #            o all: List all pages regardless of their redirect flag (default)
+    #            o redirects: Only list redirects
+    #            o nonredirects: Don't list redirects
+    #      * eilimit: Maximum amount of pages to list (10 by default)
+    #      * eicontinue: Used to continue a previous request
+    def embeded_in(page_title,options={})
+      options.merge!({'action' => 'query', 'list'=>'embeddedin', 'eititle'=>page_title})
+      results = make_api_request(options)
+      REXML::XPath.match(results, "/api/query/embeddedin/ei").map{|x| x.attributes}
     end
 
     # Edit page
@@ -561,6 +662,11 @@ module MediaWiki
       form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
       xml, dummy = make_api_request(form_data)
       return xml.elements["parse/text"].text
+    end
+
+
+    def semantic_properties
+       list "Property:"
     end
     
     # Set groups for a user
