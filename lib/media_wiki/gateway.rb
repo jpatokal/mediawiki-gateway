@@ -557,10 +557,21 @@ module MediaWiki
     #
     # Returns result as an HTML string
     def semantic_query(query, params = [])
-      params << "format=list"
-      form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
-      xml, dummy = make_api_request(form_data)
-      return xml.elements["parse/text"].text
+			if extensions.include? 'Semantic MediaWiki'
+				smw_version = extensions['Semantic MediaWiki'].to_f
+				if smw_version >= 1.7
+					form_data = { 'action' => 'ask', 'query' => "#{query}|#{params.join('|')}"}	
+					xml, dummy = make_api_request(form_data)
+					return xml
+				else
+					params << "format=list"
+					form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
+					xml, dummy = make_api_request(form_data)
+					return xml.elements["parse/text"].text
+				end
+			else
+				raise MediaWiki::Exception.new "Semantic MediaWiki extension not installed."
+			end
     end
 
     # Set groups for a user
