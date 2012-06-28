@@ -38,7 +38,7 @@ module MediaWiki
       @wiki_url = url
       @log = Logger.new(@options[:logdevice])
       @log.level = @options[:loglevel]
-      @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}" }
+      @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}", "Accept-Encoding" => "gzip" }
       @cookies = {}
     end
 
@@ -560,7 +560,7 @@ module MediaWiki
 			if extensions.include? 'Semantic MediaWiki'
 				smw_version = extensions['Semantic MediaWiki'].to_f
 				if smw_version >= 1.7
-					form_data = { 'action' => 'ask', 'query' => "#{query}|#{params.join('|')}"}	
+					form_data = { 'action' => 'ask', 'query' => "#{query}|#{params.join('|')}"}
 					xml, dummy = make_api_request(form_data)
 					return xml
 				else
