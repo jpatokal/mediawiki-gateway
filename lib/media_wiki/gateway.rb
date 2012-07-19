@@ -664,7 +664,7 @@ module MediaWiki
     # Returns the REXML::Element object as result
     #
     # Example:
-    #   def create_at(pagename)
+    #   def creation_time(pagename)
     #     res = bot.custom_query(:prop => :revisions,
     #                            :titles => pagename,
     #                            :rvprop => :timestamp,
