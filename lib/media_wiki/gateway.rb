@@ -350,6 +350,26 @@ module MediaWiki
       titles
     end
 
+    # Get a list of users
+    #
+    # [options] Optional hash of options, eg. { 'augroup' => 'sysop' }.  See http://www.mediawiki.org/wiki/API:Allusers
+    #
+    # Returns array of user names (empty if no matches)
+    def users(options = {})
+      names = []
+      aufrom = nil
+      begin
+        form_data = options.merge(
+          {'action' => 'query',
+          'list' => 'allusers',
+          'aufrom' => aufrom,
+          'aulimit' => @options[:limit]})
+        res, aufrom = make_api_request(form_data, '//query-continue/allusers/@aufrom')
+        names += REXML::XPath.match(res, "//u").map { |x| x.attributes["name"] }
+      end while aufrom
+      names
+    end
+
     # Upload a file, or get the status of pending uploads. Several
     # methods are available:
     #
