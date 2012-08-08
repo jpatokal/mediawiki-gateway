@@ -369,7 +369,7 @@ module MediaWiki
       end while aufrom
       names
     end
-    
+
     # Get user contributions
     #
     # user: The user name
@@ -595,6 +595,19 @@ module MediaWiki
       end
     end
 
+    # Sends e-mail to a user
+    #
+    # [user] Username to send mail to (name only: eg. 'Bob', not 'User:Bob')
+    # [subject] Subject of message
+    # [content] Content of message
+    #
+    # Will raise a 'noemail' APIError if the target user does not have a confirmed email address, see http://www.mediawiki.org/wiki/API:E-mail for details.
+    def email_user(user, subject, text)
+      form_data = { 'action' => 'emailuser', 'target' => user, 'subject' => subject, 'text' => text, 'token' => get_token('email', "User:" + user) }
+      res, dummy = make_api_request(form_data)
+      res.elements['emailuser'].attributes['result'] == 'Success'
+    end
+
     # Execute Semantic Mediawiki query
     #
     # [query] Semantic Mediawiki query
@@ -644,7 +657,7 @@ module MediaWiki
 
     private
 
-    # Fetch token (type 'delete', 'edit', 'import', 'move', 'protect')
+    # Fetch token (type 'delete', 'edit', 'email', 'import', 'move', 'protect')
     def get_token(type, page_titles)
       form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
       res, dummy = make_api_request(form_data)
