@@ -22,11 +22,15 @@ Simple page creation script:
  mw.login('RubyBot', 'pa$$w0rd')
  mw.create('PageTitle', 'Hello world!', :summary => 'My first page')
 
+== Status
+
+This gem is no longer in active development.  Bugs will be fixed if reported, and pull requests that add new features are more than welcome, but asking for new features is unlikely to make them materialize out of thin air.
+
 == Credits
 
 Maintained by Jani Patokallio.
 
 Thanks to:
 * John Carney, Mike Williams, Daniel Heath and the rest of the Lonely Planet Atlas team.
-* Github users for code contributions, see https://github.com/jpatokal/mediawiki-gateway/pulls 
+* Github users for code contributions, see https://github.com/jpatokal/mediawiki-gateway/pulls
 
