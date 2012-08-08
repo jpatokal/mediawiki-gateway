@@ -765,14 +765,8 @@ module MediaWiki
 
     # Execute the HTTP request using either GET or POST as appropriate
     def http_send url, form_data, headers, &block
-      if form_data['action'] == 'query'
-        log.debug("GET: #{form_data.inspect}, #{@cookies.inspect}")
-        headers[:params] = form_data
-        RestClient.get url, headers, &block
-      else
-        log.debug("POST: #{form_data.inspect}, #{@cookies.inspect}")
-        RestClient.post url, form_data, headers, &block
-      end
+			log.debug("POST: #{form_data.inspect}, #{@cookies.inspect}")
+			RestClient.post url, form_data, headers, &block
     end
 
     # Get API XML response
