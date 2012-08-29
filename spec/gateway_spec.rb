@@ -2,11 +2,11 @@ require 'spec_helper'
 
 # Kickstart fake media wiki app
 require 'sham_rack'
-require 'spec/fake_media_wiki/app'
+require_relative 'fake_media_wiki/app'
 $fake_media_wiki = FakeMediaWiki::App.new
 unless $fake_media_wiki.instance_of? FakeMediaWiki::App
   # This is a horrible workaround for some bizarre conflict with later versions of ShamRack/Rack/Sinatra/Builder/...
-  $fake_media_wiki = $fake_media_wiki.instance_eval('@app').instance_eval('@app').app.app.app.app.app
+  $fake_media_wiki = $fake_media_wiki.instance_eval('app').instance_eval('@app').instance_eval('@app').app.app.app.app.app
 end
 ShamRack.mount($fake_media_wiki, 'dummy-wiki.example')
 

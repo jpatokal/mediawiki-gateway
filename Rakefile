@@ -3,7 +3,7 @@ require 'rake'
 require "rubygems/package_task"
 require 'rdoc/task'
 require 'spec/rake/spectask'
-require 'lib/media_wiki'
+require_relative 'lib/media_wiki'
 
 task :default => ['spec']
 
@@ -22,8 +22,6 @@ desc "Run all specs"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_files = FileList['spec/**/*.rb']
   t.spec_opts = ['--debugger']
-  t.rcov = true
-  t.rcov_opts = ['--exclude', 'spec,gems']
 end
 
 
@@ -42,7 +40,7 @@ begin
     gemspec.add_development_dependency 'jeweler'
     gemspec.add_development_dependency 'sham_rack'
     gemspec.add_development_dependency 'rr'
-    gemspec.add_development_dependency 'rcov'
+    gemspec.add_development_dependency 'simplecov'
     gemspec.add_development_dependency 'rspec', '~> 1.3'
     gemspec.add_development_dependency 'ruby-debug'
     gemspec.add_development_dependency 'sinatra'
