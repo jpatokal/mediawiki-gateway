@@ -33,6 +33,7 @@ module MediaWiki
         :maxlag => 5,
         :retry_count => 3,
         :retry_delay => 10,
+        :max_results => 500
       }
       @options = default_options.merge(options)
       @wiki_url = url
@@ -325,11 +326,12 @@ module MediaWiki
     # [key] Search key
     # [namespaces] Array of namespace names to search (defaults to main only)
     # [limit] Maximum number of hits to ask for (defaults to 500; note that Wikimedia Foundation wikis allow only 50 for normal users)
+    # [max_results] Maximum total number of results to return
     #
     # Returns array of page titles (empty if no matches)
-    def search(key, namespaces=nil, limit=@options[:limit])
+    def search(key, namespaces=nil, limit=@options[:limit], max_results=@options[:max_results])
       titles = []
-      offset = nil
+      offset = 0
       in_progress = true
 
       form_data = { 'action' => 'query',
@@ -344,9 +346,10 @@ module MediaWiki
       end
       begin
         form_data['sroffset'] = offset if offset
+        form_data['srlimit'] = [limit, max_results - offset].min
         res, offset = make_api_request(form_data, '//query-continue/search/@sroffset')
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
-      end while offset
+      end while offset && offset < max_results
       titles
     end
 

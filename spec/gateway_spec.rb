@@ -610,6 +610,17 @@ describe MediaWiki::Gateway do
 
     end
 
+    describe "with maximum number of results" do
+
+      before do
+        @search = @gateway.search("KEY", nil, 2, 1)
+      end
+
+      it "should return at most the maximum number of results asked" do
+        @search.should have(1).string
+      end
+    end
+
   end
 
   describe "#namespaces_by_prefix" do

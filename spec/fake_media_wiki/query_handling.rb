@@ -76,7 +76,7 @@ module FakeMediaWiki
         _.query do
           _.search do
             namespaces = params[:srnamespace] ? params[:srnamespace].split('|') : [ "0" ]
-            @pages.search(params[:srsearch], namespaces).each do |key, page|
+            @pages.search(params[:srsearch], namespaces).first(params[:srlimit].to_i).each do |key, page|
               _.p(nil, { :title => page[:title], :ns => page[:namespace], :id => page[:pageid] })
             end
           end
