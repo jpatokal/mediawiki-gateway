@@ -36,7 +36,7 @@ module FakeMediaWiki
       @pages.add('Foopage', 'Content')
       @pages.add('Redirect', '#REDIRECT', true)
 
-      @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2' }
+      @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2', 'Semantic MediaWiki' => '1.5' }
 
       @logged_in_users = []
     end
