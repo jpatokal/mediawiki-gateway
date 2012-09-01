@@ -346,10 +346,10 @@ module MediaWiki
       end
       begin
         form_data['sroffset'] = offset if offset
-        form_data['srlimit'] = [limit, max_results - offset].min
+        form_data['srlimit'] = [limit, max_results - offset.to_i].min
         res, offset = make_api_request(form_data, '//query-continue/search/@sroffset')
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
-      end while offset && offset < max_results
+      end while offset && offset.to_i < max_results.to_i
       titles
     end
 
