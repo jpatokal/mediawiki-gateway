@@ -379,7 +379,7 @@ module MediaWiki
     # Returns array of hashes containing the "item" attributes defined here: http://www.mediawiki.org/wiki/API:Usercontribs
     def contributions(user, count = nil, options = {})
       result = []
-      ucstart = nil
+      ucstart = options[:ucstart] or nil 
       begin
         limit = [count, @options[:limit]].compact.min
         form_data = options.merge(
