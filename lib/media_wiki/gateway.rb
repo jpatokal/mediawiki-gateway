@@ -265,7 +265,6 @@ module MediaWiki
         form_data = options.merge(
           {'action' => 'query',
           'list' => 'allpages',
-          'apfrom' => apfrom,
           'apprefix' => key,
           'aplimit' => @options[:limit],
           'apnamespace' => namespace})
