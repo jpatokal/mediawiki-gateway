@@ -477,6 +477,38 @@ module MediaWiki
       !!(valid_page?(page) and page.attributes["redirect"])
     end
 
+    # Get image list for given article[s].  Follows redirects.
+    # 
+    # _article_or_pageid_ is the title or pageid of a single article
+    # _imlimit_ is the maximum number of images to return (defaults to 200)
+    #
+    # Example:
+    #   images = mw.images('Gaborone')
+    # _images_ would contain ['File:Gaborone at night.jpg', 'File:Gaborone2.png', ...]
+
+    def images(article_or_pageid, imlimit = 200)
+      form_data = {'action' => 'query', 'prop' => 'images', 'imlimit' => imlimit, 'redirects' => true}
+      case article_or_pageid
+      when Fixnum
+        form_data['pageids'] = article_or_pageid
+      else
+        form_data['titles'] = article_or_pageid
+      end
+      puts form_data.to_s
+      xml, dummy = make_api_request(form_data)
+      puts xml.to_s
+      page = xml.elements["query/pages/page"]
+      if valid_page? page
+        if xml.elements["query/redirects/r"]
+          # We're dealing with redirect here.
+          images(page.attributes["pageid"].to_i, imlimit)
+        else
+          imgs = REXML::XPath.match(page, "images/im").map { |x| x.attributes["title"] }
+        end
+      else
+        nil
+      end
+    end
     # Requests image info from MediaWiki. Follows redirects.
     #
     # _file_name_or_page_id_ should be either:
