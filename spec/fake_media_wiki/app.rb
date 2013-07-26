@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra/base'
-require 'spec/fake_media_wiki/api_pages'
-require 'spec/fake_media_wiki/query_handling'
+require_relative 'api_pages'
+require_relative 'query_handling'
 
 # A simple Rack app that stubs out a web service, for testing.
 
@@ -36,7 +36,7 @@ module FakeMediaWiki
       @pages.add('Foopage', 'Content')
       @pages.add('Redirect', '#REDIRECT', true)
 
-      @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2' }
+      @extensions = { 'FooExtension' => 'r1', 'BarExtension' => 'r2', 'Semantic MediaWiki' => '1.5' }
 
       @logged_in_users = []
     end
