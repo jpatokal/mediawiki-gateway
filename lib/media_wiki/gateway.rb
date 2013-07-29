@@ -494,9 +494,7 @@ module MediaWiki
       else
         form_data['titles'] = article_or_pageid
       end
-      puts form_data.to_s
       xml, dummy = make_api_request(form_data)
-      puts xml.to_s
       page = xml.elements["query/pages/page"]
       if valid_page? page
         if xml.elements["query/redirects/r"]

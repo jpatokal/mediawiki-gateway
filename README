@@ -7,7 +7,8 @@ A Ruby framework for MediaWiki API manipulation.  Features out of the box:
 * List, search operations work around API limits to fetch all results
 * Support for maxlag detection and automated retries on 503
 * Integrated logging
-* Tested up to MediaWiki 1.19
+* Tested up to MediaWiki 1.22
+* Should work with both Ruby 1.8 and 1.9
 
 Gem:  http://rubygems.org/gems/mediawiki-gateway
 RDoc: http://rubydoc.info/gems/mediawiki-gateway
@@ -21,6 +22,14 @@ Simple page creation script:
  mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
  mw.login('RubyBot', 'pa$$w0rd')
  mw.create('PageTitle', 'Hello world!', :summary => 'My first page')
+
+== Development environment
+
+To compile and test MediaWiki::Gateway locally, Bundler and Ruby 1.9+ are expected.
+
+ rvm install 1.9.3-p194
+ bundle install
+ bundle exec rake -T
 
 == Status
 

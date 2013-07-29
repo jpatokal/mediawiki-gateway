@@ -42,7 +42,7 @@ begin
     gemspec.add_development_dependency 'rr'
     gemspec.add_development_dependency 'simplecov'
     gemspec.add_development_dependency 'rspec', '~> 1.3'
-    gemspec.add_development_dependency 'ruby-debug'
+    gemspec.add_development_dependency 'debugger'
     gemspec.add_development_dependency 'sinatra'
     gemspec.add_development_dependency 'activemodel'
   end
