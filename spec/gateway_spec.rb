@@ -2,11 +2,11 @@ require 'spec_helper'
 
 # Kickstart fake media wiki app
 require 'sham_rack'
-require 'spec/fake_media_wiki/app'
+require_relative 'fake_media_wiki/app'
 $fake_media_wiki = FakeMediaWiki::App.new
 unless $fake_media_wiki.instance_of? FakeMediaWiki::App
   # This is a horrible workaround for some bizarre conflict with later versions of ShamRack/Rack/Sinatra/Builder/...
-  $fake_media_wiki = $fake_media_wiki.instance_eval('@app').instance_eval('@app').app.app.app.app.app
+  $fake_media_wiki = $fake_media_wiki.instance_eval('app').instance_eval('@app').instance_eval('@app').app.app.app.app.app
 end
 ShamRack.mount($fake_media_wiki, 'dummy-wiki.example')
 
@@ -321,7 +321,7 @@ describe MediaWiki::Gateway do
             <edit new='' result='Success' pageid='8' title='A New Page' oldrevid='0' newrevid='8'/>
           </api>
         XML
-        Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
+        Hash.from_xml(@page.first.to_s).should == Hash.from_xml(expected)
       end
 
     end
@@ -344,7 +344,7 @@ describe MediaWiki::Gateway do
               <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
             </api>
           XML
-          Hash.from_xml(@new_page.to_s).should == Hash.from_xml(expected)
+          Hash.from_xml(@new_page.first.to_s).should == Hash.from_xml(expected)
         end
 
       end
@@ -375,7 +375,7 @@ describe MediaWiki::Gateway do
         <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
       </api>
       XML
-      Hash.from_xml(@edit_page.to_s).should == Hash.from_xml(expected)
+      Hash.from_xml(@edit_page.first.to_s).should == Hash.from_xml(expected)
     end
 
   end
@@ -403,7 +403,7 @@ describe MediaWiki::Gateway do
             <upload result="Success" filename="sample_image.jpg"/>
          </api>
         XML
-        Hash.from_xml(@page.to_s).should == Hash.from_xml(expected)
+        Hash.from_xml(@page.first.to_s).should == Hash.from_xml(expected)
       end
 
     end
@@ -431,7 +431,7 @@ describe MediaWiki::Gateway do
         end
 
         it "should delete the page" do
-          Hash.from_xml(@page.to_s) == Hash.from_xml(delete_response)
+          Hash.from_xml(@page.first.to_s) == Hash.from_xml(delete_response)
         end
       end
 
@@ -610,6 +610,17 @@ describe MediaWiki::Gateway do
 
     end
 
+    describe "with maximum number of results" do
+
+      before do
+        @search = @gateway.search("KEY", nil, 2, 1)
+      end
+
+      it "should return at most the maximum number of results asked" do
+        @search.should have(1).string
+      end
+    end
+
   end
 
   describe "#namespaces_by_prefix" do
@@ -672,7 +683,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should import content" do
-        Hash.from_xml(@page.to_s) == Hash.from_xml(import_response)
+        Hash.from_xml(@page.first.to_s) == Hash.from_xml(import_response)
       end
 
     end
@@ -727,7 +738,7 @@ describe MediaWiki::Gateway do
     end
 
     it "should list all extensions" do
-      @extensions.should == { "FooExtension" => "r1", "BarExtension" => "r2" }
+      @extensions.should == { "FooExtension" => "r1", "BarExtension" => "r2", 'Semantic MediaWiki' => '1.5' }
     end
 
   end

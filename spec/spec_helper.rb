@@ -1,3 +1,6 @@
+require 'simplecov'  
+SimpleCov.start
+
 require 'media_wiki'
 
 require 'rr'
