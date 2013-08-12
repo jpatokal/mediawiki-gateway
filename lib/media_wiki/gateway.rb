@@ -136,7 +136,10 @@ module MediaWiki
     # * [:notminor] Mark this edit as "major" if true
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
-      form_data['bot'] = '1' if @options[:bot]
+      if @options[:bot]
+        form_data['bot'] = '1'
+        form_data['assert'] = 'bot'
+      end
       form_data['minor'] = '1' if options[:minor]
       form_data['notminor'] = '1' if options[:minor] == false or options[:notminor]
       form_data['createonly'] = "" unless options[:overwrite]
