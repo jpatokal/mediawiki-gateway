@@ -784,7 +784,7 @@ module MediaWiki
       if form_data.kind_of? Hash
         form_data['format'] = 'xml'
         form_data['maxlag'] = @options[:maxlag]
-        form_data['bot']="1" if @options[:bot]
+        form_data['bot'] = '1' if @options[:bot]
       end
       http_send(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
         if response.code == 503 and retry_count < @options[:retry_count]
