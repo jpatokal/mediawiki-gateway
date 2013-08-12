@@ -132,9 +132,13 @@ module MediaWiki
     # * [:overwrite] Allow overwriting existing pages
     # * [:summary] Edit summary for history, string
     # * [:token] Use this existing edit token instead requesting a new one (useful for bulk loads)
+    # * [:minor] Mark this edit as "minor" if true, mark this edit as "major" if false, leave major/minor status by default if not specified
+    # * [:notminor] Mark this edit as "major" if true
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
       form_data['bot'] = '1' if @options[:bot]
+      form_data['minor'] = '1' if options[:minor]
+      form_data['notminor'] = '1' if options[:minor] == false or options[:notminor]
       form_data['createonly'] = "" unless options[:overwrite]
       form_data['section'] = options[:section].to_s if options[:section]
       make_api_request(form_data)
