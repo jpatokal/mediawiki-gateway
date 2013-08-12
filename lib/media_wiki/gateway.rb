@@ -134,6 +134,7 @@ module MediaWiki
     # * [:token] Use this existing edit token instead requesting a new one (useful for bulk loads)
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
+      form_data['bot'] = '1' if @options[:bot]
       form_data['createonly'] = "" unless options[:overwrite]
       form_data['section'] = options[:section].to_s if options[:section]
       make_api_request(form_data)
@@ -784,7 +785,6 @@ module MediaWiki
       if form_data.kind_of? Hash
         form_data['format'] = 'xml'
         form_data['maxlag'] = @options[:maxlag]
-        form_data['bot'] = '1' if @options[:bot]
       end
       http_send(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
         if response.code == 503 and retry_count < @options[:retry_count]
