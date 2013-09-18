@@ -764,6 +764,28 @@ describe MediaWiki::Gateway do
         XML
 
         Hash.from_xml(@gateway.create_account({ 'name' => 'FooBar', 'password' => 'BarBaz' }).to_s).should == Hash.from_xml(expected)
+      end
+
+    end
+
+  end
+
+  describe '#options' do
+    
+    describe 'when logged in' do
+      before do
+        @gateway.login("atlasmw", "wombat")
+      end
+
+      describe 'requesting an options token' do
+        before  do
+          @token = @gateway.send(:get_options_token)
+        end
+
+        it "should return a token" do
+          @token.should_not == nil
+          @token.should_not == "+\\"
+        end
 
       end
 

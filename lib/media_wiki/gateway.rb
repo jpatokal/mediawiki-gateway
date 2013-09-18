@@ -738,6 +738,12 @@ module MediaWiki
       token
     end
 
+    def get_options_token
+      form_data = { 'action' => 'tokens', 'type' => 'options' }
+      res, dummy = make_api_request(form_data)
+      res.elements['tokens'].attributes['optionstoken']
+    end
+
     def userrights(user, token, groups_to_add, groups_to_remove, reason)
       # groups_to_add and groups_to_remove can be a string or an array. Turn them into MediaWiki's pipe-delimited list format.
       if groups_to_add.is_a? Array

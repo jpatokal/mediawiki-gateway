@@ -118,6 +118,7 @@ module FakeMediaWiki
         BLANK_TOKEN
       end
     end
+    alias_method :optionstoken, :edittoken
   end
 
   class ApiError < StandardError

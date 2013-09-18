@@ -237,6 +237,14 @@ module FakeMediaWiki
       params[:titles].split("|")
     end
 
+    def tokens
+      @token.request(user)
+
+      api_response do |_|
+        _.tokens(:optionstoken => @token.optionstoken)
+      end
+    end
+
     def get_token
       token_str = @token.request(user)
       query_pages do |_, title, page|
