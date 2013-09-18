@@ -109,6 +109,7 @@ module FakeMediaWiki
     alias_method :deletetoken, :importtoken
     alias_method :undeletetoken, :importtoken
     alias_method :userrightstoken, :importtoken
+    alias_method :createusertoken, :importtoken
     
     def edittoken
       if @user

@@ -300,6 +300,20 @@ module FakeMediaWiki
       end
     end
 
+    def createaccount
+      api_response do |_|
+        @token.request(user)
+
+        if params[:token].present?
+          @token.validate_admin
+          add_user(params[:name], params[:password], 'local', false)
+          _.createaccount(:token => @token.createusertoken, :userid => @users.length, :username => params[:name], :result => 'success')
+        else
+          _.createaccount(:token => @token.createusertoken, :result => 'needtoken')
+        end
+      end
+    end
+
     def userrights
       api_response do |_|
         _.userrights({:user => params[:user]}) do

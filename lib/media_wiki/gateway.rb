@@ -665,6 +665,15 @@ module MediaWiki
 			end
     end
 
+    # Create a new account
+    #
+    # [options] is +Hash+ passed as query arguments. See https://www.mediawiki.org/wiki/API:Account_creation#Parameters for more information.
+    def create_account(options)
+      form_data = options.merge({ 'action' => 'createaccount' })
+      res, dummy = make_api_request(form_data)
+      res
+    end
+
     # Set groups for a user
     #
     # [user] Username of user to modify
@@ -795,15 +804,32 @@ module MediaWiki
         # Check response for errors and return XML
         raise MediaWiki::Exception.new "Bad response: #{response}" unless response.code >= 200 and response.code < 300
         doc = get_response(response.dup)
-        if(form_data['action'] == 'login')
-          login_result = doc.elements["login"].attributes['result']
+        action = form_data['action']
+
+        # login and createaccount actions require a second request with a token received on the first request
+        if %w(login createaccount).include?(action)
+          action_result = doc.elements[action].attributes['result']
           @cookies.merge!(response.cookies)
-          case login_result
-            when "Success" then # do nothing
-            when "NeedToken" then make_api_request(form_data.merge('lgtoken' => doc.elements["login"].attributes["token"]))
-            else raise Unauthorized.new "Login failed: " + login_result
-          end
+
+          case action_result.downcase
+            when "success" then
+              return [doc, false]
+            when "needtoken"
+              token = doc.elements[action].attributes["token"]
+              if action == 'login'
+                return make_api_request(form_data.merge('lgtoken' => token))
+              elsif action == 'createaccount'
+                return make_api_request(form_data.merge('token' => token))
+              end
+            else
+              if action == 'login'
+                raise Unauthorized.new("Login failed: #{action_result}")
+              elsif action == 'createaccount'
+                raise Unauthorized.new("Account creation failed: #{action_result}")
+              end
+            end
         end
+
         continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath).value : nil
         return [doc, continue]
       end

@@ -749,6 +749,28 @@ describe MediaWiki::Gateway do
     @gateway.send(:make_api_request, form_data)
   end
 
+  describe "#create_account" do
+
+    describe "when logged in as admin" do
+      before do
+        @gateway.login("atlasmw", "wombat")
+      end
+
+      it 'should get expected result' do
+        expected = <<-XML
+          <api>
+            <createaccount result='success' token='admin_token+\\' userid='4' username='FooBar'/>
+          </api>
+        XML
+
+        Hash.from_xml(@gateway.create_account({ 'name' => 'FooBar', 'password' => 'BarBaz' }).to_s).should == Hash.from_xml(expected)
+
+      end
+
+    end
+
+  end
+
   describe "#user_rights" do
 
     describe "when logged in as admin" do
