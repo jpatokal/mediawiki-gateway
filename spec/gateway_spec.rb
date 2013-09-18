@@ -789,6 +789,11 @@ describe MediaWiki::Gateway do
 
       end
 
+      it 'should return the expected response' do
+        expected = '<api options="success" />'
+        Hash.from_xml(@gateway.options({ :realname => 'Bar Baz' }).to_s).should == Hash.from_xml(expected)
+      end
+
     end
 
   end

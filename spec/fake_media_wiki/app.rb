@@ -172,10 +172,12 @@ module FakeMediaWiki
 
     include QueryHandling
 
-    def api_response
+    def api_response(api_attr = {}, &block)
       builder do |_|
-        _.api do |_|
-          yield(_)
+        if block_given?
+          _.api(api_attr, &block)
+        else
+          _.api(api_attr)
         end
       end
     end
@@ -320,6 +322,10 @@ module FakeMediaWiki
           _.createaccount(:token => @token.createusertoken, :result => 'needtoken')
         end
       end
+    end
+
+    def options
+      api_response(:options => 'success')
     end
 
     def userrights

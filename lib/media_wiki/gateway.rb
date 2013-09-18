@@ -674,6 +674,31 @@ module MediaWiki
       res
     end
 
+    # Sets options for currenlty logged in user
+    # 
+    # [changes] a +Hash+ that will be transformed into an equal sign and pipe-separated key value parameter
+    # [optionname] a +String+ indicating which option to change (optional)
+    # [optionvalue] the new value for optionname - allows pipe characters (optional)
+    # [reset] a +Boolean+ indicating if all preferences should be reset to site defaults (optional)
+    def options(changes = {}, optionname = nil, optionvalue = nil, reset = false)
+      form_data = { 'action' => 'options', 'token' => get_options_token }
+
+      if changes.present?
+        form_data['change'] = changes.map { |key, value| "#{key}=#{value}" }.join('|')
+      end
+
+      if optionname.present?
+        form_data[optionname] = optionvalue
+      end
+
+      if reset
+        form_data['reset'] = true
+      end
+
+      res, dummy = make_api_request(form_data)
+      res
+    end
+
     # Set groups for a user
     #
     # [user] Username of user to modify
