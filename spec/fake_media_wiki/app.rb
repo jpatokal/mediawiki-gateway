@@ -172,10 +172,12 @@ module FakeMediaWiki
 
     include QueryHandling
 
-    def api_response
+    def api_response(api_attr = {}, &block)
       builder do |_|
-        _.api do |_|
-          yield(_)
+        if block_given?
+          _.api(api_attr, &block)
+        else
+          _.api(api_attr)
         end
       end
     end
@@ -235,6 +237,14 @@ module FakeMediaWiki
 
     def requested_page_titles
       params[:titles].split("|")
+    end
+
+    def tokens
+      @token.request(user)
+
+      api_response do |_|
+        _.tokens(:optionstoken => @token.optionstoken)
+      end
     end
 
     def get_token
@@ -298,6 +308,24 @@ module FakeMediaWiki
       api_response do |_|
         _.login(nil, result)
       end
+    end
+
+    def createaccount
+      api_response do |_|
+        @token.request(user)
+
+        if params[:token].present?
+          @token.validate_admin
+          add_user(params[:name], params[:password], 'local', false)
+          _.createaccount(:token => @token.createusertoken, :userid => @users.length, :username => params[:name], :result => 'success')
+        else
+          _.createaccount(:token => @token.createusertoken, :result => 'needtoken')
+        end
+      end
+    end
+
+    def options
+      api_response(:options => 'success')
     end
 
     def userrights
