@@ -515,6 +515,52 @@ module MediaWiki
         nil
       end
     end
+
+    # Get list of interlanguage links for given article[s].  Follows redirects.  Returns a hash like { 'id' => 'Yerusalem', 'en' => 'Jerusalem', ... }
+    # 
+    # _article_or_pageid_ is the title or pageid of a single article
+    # _lllimit_ is the maximum number of langlinks to return (defaults to 500, the maximum)
+    #
+    # Example:
+    #   langlinks = mw.langlinks('Jerusalem')
+    def langlinks(article_or_pageid, lllimit = 500)
+      form_data = {'action' => 'query', 'prop' => 'langlinks', 'lllimit' => lllimit, 'redirects' => true}
+      case article_or_pageid
+      when Fixnum
+        form_data['pageids'] = article_or_pageid
+      else
+        form_data['titles'] = article_or_pageid
+      end
+      xml, dummy = make_api_request(form_data)
+      page = xml.elements["query/pages/page"]
+      if valid_page? page
+        if xml.elements["query/redirects/r"]
+          # We're dealing with the redirect here.
+          langlinks(page.attributes["pageid"].to_i, lllimit)
+        else
+          langl = REXML::XPath.match(page, 'langlinks/ll')
+          if langl.nil?
+            nil
+          else
+            links = {}
+            langl.each{ |ll| links[ll.attributes["lang"]] = ll.children[0].to_s } 
+            return links
+          end
+        end
+      else
+        nil
+      end
+    end
+
+    # Convenience wrapper for _langlinks_ returning the title in language _lang_ (ISO code) for a given article of pageid, if it exists, via the interlanguage link 
+    # 
+    # Example:
+    #
+    #  langlink = mw.langlink_for_lang('Tycho Brahe', 'de')
+    def langlink_for_lang(article_or_pageid, lang)
+      return langlinks(article_or_pageid)[lang]
+    end
+
     # Requests image info from MediaWiki. Follows redirects.
     #
     # _file_name_or_page_id_ should be either:
