@@ -35,16 +35,6 @@ begin
     gemspec.homepage = "http://github.com/jpatokal/mediawiki-gateway"
     gemspec.authors = ["Jani Patokallio"]
     gemspec.version = MediaWiki::VERSION
-    gemspec.add_dependency 'rest-client', '>= 1.3.0'
-    gemspec.add_dependency 'activesupport'
-    gemspec.add_development_dependency 'jeweler'
-    gemspec.add_development_dependency 'sham_rack'
-    gemspec.add_development_dependency 'rr'
-    gemspec.add_development_dependency 'simplecov'
-    gemspec.add_development_dependency 'rspec', '~> 1.3'
-    gemspec.add_development_dependency 'debugger'
-    gemspec.add_development_dependency 'sinatra'
-    gemspec.add_development_dependency 'activemodel'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
