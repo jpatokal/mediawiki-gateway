@@ -4,6 +4,7 @@ gem 'rest-client', '>= 1.3.0'
 gem 'activesupport'
 
 group :development do
+  gem 'atomic'
   gem 'jeweler'
   gem 'sham_rack'
   gem 'rr'
