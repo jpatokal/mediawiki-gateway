@@ -134,7 +134,6 @@ module MediaWiki
     # * [:token] Use this existing edit token instead requesting a new one (useful for bulk loads)
     # * [:minor] Mark this edit as "minor" if true, mark this edit as "major" if false, leave major/minor status by default if not specified
     # * [:notminor] Mark this edit as "major" if true
-    # * [:bot] Mark this edit as "bot" if true
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
       if @options[:bot] or options[:bot]
@@ -943,4 +942,35 @@ module MediaWiki
         raise MediaWiki::Exception.new "Response is not XML.  Are you sure you are pointing to api.php?"
       end
       log.debug("RES: #{doc}")
-      raise MediaWiki::Exception.new "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "med
+      raise MediaWiki::Exception.new "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
+      if doc.elements["error"]
+        code = doc.elements["error"].attributes["code"]
+        info = doc.elements["error"].attributes["info"]
+        raise APIError.new(code, info)
+      end
+      if doc.elements["warnings"]
+        warning("API warning: #{doc.elements["warnings"].children.map {|e| e.text}.join(", ")}")
+      end
+      doc
+    end
+
+    def valid_page?(page)
+      return false unless page
+      return false if page.attributes["missing"]
+      if page.attributes["invalid"]
+        warning("Invalid title '#{page.attributes["title"]}'")
+      else
+        true
+      end
+    end
+
+    def warning(msg)
+      if @options[:ignorewarnings]
+        log.warn(msg)
+        return false
+      else
+        raise APIError.new('warning', msg)
+      end
+    end
+  end
+end
