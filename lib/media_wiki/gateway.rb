@@ -134,6 +134,7 @@ module MediaWiki
     # * [:token] Use this existing edit token instead requesting a new one (useful for bulk loads)
     # * [:minor] Mark this edit as "minor" if true, mark this edit as "major" if false, leave major/minor status by default if not specified
     # * [:notminor] Mark this edit as "major" if true
+    # * [:bot] Set the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
     def create(title, content, options={})
       form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
       if @options[:bot] or options[:bot]
