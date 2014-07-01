@@ -400,7 +400,7 @@ module MediaWiki
           'ucuser' => user,
           'ucstart' => ucstart,
           'uclimit' => limit})
-        res, ucstart = make_api_request(form_data, '//query-continue/usercontribs/@ucstart')
+        res, ucstart = make_api_request(form_data, '//query-continue/usercontribs/@uccontinue')
         result += REXML::XPath.match(res, "//item").map { |x| x.attributes.inject({}) { |hash, data| hash[data.first] = data.last; hash } }
         break if count and result.size >= count
       end while ucstart
@@ -914,8 +914,11 @@ module MediaWiki
               end
             end
         end
-
-        continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath).value : nil
+        contxp = REXML::XPath.first(doc, continue_xpath)
+        unless contxp.nil?
+          contxp = contxp.value[0..contxp.value.index('|')-1] if contxp.value.index('|') # take only timestamp from compound value
+        end
+        continue = (continue_xpath and doc.elements['query-continue']) ? contxp : nil
         return [doc, continue]
       end
     end
