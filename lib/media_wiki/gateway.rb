@@ -14,6 +14,7 @@ module MediaWiki
     #
     # [url] Path to API of target MediaWiki (eg. "http://en.wikipedia.org/w/api.php")
     # [options] Hash of options
+    # [http_options] Hash of options for RestClient::Request (via http_send)
     #
     # Options:
     # [:bot] When set to true, executes API queries with the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
@@ -24,7 +25,7 @@ module MediaWiki
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
     # [:retry_count] Number of times to try before giving up if MediaWiki returns 503 Service Unavailable, defaults to 3 (original request plus two retries).
     # [:retry_delay] Seconds to wait before retry if MediaWiki returns 503 Service Unavailable, defaults to 10 seconds.
-    def initialize(url, options={})
+    def initialize(url, options={}, http_options={})
       default_options = {
         :bot => false,
         :limit => 500,
@@ -36,6 +37,7 @@ module MediaWiki
         :max_results => 500
       }
       @options = default_options.merge(options)
+      @http_options = http_options
       @wiki_url = url
       @log = Logger.new(@options[:logdevice])
       @log.level = @options[:loglevel]
@@ -925,13 +927,15 @@ module MediaWiki
 
     # Execute the HTTP request using either GET or POST as appropriate
     def http_send url, form_data, headers, &block
+      opts = @http_options.merge(:url => url, :headers => headers)
+
       if form_data['action'] == 'query'
         log.debug("GET: #{form_data.inspect}, #{@cookies.inspect}")
         headers[:params] = form_data
-        RestClient.get url, headers, &block
+        RestClient::Request.execute(opts.update(:method => :get), &block)
       else
         log.debug("POST: #{form_data.inspect}, #{@cookies.inspect}")
-        RestClient.post url, form_data, headers, &block
+        RestClient::Request.execute(opts.update(:method => :post, :payload => form_data), &block)
       end
     end
 
