@@ -915,7 +915,7 @@ module MediaWiki
             end
         end
         contxp = REXML::XPath.first(doc, continue_xpath)
-        unless contxp.nil?
+        if contxp.is_a?(REXML::Attribute)
           contxp = contxp.value[0..contxp.value.index('|')-1] if contxp.value.index('|') # take only timestamp from compound value
         end
         continue = (continue_xpath and doc.elements['query-continue']) ? contxp : nil
