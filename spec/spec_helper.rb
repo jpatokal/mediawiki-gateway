@@ -1,12 +1,17 @@
-require 'simplecov'  
-SimpleCov.start
+begin
+  require 'simplecov'
+  SimpleCov.start
+rescue LoadError
+  warn 'SimpleCov not available. Install it with: gem install simplecov'
+end
 
 require 'media_wiki'
 
-require 'rr'
-Spec::Runner.configure do |config|
-  config.mock_with RR::Adapters::Rspec
-end
+RSpec.configure { |config|
+  %w[expect mock].each { |what|
+    config.send("#{what}_with", :rspec) { |c| c.syntax = [:should, :expect] }
+  }
+}
 
 # :nodoc: Rails 2.3.x: Hash#to_xml is defined in active_support
 # :nodoc: Rails 3: #to_xml is defined in ActiveModel::Serializers::Xml
