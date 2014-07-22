@@ -3,11 +3,8 @@ require 'spec_helper'
 # Kickstart fake media wiki app
 require 'sham_rack'
 require_relative 'fake_media_wiki/app'
-$fake_media_wiki = FakeMediaWiki::App.new
-unless $fake_media_wiki.instance_of? FakeMediaWiki::App
-  # This is a horrible workaround for some bizarre conflict with later versions of ShamRack/Rack/Sinatra/Builder/...
-  $fake_media_wiki = $fake_media_wiki.instance_eval('app').instance_eval('@app').instance_eval('@app').app.app.app.app.app
-end
+
+$fake_media_wiki = FakeMediaWiki::App.new!
 ShamRack.mount($fake_media_wiki, 'dummy-wiki.example')
 
 describe MediaWiki::Gateway do
@@ -190,18 +187,16 @@ describe MediaWiki::Gateway do
     describe "when wiki returns 503" do
 
       before do
-        @log = Object.new
-        stub(@log).debug { }
-        stub(@log).warn { }
+        @log = double(:debug => nil, :warn => nil)
         @fail_gateway = MediaWiki::Gateway.new('http://dummy-wiki.example/w/api.php', {:maxlag => -1, :retry_delay => 0})
-        stub(@fail_gateway).log { @log }
+        allow(@fail_gateway).to receive(:log) { @log }
       end
 
       it "should retry twice and fail" do
         lambda {
           @fail_gateway.get("")
         }.should raise_error
-        @log.should have_received.warn("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").times(2)
+        @log.should have_received(:warn).with("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").twice
       end
 
     end
@@ -213,7 +208,7 @@ describe MediaWiki::Gateway do
     describe "for an existing redirect page" do
 
       it "returns true" do
-        @gateway.redirect?("Redirect").should be_true
+        @gateway.redirect?("Redirect").should == true
       end
 
     end
@@ -221,7 +216,7 @@ describe MediaWiki::Gateway do
     describe "for an existing non-redirect page" do
 
       it "returns false" do
-        @gateway.redirect?("Main Page").should be_false
+        @gateway.redirect?("Main Page").should == false
       end
 
     end
@@ -229,7 +224,7 @@ describe MediaWiki::Gateway do
     describe "for a missing wiki page" do
 
       it "returns false" do
-        @gateway.redirect?("page/missing").should be_false
+        @gateway.redirect?("page/missing").should == false
       end
 
     end
@@ -389,19 +384,20 @@ describe MediaWiki::Gateway do
     describe "when uploading a new file" do
 
       before do
-        stub(File).new(anything) { "SAMPLEIMAGEDATA" }
-        @page = @gateway.upload("some/path/sample_image.jpg")
+        @path = 'some/path/sample_image.jpg'
+        allow(File).to receive(:new).with(@path).and_return('SAMPLEIMAGEDATA')
+        @page = @gateway.upload(@path)
       end
 
       it "should open the file" do
-        File.should have_received.new("some/path/sample_image.jpg")
+        File.should have_received(:new).with(@path)
       end
 
       it "should upload the file" do
         expected = <<-XML
           <api>
             <upload result="Success" filename="sample_image.jpg"/>
-         </api>
+          </api>
         XML
         Hash.from_xml(@page.first.to_s).should == Hash.from_xml(expected)
       end
@@ -617,7 +613,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should return at most the maximum number of results asked" do
-        @search.should have(1).string
+        @search.size.should == 1
       end
     end
 

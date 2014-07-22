@@ -64,9 +64,9 @@ module FakeMediaWiki
   end
 
   class ApiToken
-    ADMIN_TOKEN   = "admin_token+\\" 
-    REGULAR_TOKEN = "regular_token+\\"
-    BLANK_TOKEN   = "+\\"
+    ADMIN_TOKEN   = "admin_token+\\"   unless const_defined?(:ADMIN_TOKEN)
+    REGULAR_TOKEN = "regular_token+\\" unless const_defined?(:REGULAR_TOKEN)
+    BLANK_TOKEN   = "+\\"              unless const_defined?(:BLANK_TOKEN)
 
     def initialize(params)
       @token_str = params[:token]
