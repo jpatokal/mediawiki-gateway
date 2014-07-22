@@ -300,7 +300,6 @@ module MediaWiki
         form_data = options.merge(
           {'action' => 'query',
           'list' => 'categorymembers',
-          'apfrom' => apfrom,
           'cmtitle' => category,
           'cmlimit' => @options[:limit]})
         res, apfrom = make_api_request(form_data, '//query-continue/categorymembers/@apfrom')
