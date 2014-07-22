@@ -201,6 +201,12 @@ describe MediaWiki::Gateway do
 
     end
 
+    it "should pass options to RestClient::Request" do
+      gateway = MediaWiki::Gateway.new('http://dummy-wiki.example/w/api.php', {}, :verify_ssl => false)
+      RestClient::Request.should receive(:execute).with(hash_including(:verify_ssl => false)).and_return([double(:elements => {})])
+      gateway.get("").should be_nil
+    end
+
   end
 
   describe "#redirect?" do
