@@ -281,7 +281,7 @@ module MediaWiki
           'apprefix' => key,
           'aplimit' => @options[:limit],
           'apnamespace' => namespace})
-        res, apfrom = make_api_request(form_data, '//query-continue/allpages/@apfrom')
+        res, apfrom = make_api_request(form_data, '//query-continue/allpages/@apcontinue')
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
       end while apfrom
       titles
@@ -303,7 +303,7 @@ module MediaWiki
           'apfrom' => apfrom,
           'cmtitle' => category,
           'cmlimit' => @options[:limit]})
-        res, apfrom = make_api_request(form_data, '//query-continue/categorymembers/@apfrom')
+        res, apfrom = make_api_request(form_data, '//query-continue/categorymembers/@apcontinue')
         titles += REXML::XPath.match(res, "//cm").map { |x| x.attributes["title"] }
       end while apfrom
       titles
@@ -378,7 +378,7 @@ module MediaWiki
           'list' => 'allusers',
           'aufrom' => aufrom,
           'aulimit' => @options[:limit]})
-        res, aufrom = make_api_request(form_data, '//query-continue/allusers/@aufrom')
+        res, aufrom = make_api_request(form_data, '//query-continue/allusers/@aucontinue')
         names += REXML::XPath.match(res, "//u").map { |x| x.attributes["name"] }
       end while aufrom
       names
