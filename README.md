@@ -11,34 +11,38 @@ A Ruby framework for MediaWiki API manipulation.  Features out of the box:
 * Should work with both Ruby 1.8 and 1.9
 
 Gem:  http://rubygems.org/gems/mediawiki-gateway
+
 RDoc: http://rubydoc.info/gems/mediawiki-gateway
+
 Git:  https://github.com/jpatokal/mediawiki-gateway
 
 ## Example
 
 Simple page creation script:
 
- require 'media_wiki'
- mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
- mw.login('RubyBot', 'pa$$w0rd')
- mw.create('PageTitle', 'Hello world!', :summary => 'My first page')
+    require 'media_wiki'
+    mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
+    mw.login('RubyBot', 'pa$$w0rd')
+    mw.create('PageTitle', 'Hello world!', :summary => 'My first page')
 
 ## Development environment
 
 To compile and test MediaWiki::Gateway locally, Bundler and Ruby 1.9+ are expected.
 
- rvm install 1.9.3-p194
- bundle install
+    rvm install 1.9.3-p194
+    bundle install
 
 This will list the available options:
- bundle exec rake -T
+
+    bundle exec rake -T
 
 To build and install the gem use:
- bundle exec rake install
+
+    bundle exec rake install
 
 ## Status
 
-This gem is no longer in active development.  Bugs will be fixed if reported, and pull requests that add new features are more than welcome, but asking for new features is unlikely to make them materialize out of thin air.
+This gem is no longer in active development.  Pull requests that fix bugs or add new features are more than welcome, but asking for new features is unlikely to make them materialize out of thin air.
 
 ## Credits
 
