@@ -21,7 +21,7 @@ module MediaWiki
     # [title] Page name string in Wiki format 
     def get_path_to_subpage(title)
       return nil unless title and title.include? '/'
-      parts = title.split(/\/([^\/]*)$/).first
+      title.split(/\/([^\/]*)$/).first
     end
 
     # Extract subpage name.  If there is no hierarchy above, return page name.
