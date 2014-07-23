@@ -269,22 +269,15 @@ module MediaWiki
     #
     # Returns array of page titles (empty if no matches)
     def list(key, options = {})
-      titles = []
-      apfrom = nil
-      key, namespace = key.split(":", 2).reverse
+      key, namespace = key.split(':', 2).reverse
       namespace = namespaces_by_prefix[namespace] || 0
-      begin
-        form_data = options.merge(
-          {'action' => 'query',
-          'list' => 'allpages',
-          'apfrom' => apfrom,
-          'apprefix' => key,
-          'aplimit' => @options[:limit],
-          'apnamespace' => namespace})
-        res, apfrom = make_api_request(form_data, '//query-continue/allpages/@apcontinue')
-        titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
-      end while apfrom
-      titles
+
+      iterate_query('allpages', '//p', 'title', 'apfrom', options.merge(
+        'list'        => 'allpages',
+        'apprefix'    => key,
+        'apnamespace' => namespace,
+        'aplimit'     => @options[:limit]
+      ))
     end
 
     # Get a list of pages that are members of a category
@@ -294,19 +287,10 @@ module MediaWiki
     #
     # Returns array of page titles (empty if no matches)
     def category_members(category, options = {})
-      titles = []
-      apfrom = nil
-      begin
-        form_data = options.merge(
-          {'action' => 'query',
-          'list' => 'categorymembers',
-          'apfrom' => apfrom,
-          'cmtitle' => category,
-          'cmlimit' => @options[:limit]})
-        res, apfrom = make_api_request(form_data, '//query-continue/categorymembers/@apcontinue')
-        titles += REXML::XPath.match(res, "//cm").map { |x| x.attributes["title"] }
-      end while apfrom
-      titles
+      iterate_query('categorymembers', '//cm', 'title', 'cmcontinue', options.merge(
+        'cmtitle' => category,
+        'cmlimit' => @options[:limit]
+      ))
     end
 
     # Get a list of pages that link to a target page
@@ -315,21 +299,12 @@ module MediaWiki
     # [filter] "all" links (default), "redirects" only, or "nonredirects" (plain links only)
     #
     # Returns array of page titles (empty if no matches)
-    def backlinks(title, filter = "all")
-      titles = []
-      blcontinue = nil
-      begin
-        form_data =
-          {'action' => 'query',
-          'list' => 'backlinks',
-          'bltitle' => title,
-          'blfilterredir' => filter,
-          'bllimit' => @options[:limit] }
-        form_data['blcontinue'] = blcontinue if blcontinue
-        res, blcontinue = make_api_request(form_data, '//query-continue/backlinks/@blcontinue')
-        titles += REXML::XPath.match(res, "//bl").map { |x| x.attributes["title"] }
-      end while blcontinue
-      titles
+    def backlinks(title, filter = 'all', options = {})
+      iterate_query('backlinks', '//bl', 'title', 'blcontinue', options.merge(
+        'bltitle'       => title,
+        'blfilterredir' => filter,
+        'bllimit'       => @options[:limit]
+      ))
     end
 
     # Get a list of pages with matching content in given namespaces
@@ -370,18 +345,9 @@ module MediaWiki
     #
     # Returns array of user names (empty if no matches)
     def users(options = {})
-      names = []
-      aufrom = nil
-      begin
-        form_data = options.merge(
-          {'action' => 'query',
-          'list' => 'allusers',
-          'aufrom' => aufrom,
-          'aulimit' => @options[:limit]})
-        res, aufrom = make_api_request(form_data, '//query-continue/allusers/@aucontinue')
-        names += REXML::XPath.match(res, "//u").map { |x| x.attributes["name"] }
-      end while aufrom
-      names
+      iterate_query('allusers', '//u', 'name', 'aufrom', options.merge(
+        'aulimit' => @options[:limit]
+      ))
     end
 
     # Get user contributions
@@ -393,20 +359,16 @@ module MediaWiki
     # Returns array of hashes containing the "item" attributes defined here: http://www.mediawiki.org/wiki/API:Usercontribs
     def contributions(user, count = nil, options = {})
       result = []
-      ucstart = options[:ucstart] or nil 
-      begin
-        limit = [count, @options[:limit]].compact.min
-        form_data = options.merge(
-          {'action' => 'query',
-          'list' => 'usercontribs',
-          'ucuser' => user,
-          'ucstart' => ucstart,
-          'uclimit' => limit})
-        res, ucstart = make_api_request(form_data, '//query-continue/usercontribs/@uccontinue')
-        result += REXML::XPath.match(res, "//item").map { |x| x.attributes.inject({}) { |hash, data| hash[data.first] = data.last; hash } }
-        break if count and result.size >= count
-      end while ucstart
-      result
+
+      iterate_query('usercontribs', '//item', nil, 'uccontinue', options.merge(
+        'ucuser'  => user,
+        'uclimit' => @options[:limit]
+      )) { |element|
+        result << hash = {}
+        element.attributes.each { |key, value| hash[key] = value }
+      }
+
+      count ? result.take(count) : result
     end
 
     # Upload a file, or get the status of pending uploads. Several
@@ -869,6 +831,39 @@ module MediaWiki
       make_api_request(form_data).first.elements['query']
     end
 
+    # Iterate over query results
+    #
+    # [list] list name to query
+    # [res_xpath] XPath selector for results
+    # [attr] attribute name to extract, if any
+    # [param] parameter name to continue query
+    # [options] additional query options
+    #
+    # Yields each attribute value, or, if +attr+ is nil, each REXML::Element.
+    def iterate_query(list, res_xpath, attr, param, options, &block)
+      items, block = [], lambda { |item| items << item } unless block
+
+      attribute_names = %w[from continue].map { |name|
+        "name()='#{param[0, 2]}#{name}'"
+      }
+
+      req_xpath = "//query-continue/#{list}/@*[#{attribute_names.join(' or ')}]"
+      res_xpath = "//query/#{list}/#{res_xpath}" unless res_xpath.start_with?('/')
+
+      options, continue = options.merge('action' => 'query', 'list' => list), nil
+
+      loop {
+        res, continue = make_api_request(options, req_xpath)
+
+        REXML::XPath.match(res, res_xpath).each { |element|
+          block[attr ? element.attributes[attr] : element]
+        }
+
+        continue ? options[param] = continue : break
+      }
+
+      items
+    end
 
     # Make generic request to API
     #
@@ -916,11 +911,7 @@ module MediaWiki
               end
             end
         end
-        contxp = REXML::XPath.first(doc, continue_xpath)
-        if contxp.is_a?(REXML::Attribute)
-          contxp = contxp.value[0..contxp.value.index('|')-1] if contxp.value.index('|') # take only timestamp from compound value
-        end
-        continue = (continue_xpath and doc.elements['query-continue']) ? contxp : nil
+        continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath) : nil
         return [doc, continue]
       end
     end
