@@ -112,7 +112,7 @@ module MediaWiki
         # OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o
         if options["linkbase"] or options[:linkbase]
           linkbase = options["linkbase"] || options[:linkbase]
-          rendered = rendered.gsub(/\shref="\/wiki\/([\w\(\)_\-\.%\d:,]*)"/, ' href="' + linkbase + '/wiki/\1"')
+          rendered = rendered.gsub(/\shref="\/wiki\/([\w\(\)\-\.%:,]*)"/, ' href="' + linkbase + '/wiki/\1"')
         end
         if options["noeditsections"] or options[:noeditsections]
           rendered = rendered.gsub(/<span class="editsection">\[.+\]<\/span>/, '')
@@ -318,7 +318,6 @@ module MediaWiki
     def search(key, namespaces=nil, limit=@options[:limit], max_results=@options[:max_results])
       titles = []
       offset = 0
-      in_progress = true
 
       form_data = { 'action' => 'query',
         'list' => 'search',
@@ -467,14 +466,14 @@ module MediaWiki
       else
         form_data['titles'] = article_or_pageid
       end
-      xml, dummy = make_api_request(form_data)
+      xml, _ = make_api_request(form_data)
       page = xml.elements["query/pages/page"]
       if valid_page? page
         if xml.elements["query/redirects/r"]
           # We're dealing with redirect here.
           images(page.attributes["pageid"].to_i, imlimit)
         else
-          imgs = REXML::XPath.match(page, "images/im").map { |x| x.attributes["title"] }
+          REXML::XPath.match(page, "images/im").map { |x| x.attributes["title"] }
         end
       else
         nil
@@ -496,7 +495,7 @@ module MediaWiki
       else
         form_data['titles'] = article_or_pageid
       end
-      xml, dummy = make_api_request(form_data)
+      xml, _ = make_api_request(form_data)
       page = xml.elements["query/pages/page"]
       if valid_page? page
         if xml.elements["query/redirects/r"]
@@ -568,7 +567,7 @@ module MediaWiki
         form_data['titles'] = "File:#{file_name_or_page_id}"
       end
 
-      xml, dummy = make_api_request(form_data)
+      xml, _ = make_api_request(form_data)
       page = xml.elements["query/pages/page"]
       if valid_page? page
         if xml.elements["query/redirects/r"]
@@ -656,7 +655,7 @@ module MediaWiki
     # Will raise a 'noemail' APIError if the target user does not have a confirmed email address, see http://www.mediawiki.org/wiki/API:E-mail for details.
     def email_user(user, subject, text)
       form_data = { 'action' => 'emailuser', 'target' => user, 'subject' => subject, 'text' => text, 'token' => get_token('email', "User:" + user) }
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       res.elements['emailuser'].attributes['result'] == 'Success'
     end
 
@@ -671,12 +670,12 @@ module MediaWiki
 				smw_version = extensions['Semantic MediaWiki'].to_f
 				if smw_version >= 1.7
 					form_data = { 'action' => 'ask', 'query' => "#{query}|#{params.join('|')}"}
-					xml, dummy = make_api_request(form_data)
+					xml, _ = make_api_request(form_data)
 					return xml
 				else
 					params << "format=list"
 					form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
-					xml, dummy = make_api_request(form_data)
+					xml, _ = make_api_request(form_data)
 					return xml.elements["parse/text"].text
 				end
 			else
@@ -689,7 +688,7 @@ module MediaWiki
     # [options] is +Hash+ passed as query arguments. See https://www.mediawiki.org/wiki/API:Account_creation#Parameters for more information.
     def create_account(options)
       form_data = options.merge({ 'action' => 'createaccount' })
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       res
     end
 
@@ -714,7 +713,7 @@ module MediaWiki
         form_data['reset'] = true
       end
 
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       res
     end
 
@@ -737,7 +736,7 @@ module MediaWiki
       raise APIError.new('missingtitle', "Article #{title} not found") unless revid = revision(title)
       form_data = {'action' => 'review', 'revid' => revid, 'token' => get_token('edit', title), 'comment' => comment}
       form_data.merge!( Hash[flags.map {|k,v| ["flag_#{k}", v]}] )
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       res
     end
 
@@ -746,7 +745,7 @@ module MediaWiki
     # Fetch token (type 'delete', 'edit', 'email', 'import', 'move', 'protect')
     def get_token(type, page_titles)
       form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       token = res.elements["query/pages/page"].attributes[type + "token"]
       raise Unauthorized.new "User is not permitted to perform this operation: #{type}" if token.nil?
       token
@@ -754,7 +753,7 @@ module MediaWiki
 
     def get_undelete_token(page_titles)
       form_data = {'action' => 'query', 'list' => 'deletedrevs', 'prop' => 'info', 'drprop' => 'token', 'titles' => page_titles}
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       if res.elements["query/deletedrevs/page"]
         token = res.elements["query/deletedrevs/page"].attributes["token"]
         raise Unauthorized.new "User is not permitted to perform this operation: #{type}" if token.nil?
@@ -767,7 +766,7 @@ module MediaWiki
     # User rights management (aka group assignment)
     def get_userrights_token(user)
       form_data = {'action' => 'query', 'list' => 'users', 'ustoken' => 'userrights', 'ususers' => user}
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       token = res.elements["query/users/user"].attributes["userrightstoken"]
 
       @log.debug("RESPONSE: #{res.to_s}")
@@ -784,7 +783,7 @@ module MediaWiki
 
     def get_options_token
       form_data = { 'action' => 'tokens', 'type' => 'options' }
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       res.elements['tokens'].attributes['optionstoken']
     end
 
@@ -802,7 +801,7 @@ module MediaWiki
         'remove' => groups_to_remove,
         'reason' => reason
       }
-      res, dummy = make_api_request(form_data)
+      res, _ = make_api_request(form_data)
       res
     end
 
@@ -909,7 +908,7 @@ module MediaWiki
               elsif action == 'createaccount'
                 raise Unauthorized.new("Account creation failed: #{action_result}")
               end
-            end
+          end
         end
         continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath) : nil
         return [doc, continue]
@@ -937,7 +936,7 @@ module MediaWiki
       begin
         res = res.force_encoding("UTF-8") if res.respond_to?(:force_encoding)
         doc = REXML::Document.new(res).root
-      rescue REXML::ParseException => e
+      rescue REXML::ParseException
         raise MediaWiki::Exception.new "Response is not XML.  Are you sure you are pointing to api.php?"
       end
       log.debug("RES: #{doc}")
