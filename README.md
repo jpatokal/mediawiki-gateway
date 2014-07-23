@@ -1,4 +1,4 @@
-= MediaWiki::Gateway
+# MediaWiki::Gateway
 
 A Ruby framework for MediaWiki API manipulation.  Features out of the box:
 
@@ -14,7 +14,7 @@ Gem:  http://rubygems.org/gems/mediawiki-gateway
 RDoc: http://rubydoc.info/gems/mediawiki-gateway
 Git:  https://github.com/jpatokal/mediawiki-gateway
 
-== Example
+## Example
 
 Simple page creation script:
 
@@ -23,7 +23,7 @@ Simple page creation script:
  mw.login('RubyBot', 'pa$$w0rd')
  mw.create('PageTitle', 'Hello world!', :summary => 'My first page')
 
-== Development environment
+## Development environment
 
 To compile and test MediaWiki::Gateway locally, Bundler and Ruby 1.9+ are expected.
 
@@ -36,11 +36,11 @@ This will list the available options:
 To build and install the gem use:
  bundle exec rake install
 
-== Status
+## Status
 
 This gem is no longer in active development.  Bugs will be fixed if reported, and pull requests that add new features are more than welcome, but asking for new features is unlikely to make them materialize out of thin air.
 
-== Credits
+## Credits
 
 Maintained by Jani Patokallio.
 
