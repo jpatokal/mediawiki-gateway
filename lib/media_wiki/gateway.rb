@@ -52,11 +52,17 @@ module MediaWiki
     # [username] Username
     # [password] Password
     # [domain] Domain for authentication plugin logins (eg. LDAP), optional -- defaults to 'local' if not given
+    # [options] Hash of additional options
     #
     # Throws MediaWiki::Unauthorized if login fails
-    def login(username, password, domain = 'local')
-      form_data = {'action' => 'login', 'lgname' => username, 'lgpassword' => password, 'lgdomain' => domain}
-      make_api_request(form_data)
+    def login(username, password, domain = 'local', options = {})
+      make_api_request(options.merge(
+        'action'     => 'login',
+        'lgname'     => username,
+        'lgpassword' => password,
+        'lgdomain'   => domain
+      ))
+
       @password = password
       @username = username
     end
@@ -64,27 +70,36 @@ module MediaWiki
     # Fetch MediaWiki page in MediaWiki format.  Does not follow redirects.
     #
     # [page_title] Page title to fetch
+    # [options] Hash of additional options
     #
     # Returns content of page as string, nil if the page does not exist.
-    def get(page_title)
-      form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'content', 'titles' => page_title}
-      page = make_api_request(form_data).first.elements["query/pages/page"]
-      if valid_page? page
-        page.elements["revisions/rev"].text || ""
-      end
+    def get(page_title, options = {})
+      page = make_api_request(options.merge(
+        'action' => 'query',
+        'prop'   => 'revisions',
+        'rvprop' => 'content',
+        'titles' => page_title
+      )).first.elements['query/pages/page']
+
+      page.elements['revisions/rev'].text || '' if valid_page?(page)
     end
 
     # Fetch latest revision ID of a MediaWiki page.  Does not follow redirects.
     #
     # [page_title] Page title to fetch
+    # [options] Hash of additional options
     #
     # Returns revision ID as a string, nil if the page does not exist.
-    def revision(page_title)
-      form_data = {'action' => 'query', 'prop' => 'revisions', 'rvprop' => 'ids', 'rvlimit' => 1, 'titles' => page_title}
-      page = make_api_request(form_data).first.elements["query/pages/page"]
-      if valid_page? page
-        page.elements["revisions/rev"].attributes["revid"]
-      end
+    def revision(page_title, options = {})
+      page = make_api_request(options.merge(
+        'action'  => 'query',
+        'prop'    => 'revisions',
+        'rvprop'  => 'ids',
+        'rvlimit' => 1,
+        'titles'  => page_title
+      )).first.elements['query/pages/page']
+
+      page.elements['revisions/rev'].attributes['revid'] if valid_page?(page)
     end
 
     # Render a MediaWiki page as HTML
@@ -242,21 +257,28 @@ module MediaWiki
     # Delete one page. (MediaWiki API does not support deleting multiple pages at a time.)
     #
     # [title] Title of page to delete
-    def delete(title)
-      form_data = {'action' => 'delete', 'title' => title, 'token' => get_token('delete', title)}
-      make_api_request(form_data)
+    # [options] Hash of additional options
+    def delete(title, options = {})
+      make_api_request(options.merge(
+        'action' => 'delete',
+        'title'  => title,
+        'token'  => get_token('delete', title)
+      ))
     end
 
     # Undelete all revisions of one page.
     #
     # [title] Title of page to undelete
+    # [options] Hash of additional options
     #
     # Returns number of revisions undeleted, or zero if nothing to undelete
-    def undelete(title)
-      token = get_undelete_token(title)
-      if token
-        form_data = {'action' => 'undelete', 'title' => title, 'token' => token }
-        make_api_request(form_data).first.elements["undelete"].attributes["revisions"].to_i
+    def undelete(title, options = {})
+      if token = get_undelete_token(title)
+        make_api_request(options.merge(
+          'action' => 'undelete',
+          'title'  => title,
+          'token'  => token
+        )).first.elements['undelete'].attributes['revisions'].to_i
       else
         0 # No revisions to undelete
       end
@@ -297,6 +319,7 @@ module MediaWiki
     #
     # [title] Link target page
     # [filter] "all" links (default), "redirects" only, or "nonredirects" (plain links only)
+    # [options] Hash of additional options
     #
     # Returns array of page titles (empty if no matches)
     def backlinks(title, filter = 'all', options = {})
@@ -313,28 +336,33 @@ module MediaWiki
     # [namespaces] Array of namespace names to search (defaults to main only)
     # [limit] Maximum number of hits to ask for (defaults to 500; note that Wikimedia Foundation wikis allow only 50 for normal users)
     # [max_results] Maximum total number of results to return
+    # [options] Hash of additional options
     #
     # Returns array of page titles (empty if no matches)
-    def search(key, namespaces=nil, limit=@options[:limit], max_results=@options[:max_results])
+    def search(key, namespaces = nil, limit = @options[:limit], max_results = @options[:max_results], options = {})
       titles = []
       offset = 0
 
-      form_data = { 'action' => 'query',
-        'list' => 'search',
-        'srwhat' => 'text',
+      form_data = options.merge(
+        'action'   => 'query',
+        'list'     => 'search',
+        'srwhat'   => 'text',
         'srsearch' => key,
-        'srlimit' => limit
-      }
+        'srlimit'  => limit
+      )
+
       if namespaces
         namespaces = [ namespaces ] unless namespaces.kind_of? Array
         form_data['srnamespace'] = namespaces.map! do |ns| namespaces_by_prefix[ns] end.join('|')
       end
+
       begin
         form_data['sroffset'] = offset if offset
         form_data['srlimit'] = [limit, max_results - offset.to_i].min
         res, offset = make_api_request(form_data, '//query-continue/search/@sroffset')
         titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
       end while offset && offset.to_i < max_results.to_i
+
       titles
     end
 
@@ -453,13 +481,19 @@ module MediaWiki
     # 
     # _article_or_pageid_ is the title or pageid of a single article
     # _imlimit_ is the maximum number of images to return (defaults to 200)
+    # _options_ is the hash of additional options
     #
     # Example:
     #   images = mw.images('Gaborone')
     # _images_ would contain ['File:Gaborone at night.jpg', 'File:Gaborone2.png', ...]
+    def images(article_or_pageid, imlimit = 200, options = {})
+      form_data = options.merge(
+        'action'    => 'query',
+        'prop'      => 'images',
+        'imlimit'   => imlimit,
+        'redirects' => true
+      )
 
-    def images(article_or_pageid, imlimit = 200)
-      form_data = {'action' => 'query', 'prop' => 'images', 'imlimit' => imlimit, 'redirects' => true}
       case article_or_pageid
       when Fixnum
         form_data['pageids'] = article_or_pageid
@@ -484,11 +518,18 @@ module MediaWiki
     # 
     # _article_or_pageid_ is the title or pageid of a single article
     # _lllimit_ is the maximum number of langlinks to return (defaults to 500, the maximum)
+    # _options_ is the hash of additional options
     #
     # Example:
     #   langlinks = mw.langlinks('Jerusalem')
-    def langlinks(article_or_pageid, lllimit = 500)
-      form_data = {'action' => 'query', 'prop' => 'langlinks', 'lllimit' => lllimit, 'redirects' => true}
+    def langlinks(article_or_pageid, lllimit = 500, options = {})
+      form_data = options.merge(
+        'action'    => 'query',
+        'prop'      => 'langlinks',
+        'lllimit'   => lllimit,
+        'redirects' => true
+      )
+
       case article_or_pageid
       when Fixnum
         form_data['pageids'] = article_or_pageid
@@ -598,34 +639,47 @@ module MediaWiki
     # Imports a MediaWiki XML dump
     #
     # [xml] String or array of page names to fetch
+    # [options] Hash of additional options
     #
     # Returns XML array <api><import><page/><page/>...
     # <page revisions="1"> (or more) means successfully imported
     # <page revisions="0"> means duplicate, not imported
-    def import(xmlfile)
-      form_data = { "action"  => "import",
-        "xml"     => File.new(xmlfile),
-        "token"   => get_token('import', 'Main Page'), # NB: dummy page name
-        "format"  => 'xml' }
-      make_api_request(form_data)
+    def import(xmlfile, options = {})
+      make_api_request(options.merge(
+        'action'  => 'import',
+        'xml'     => File.new(xmlfile),
+        'token'   => get_token('import', 'Main Page'), # NB: dummy page name
+        'format'  => 'xml'
+      ))
     end
 
     # Exports a page or set of pages
     #
     # [page_titles] String or array of page titles to fetch
+    # [options] Hash of additional options
     #
     # Returns MediaWiki XML dump
-    def export(page_titles)
-      form_data = {'action' => 'query', 'titles' => [page_titles].join('|'), 'export' => nil, 'exportnowrap' => nil}
-      make_api_request(form_data).first
+    def export(page_titles, options = {})
+      make_api_request(options.merge(
+        'action'       => 'query',
+        'titles'       => Array(page_titles).join('|'),
+        'export'       => nil,
+        'exportnowrap' => nil
+      )).first
     end
 
     # Get a list of all known namespaces
     #
+    # [options] Hash of additional options
+    #
     # Returns array of namespaces (name => id)
-    def namespaces_by_prefix
-      form_data = { 'action' => 'query', 'meta' => 'siteinfo', 'siprop' => 'namespaces' }
-      res = make_api_request(form_data)
+    def namespaces_by_prefix(options = {})
+      res = make_api_request(options.merge(
+        'action' => 'query',
+        'meta'   => 'siteinfo',
+        'siprop' => 'namespaces'
+      )).first
+
       REXML::XPath.match(res, "//ns").inject(Hash.new) do |namespaces, namespace|
         prefix = namespace.attributes["canonical"] || ""
         namespaces[prefix] = namespace.attributes["id"].to_i
@@ -635,10 +689,16 @@ module MediaWiki
 
     # Get a list of all installed (and registered) extensions
     #
+    # [options] Hash of additional options
+    #
     # Returns array of extensions (name => version)
-    def extensions
-      form_data = { 'action' => 'query', 'meta' => 'siteinfo', 'siprop' => 'extensions' }
-      res = make_api_request(form_data)
+    def extensions(options = {})
+      res = make_api_request(options.merge(
+        'action' => 'query',
+        'meta'   => 'siteinfo',
+        'siprop' => 'extensions'
+      )).first
+
       REXML::XPath.match(res, "//ext").inject(Hash.new) do |extensions, extension|
         name = extension.attributes["name"] || ""
         extensions[name] = extension.attributes["version"]
@@ -651,11 +711,18 @@ module MediaWiki
     # [user] Username to send mail to (name only: eg. 'Bob', not 'User:Bob')
     # [subject] Subject of message
     # [content] Content of message
+    # [options] Hash of additional options
     #
     # Will raise a 'noemail' APIError if the target user does not have a confirmed email address, see http://www.mediawiki.org/wiki/API:E-mail for details.
-    def email_user(user, subject, text)
-      form_data = { 'action' => 'emailuser', 'target' => user, 'subject' => subject, 'text' => text, 'token' => get_token('email', "User:" + user) }
-      res, _ = make_api_request(form_data)
+    def email_user(user, subject, text, options = {})
+      res = make_api_request(options.merge(
+        'action'  => 'emailuser',
+        'target'  => user,
+        'subject' => subject,
+        'text'    => text,
+        'token'   => get_token('email', "User:#{user}")
+      )).first
+
       res.elements['emailuser'].attributes['result'] == 'Success'
     end
 
@@ -663,33 +730,33 @@ module MediaWiki
     #
     # [query] Semantic Mediawiki query
     # [params] Array of additional parameters or options, eg. mainlabel=Foo or ?Place (optional)
+    # [options] Hash of additional options
     #
     # Returns result as an HTML string
-    def semantic_query(query, params = [])
-			if extensions.include? 'Semantic MediaWiki'
-				smw_version = extensions['Semantic MediaWiki'].to_f
-				if smw_version >= 1.7
-					form_data = { 'action' => 'ask', 'query' => "#{query}|#{params.join('|')}"}
-					xml, _ = make_api_request(form_data)
-					return xml
-				else
-					params << "format=list"
-					form_data = { 'action' => 'parse', 'prop' => 'text', 'text' => "{{#ask:#{query}|#{params.join('|')}}}" }
-					xml, _ = make_api_request(form_data)
-					return xml.elements["parse/text"].text
-				end
-			else
-				raise MediaWiki::Exception.new "Semantic MediaWiki extension not installed."
-			end
+    def semantic_query(query, params = [], options = {})
+      unless smw_version = extensions['Semantic MediaWiki']
+        raise MediaWiki::Exception, 'Semantic MediaWiki extension not installed.'
+      end
+
+      if smw_version.to_f >= 1.7
+        make_api_request(options.merge(
+          'action' => 'ask',
+          'query'  => "#{query}|#{params.join('|')}"
+        )).first
+      else
+        make_api_request(options.merge(
+          'action' => 'parse',
+          'prop'   => 'text',
+          'text'   => "{{#ask:#{query}|#{params.push('format=list').join('|')}}}"
+        )).first.elements['parse/text'].text
+      end
     end
 
     # Create a new account
     #
     # [options] is +Hash+ passed as query arguments. See https://www.mediawiki.org/wiki/API:Account_creation#Parameters for more information.
     def create_account(options)
-      form_data = options.merge({ 'action' => 'createaccount' })
-      res, _ = make_api_request(form_data)
-      res
+      make_api_request(options.merge('action' => 'createaccount')).first
     end
 
     # Sets options for currenlty logged in user
@@ -698,8 +765,12 @@ module MediaWiki
     # [optionname] a +String+ indicating which option to change (optional)
     # [optionvalue] the new value for optionname - allows pipe characters (optional)
     # [reset] a +Boolean+ indicating if all preferences should be reset to site defaults (optional)
-    def options(changes = {}, optionname = nil, optionvalue = nil, reset = false)
-      form_data = { 'action' => 'options', 'token' => get_options_token }
+    # [options] Hash of additional options
+    def options(changes = {}, optionname = nil, optionvalue = nil, reset = false, options = {})
+      form_data = options.merge(
+        'action' => 'options',
+        'token'  => get_options_token
+      )
 
       if changes.present?
         form_data['change'] = changes.map { |key, value| "#{key}=#{value}" }.join('|')
@@ -713,8 +784,7 @@ module MediaWiki
         form_data['reset'] = true
       end
 
-      res, _ = make_api_request(form_data)
-      res
+      make_api_request(form_data).first
     end
 
     # Set groups for a user
@@ -722,9 +792,10 @@ module MediaWiki
     # [user] Username of user to modify
     # [groups_to_add] Groups to add user to, as an array or a string if a single group (optional)
     # [groups_to_remove] Groups to remove user from, as an array or a string if a single group (optional)
-    def set_groups(user, groups_to_add = [], groups_to_remove = [], comment = '')
+    # [options] Hash of additional options
+    def set_groups(user, groups_to_add = [], groups_to_remove = [], comment = '', options = {})
       token = get_userrights_token(user)
-      userrights(user, token, groups_to_add, groups_to_remove, comment)
+      userrights(user, token, groups_to_add, groups_to_remove, comment, options)
     end
 
     # Review current revision of an article (requires FlaggedRevisions extension, see http://www.mediawiki.org/wiki/Extension:FlaggedRevs)
@@ -732,12 +803,20 @@ module MediaWiki
     # [title] Title of article to review
     # [flags] Hash of flags and values to set, eg. { "accuracy" => "1", "depth" => "2" }
     # [comment] Comment to add to review (optional)
-    def review(title, flags, comment = "Reviewed by MediaWiki::Gateway")
+    # [options] Hash of additional options
+    def review(title, flags, comment = "Reviewed by MediaWiki::Gateway", options = {})
       raise APIError.new('missingtitle', "Article #{title} not found") unless revid = revision(title)
-      form_data = {'action' => 'review', 'revid' => revid, 'token' => get_token('edit', title), 'comment' => comment}
-      form_data.merge!( Hash[flags.map {|k,v| ["flag_#{k}", v]}] )
-      res, _ = make_api_request(form_data)
-      res
+
+      form_data = options.merge(
+        'action'  => 'review',
+        'revid'   => revid,
+        'token'   => get_token('edit', title),
+        'comment' => comment
+      )
+
+      flags.each { |k, v| form_data["flag_#{k}"] = v }
+
+      make_api_request(form_data).first
     end
 
     private
@@ -787,22 +866,24 @@ module MediaWiki
       res.elements['tokens'].attributes['optionstoken']
     end
 
-    def userrights(user, token, groups_to_add, groups_to_remove, reason)
+    def userrights(user, token, groups_to_add, groups_to_remove, reason, options = {})
       # groups_to_add and groups_to_remove can be a string or an array. Turn them into MediaWiki's pipe-delimited list format.
       if groups_to_add.is_a? Array
         groups_to_add = groups_to_add.join('|')
       end
+
       if groups_to_remove.is_a? Array
         groups_to_remove = groups_to_remove.join('|')
       end
 
-      form_data = {'action' => 'userrights', 'user' => user, 'token' => token,
-        'add' => groups_to_add,
+      make_api_request(options.merge(
+        'action' => 'userrights',
+        'user'   => user,
+        'token'  => token,
+        'add'    => groups_to_add,
         'remove' => groups_to_remove,
         'reason' => reason
-      }
-      res, _ = make_api_request(form_data)
-      res
+      )).first
     end
 
 
