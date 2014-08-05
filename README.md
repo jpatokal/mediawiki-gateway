@@ -40,6 +40,10 @@ To build and install the gem use:
 
     bundle exec rake install
 
+### Testing against a live MediaWiki instance
+
+You need to have [Docker](https://docker.com) and [mediawiki-testwiki](https://rubygems.org/gems/mediawiki-testwiki) installed.
+
 ## Status
 
 This gem is no longer in active development.  Pull requests that fix bugs or add new features are more than welcome, but asking for new features is unlikely to make them materialize out of thin air.
