@@ -91,9 +91,16 @@ module FakeMediaWiki
     end
     
     def siteinfo
-      siteinfo_type = params[:siprop].to_sym
-      return send(siteinfo_type) if respond_to?(siteinfo_type)
-      halt(404, "Page not found")
+      if siteinfo_type = params[:siprop]
+        return send(siteinfo_type) if respond_to?(siteinfo_type)
+        halt(404, "Page not found")
+      else
+        api_response do |_|
+          _.query do
+            _.general(generator: "MediaWiki #{MediaWiki::VERSION}")
+          end
+        end
+      end
     end
     
     def namespaces

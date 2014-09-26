@@ -668,6 +668,26 @@ module MediaWiki
       )).first
     end
 
+    # Get the wiki's siteinfo as a hash. See http://www.mediawiki.org/wiki/API:Siteinfo.
+    #
+    # [options] Hash of additional options
+    def siteinfo(options = {})
+      res = make_api_request(options.merge(
+        'action' => 'query',
+        'meta'   => 'siteinfo'
+      )).first
+
+      REXML::XPath.first(res, '//query/general')
+        .attributes.each_with_object({}) { |(k, v), h| h[k] = v }
+    end
+
+    # Get the wiki's MediaWiki version.
+    #
+    # [options] Hash of additional options passed to #siteinfo
+    def version(options = {})
+      siteinfo(options).fetch('generator', '').split.last
+    end
+
     # Get a list of all known namespaces
     #
     # [options] Hash of additional options
