@@ -719,6 +719,32 @@ describe MediaWiki::Gateway do
 
   end
 
+  describe "#siteinfo" do
+
+    before do
+      $fake_media_wiki.reset
+      @siteinfo = @gateway.siteinfo
+    end
+
+    it "should get the siteinfo" do
+      @siteinfo.should == { 'generator' => "MediaWiki #{MediaWiki::VERSION}" }
+    end
+
+  end
+
+  describe "#version" do
+
+    before do
+      $fake_media_wiki.reset
+      @version = @gateway.version
+    end
+
+    it "should get the version" do
+      @version.should == MediaWiki::VERSION
+    end
+
+  end
+
   describe "#namespaces_by_prefix" do
 
     before do
