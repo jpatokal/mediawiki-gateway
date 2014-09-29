@@ -50,7 +50,7 @@ This gem is no longer in active development.  Pull requests that fix bugs or add
 
 ## Credits
 
-Maintained by Jani Patokallio.
+Loosely maintained by Jani Patokallio and [Jens Wille](https://github.com/blackwinter).  If you'd be seriously interested in joining as an active maintainer, drop us a line!
 
 Thanks to:
 * John Carney, Mike Williams, Daniel Heath and the rest of the Lonely Planet Atlas team.
