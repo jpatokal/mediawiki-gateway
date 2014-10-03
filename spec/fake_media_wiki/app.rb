@@ -1,5 +1,5 @@
-require 'rubygems'
 require 'sinatra/base'
+
 require_relative 'api_pages'
 require_relative 'query_handling'
 

@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'logger'
 require 'rest_client'
 require 'rexml/document'

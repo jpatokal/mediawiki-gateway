@@ -1,9 +1,8 @@
-require 'thread'
-require 'rake'
+require_relative 'lib/media_wiki'
+
 require "rubygems/package_task"
 require 'rdoc/task'
 require 'rspec/core/rake_task'
-require_relative 'lib/media_wiki'
 
 task :default => ['spec']
 
