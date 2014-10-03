@@ -1,4 +1,4 @@
-require_relative 'lib/media_wiki'
+require_relative 'lib/media_wiki/version'
 
 require "rubygems/package_task"
 require 'rdoc/task'
