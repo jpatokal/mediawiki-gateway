@@ -27,6 +27,7 @@ begin
     gemspec.summary = 'Connect to the mediawiki API'
     gemspec.description = ''
     gemspec.email = 'jpatokal@iki.fi'
+    gemspec.license = 'MIT'
     gemspec.homepage = 'http://github.com/jpatokal/mediawiki-gateway'
     gemspec.authors = ['Jani Patokallio']
     gemspec.version = MediaWiki::VERSION
