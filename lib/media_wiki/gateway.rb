@@ -7,11 +7,12 @@ require 'active_support'
 module MediaWiki
 
   class Gateway
+
     attr_reader :log
 
     # Set up a MediaWiki::Gateway for a given MediaWiki installation
     #
-    # [url] Path to API of target MediaWiki (eg. "http://en.wikipedia.org/w/api.php")
+    # [url] Path to API of target MediaWiki (eg. 'http://en.wikipedia.org/w/api.php')
     # [options] Hash of options
     # [http_options] Hash of options for RestClient::Request (via http_send)
     #
@@ -24,24 +25,25 @@ module MediaWiki
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
     # [:retry_count] Number of times to try before giving up if MediaWiki returns 503 Service Unavailable, defaults to 3 (original request plus two retries).
     # [:retry_delay] Seconds to wait before retry if MediaWiki returns 503 Service Unavailable, defaults to 10 seconds.
-    def initialize(url, options={}, http_options={})
-      default_options = {
-        :bot => false,
-        :limit => 500,
-        :logdevice => STDERR,
-        :loglevel => Logger::WARN,
-        :maxlag => 5,
-        :retry_count => 3,
-        :retry_delay => 10,
-        :max_results => 500
-      }
-      @options = default_options.merge(options)
-      @http_options = http_options
-      @wiki_url = url
+    def initialize(url, options = {}, http_options = {})
+      @options = {
+        bot:         false,
+        limit:       500,
+        logdevice:   STDERR,
+        loglevel:    Logger::WARN,
+        max_results: 500,
+        maxlag:      5,
+        retry_count: 3,
+        retry_delay: 10
+      }.merge(options)
+
       @log = Logger.new(@options[:logdevice])
       @log.level = @options[:loglevel]
-      @headers = { "User-Agent" => "MediaWiki::Gateway/#{MediaWiki::VERSION}", "Accept-Encoding" => "gzip" }
-      @cookies = {}
+
+      @http_options, @wiki_url, @cookies, @headers = http_options, url, {}, {
+        'User-Agent'      => "#{self.class}/#{MediaWiki::VERSION}",
+        'Accept-Encoding' => 'gzip'
+      }
     end
 
     attr_reader :base_url, :cookies
@@ -113,28 +115,30 @@ module MediaWiki
     #
     # Returns rendered page as string, or nil if the page does not exist
     def render(page_title, options = {})
-      form_data = {'action' => 'parse', 'page' => page_title}
+      form_data = { 'action' => 'parse', 'page' => page_title }
 
-      valid_options = %w(linkbase noeditsections noimages)
-      # Check options
-      options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
+      validate_options(options, %w[linkbase noeditsections noimages])
 
-      rendered = nil
-      parsed = make_api_request(form_data).first.elements["parse"]
-      if parsed.attributes["revid"] != '0'
-        rendered = parsed.elements["text"].text.gsub(/<!--(.|\s)*?-->/, '')
+      rendered, parsed = nil,
+        make_api_request(form_data).first.elements['parse']
+
+      if parsed.attributes['revid'] != '0'
+        rendered = parsed.elements['text'].text.gsub(/<!--(.|\s)*?-->/, '')
+
         # OPTIMIZE: unifiy the keys in +options+ like symbolize_keys! but w/o
-        if options["linkbase"] or options[:linkbase]
-          linkbase = options["linkbase"] || options[:linkbase]
+        if linkbase = options['linkbase'] || options[:linkbase]
           rendered = rendered.gsub(/\shref="\/wiki\/([\w\(\)\-\.%:,]*)"/, ' href="' + linkbase + '/wiki/\1"')
         end
-        if options["noeditsections"] or options[:noeditsections]
+
+        if options['noeditsections'] || options[:noeditsections]
           rendered = rendered.gsub(/<span class="editsection">\[.+\]<\/span>/, '')
         end
-        if options["noimages"] or options[:noimages]
+
+        if options['noimages'] || options[:noimages]
           rendered = rendered.gsub(/<img.*\/>/, '')
         end
       end
+
       rendered
     end
 
@@ -151,24 +155,32 @@ module MediaWiki
     # * [:minor] Mark this edit as "minor" if true, mark this edit as "major" if false, leave major/minor status by default if not specified
     # * [:notminor] Mark this edit as "major" if true
     # * [:bot] Set the bot parameter (see http://www.mediawiki.org/wiki/API:Edit#Parameters).  Defaults to false.
-    def create(title, content, options={})
-      form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => get_token('edit', title)}
-      if @options[:bot] or options[:bot]
-        form_data['bot'] = '1'
-        form_data['assert'] = 'bot'
+    def create(title, content, options = {})
+      form_data = {
+        'action'  => 'edit',
+        'title'   => title,
+        'text'    => content,
+        'summary' => options[:summary] || '',
+        'token'   => get_token('edit', title)
+      }
+
+      if @options[:bot] || options[:bot]
+        form_data.update('bot' => '1', 'assert' => 'bot')
       end
-      form_data['minor'] = '1' if options[:minor]
-      form_data['notminor'] = '1' if options[:minor] == false or options[:notminor]
-      form_data['createonly'] = "" unless options[:overwrite]
-      form_data['section'] = options[:section].to_s if options[:section]
+
+      form_data['minor']      = '1' if options[:minor]
+      form_data['notminor']   = '1' if options[:minor] == false || options[:notminor]
+      form_data['createonly'] = '' unless options[:overwrite]
+      form_data['section']    = options[:section].to_s if options[:section]
+
       make_api_request(form_data)
     end
 
     # Edit page
     #
     # Same options as create, but always overwrites existing pages (and creates them if they don't exist already).
-    def edit(title, content, options={})
-      create(title, content, {:overwrite => true}.merge(options))
+    def edit(title, content, options = {})
+      create(title, content, { overwrite: true }.merge(options))
     end
 
     # Protect/unprotect a page
@@ -194,41 +206,55 @@ module MediaWiki
     #      {:action => 'edit', :group => 'autoconfirmed', :expiry => 'next Monday 16:04:57'}]
     #    mw.protect('Main Page', prt, {:reason => 'awesomeness'})
     #
-    def protect(title, protections, options={})
-      # validate and format protections
-      protections = [protections] if protections.is_a?(Hash)
-      raise ArgumentError.new("Invalid type '#{protections.class}' for protections") unless protections.is_a?(Array)
-      valid_prt_options = %w(action group expiry)
-      required_prt_options = %w(action group)
-      p,e = [],[]
-      protections.each do |prt|
-        existing_prt_options = []
-        prt.keys.each do |opt|
-          if valid_prt_options.include?(opt.to_s)
-            existing_prt_options.push(opt.to_s)
-          else
-            raise ArgumentError.new("Unknown option '#{opt}' for protections")
-          end
-        end
-        required_prt_options.each{|opt| raise ArgumentError.new("Missing required option '#{opt}' for protections") unless existing_prt_options.include?(opt)}
-        p.push("#{prt[:action]}=#{prt[:group]}")
-        if prt.has_key?(:expiry)
-          e.push(prt[:expiry].to_s)
+    def protect(title, protections, options = {})
+      case protections
+        when Array
+          # ok
+        when Hash
+          protections = [protections]
         else
-          e.push('never')
-        end
+          raise ArgumentError, "Invalid type '#{protections.class}' for protections"
       end
 
-      # validate options
-      valid_options = %w(cascade reason)
-      options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
+      valid_prt_options    = %w[action group expiry]
+      required_prt_options = %w[action group]
 
-      # make API request
-      form_data = {'action' => 'protect', 'title' => title, 'token' => get_token('protect', title)}
-      form_data['protections'] = p.join('|')
-      form_data['expiry'] = e.join('|')
-      form_data['cascade'] = '' if options[:cascade] === true
-      form_data['reason'] = options[:reason].to_s if options[:reason]
+      p, e = [], []
+
+      protections.each { |prt|
+        existing_prt_options = []
+
+        prt.each_key { |opt|
+          if valid_prt_options.include?(opt.to_s)
+            existing_prt_options << opt.to_s
+          else
+            raise ArgumentError, "Unknown option '#{opt}' for protections"
+          end
+        }
+
+        required_prt_options.each { |opt|
+          unless existing_prt_options.include?(opt)
+            raise ArgumentError, "Missing required option '#{opt}' for protections"
+          end
+        }
+
+        p << "#{prt[:action]}=#{prt[:group]}"
+        e << (prt.key?(:expiry) ? prt[:expiry].to_s : 'never')
+      }
+
+      validate_options(options, %w[cascade reason])
+
+      form_data = {
+        'action'      => 'protect',
+        'title'       => title,
+        'token'       => get_token('protect', title),
+        'protections' => p.join('|'),
+        'expiry'      => e.join('|')
+      }
+
+      form_data['cascade'] = '' if options[:cascade] == true
+      form_data['reason']  = options[:reason].to_s if options[:reason]
+
       make_api_request(form_data)
     end
 
@@ -245,12 +271,15 @@ module MediaWiki
     # * [:reason] Reason for move
     # * [:watch] Add page and any redirect to watchlist
     # * [:unwatch] Remove page and any redirect from watchlist
-    def move(from, to, options={})
-      valid_options = %w(movesubpages movetalk noredirect reason watch unwatch)
-      options.keys.each{|opt| raise ArgumentError.new("Unknown option '#{opt}'") unless valid_options.include?(opt.to_s)}
+    def move(from, to, options = {})
+      validate_options(options, %w[movesubpages movetalk noredirect reason watch unwatch])
 
-      form_data = options.merge({'action' => 'move', 'from' => from, 'to' => to, 'token' => get_token('move', from)})
-      make_api_request(form_data)
+      make_api_request(options.merge(
+        'action' => 'move',
+        'from'   => from,
+        'to'     => to,
+        'token'  => get_token('move', from)
+      ))
     end
 
     # Delete one page. (MediaWiki API does not support deleting multiple pages at a time.)
@@ -317,7 +346,7 @@ module MediaWiki
     # Get a list of pages that link to a target page
     #
     # [title] Link target page
-    # [filter] "all" links (default), "redirects" only, or "nonredirects" (plain links only)
+    # [filter] 'all' links (default), 'redirects' only, or 'nonredirects' (plain links only)
     # [options] Hash of additional options
     #
     # Returns array of page titles (empty if no matches)
@@ -339,10 +368,7 @@ module MediaWiki
     #
     # Returns array of page titles (empty if no matches)
     def search(key, namespaces = nil, limit = @options[:limit], max_results = @options[:max_results], options = {})
-      titles = []
-      offset = 0
-
-      form_data = options.merge(
+      titles, offset, form_data = [], 0, options.merge(
         'action'   => 'query',
         'list'     => 'search',
         'srwhat'   => 'text',
@@ -351,15 +377,18 @@ module MediaWiki
       )
 
       if namespaces
-        namespaces = [ namespaces ] unless namespaces.kind_of? Array
-        form_data['srnamespace'] = namespaces.map! do |ns| namespaces_by_prefix[ns] end.join('|')
+        form_data['srnamespace'] = Array(namespaces).map! { |ns|
+          namespaces_by_prefix[ns]
+        }.join('|')
       end
 
       begin
         form_data['sroffset'] = offset if offset
-        form_data['srlimit'] = [limit, max_results - offset.to_i].min
+        form_data['srlimit']  = [limit, max_results - offset.to_i].min
+
         res, offset = make_api_request(form_data, '//query-continue/search/@sroffset')
-        titles += REXML::XPath.match(res, "//p").map { |x| x.attributes["title"] }
+
+        titles += REXML::XPath.match(res, '//p').map { |x| x.attributes['title'] }
       end while offset && offset.to_i < max_results.to_i
 
       titles
@@ -402,7 +431,7 @@ module MediaWiki
     #
     # * Upload file contents directly.
     # * Have the MediaWiki server fetch a file from a URL, using the
-    #   "url" parameter
+    #   'url' parameter
     #
     # Requires Mediawiki 1.16+
     #
@@ -416,7 +445,7 @@ module MediaWiki
     #
     # Options:
     # * 'filename'       - Target filename (defaults to local name if not given), options[:target] is alias for this.
-    # * 'comment'        - Upload comment. Also used as the initial page text for new files if "text" is not specified.
+    # * 'comment'        - Upload comment. Also used as the initial page text for new files if 'text' is not specified.
     # * 'text'           - Initial page text for new files
     # * 'watch'          - Watch the page
     # * 'ignorewarnings' - Ignore any warnings
@@ -428,41 +457,39 @@ module MediaWiki
     # * :summary         - Edit summary for history. Used as 'comment'. Also used as 'text' if neither it or :description is specified.
     #
     # Examples:
-    #   mw.upload('/path/to/local/file.jpg', 'filename' => "RemoteFile.jpg")
-    #   mw.upload(nil, 'filename' => "RemoteFile2.jpg", 'url' => 'http://remote.com/server/file.jpg')
+    #   mw.upload('/path/to/local/file.jpg', 'filename' => 'RemoteFile.jpg')
+    #   mw.upload(nil, 'filename' => 'RemoteFile2.jpg', 'url' => 'http://remote.com/server/file.jpg')
     #
-    def upload(path, options={})
+    def upload(path, options = {})
       if options[:description]
-        options['text'] = options[:description]
-        options.delete(:description)
+        options['text'] = options.delete(:description)
       end
 
       if options[:target]
-        options['filename'] = options[:target]
-        options.delete(:target)
+        options['filename'] = options.delete(:target)
       end
 
       if options[:summary]
         options['text'] ||= options[:summary]
-        options['comment'] = options[:summary]
-        options.delete(:summary)
+        options['comment'] = options.delete(:summary)
       end
 
-      options['comment'] ||= "Uploaded by MediaWiki::Gateway"
+      options['comment'] ||= 'Uploaded by MediaWiki::Gateway'
+
       options['file'] = File.new(path) if path
+
       full_name = path || options['url']
       options['filename'] ||= File.basename(full_name) if full_name
 
-      raise ArgumentError.new(
-        "One of the 'file', 'url' or 'sessionkey' options must be specified!"
-      ) unless options['file'] || options['url'] || options['sessionkey']
+      unless options['file'] || options['url'] || options['sessionkey']
+        raise ArgumentError,
+          "One of the 'file', 'url' or 'sessionkey' options must be specified!"
+      end
 
-      form_data = options.merge(
+      make_api_request(options.merge(
         'action' => 'upload',
-        'token' => get_token('edit', options['filename'])
-      )
-
-      make_api_request(form_data)
+        'token'  => get_token('edit', options['filename'])
+      ))
     end
 
     # Checks if page is a redirect.
@@ -471,13 +498,17 @@ module MediaWiki
     #
     # Returns true if the page is a redirect, false if it is not or the page does not exist.
     def redirect?(page_title)
-      form_data = {'action' => 'query', 'prop' => 'info', 'titles' => page_title}
-      page = make_api_request(form_data).first.elements["query/pages/page"]
-      !!(valid_page?(page) and page.attributes["redirect"])
+      page = make_api_request(
+        'action' => 'query',
+        'prop'   => 'info',
+        'titles' => page_title
+      ).first.elements['query/pages/page']
+
+      !!(valid_page?(page) && page.attributes['redirect'])
     end
 
     # Get image list for given article[s].  Follows redirects.
-    # 
+    #
     # _article_or_pageid_ is the title or pageid of a single article
     # _imlimit_ is the maximum number of images to return (defaults to 200)
     # _options_ is the hash of additional options
@@ -493,28 +524,23 @@ module MediaWiki
         'redirects' => true
       )
 
-      case article_or_pageid
-      when Fixnum
-        form_data['pageids'] = article_or_pageid
-      else
-        form_data['titles'] = article_or_pageid
-      end
-      xml, _ = make_api_request(form_data)
-      page = xml.elements["query/pages/page"]
-      if valid_page? page
-        if xml.elements["query/redirects/r"]
+      form_data[article_or_pageid.is_a?(Fixnum) ?
+        'pageids' : 'titles'] = article_or_pageid
+
+      xml = make_api_request(form_data).first
+
+      if valid_page?(page = xml.elements['query/pages/page'])
+        if xml.elements['query/redirects/r']
           # We're dealing with redirect here.
-          images(page.attributes["pageid"].to_i, imlimit)
+          images(page.attributes['pageid'].to_i, imlimit)
         else
-          REXML::XPath.match(page, "images/im").map { |x| x.attributes["title"] }
+          REXML::XPath.match(page, 'images/im').map { |x| x.attributes['title'] }
         end
-      else
-        nil
       end
     end
 
     # Get list of interlanguage links for given article[s].  Follows redirects.  Returns a hash like { 'id' => 'Yerusalem', 'en' => 'Jerusalem', ... }
-    # 
+    #
     # _article_or_pageid_ is the title or pageid of a single article
     # _lllimit_ is the maximum number of langlinks to return (defaults to 500, the maximum)
     # _options_ is the hash of additional options
@@ -529,40 +555,30 @@ module MediaWiki
         'redirects' => true
       )
 
-      case article_or_pageid
-      when Fixnum
-        form_data['pageids'] = article_or_pageid
-      else
-        form_data['titles'] = article_or_pageid
-      end
-      xml, _ = make_api_request(form_data)
-      page = xml.elements["query/pages/page"]
-      if valid_page? page
-        if xml.elements["query/redirects/r"]
+      form_data[article_or_pageid.is_a?(Fixnum) ?
+        'pageids' : 'titles'] = article_or_pageid
+
+      xml = make_api_request(form_data).first
+
+      if valid_page?(page = xml.elements['query/pages/page'])
+        if xml.elements['query/redirects/r']
           # We're dealing with the redirect here.
-          langlinks(page.attributes["pageid"].to_i, lllimit)
-        else
-          langl = REXML::XPath.match(page, 'langlinks/ll')
-          if langl.nil?
-            nil
-          else
-            links = {}
-            langl.each{ |ll| links[ll.attributes["lang"]] = ll.children[0].to_s } 
-            return links
-          end
+          langlinks(page.attributes['pageid'].to_i, lllimit)
+        elsif langl = REXML::XPath.match(page, 'langlinks/ll')
+          langl.each_with_object({}) { |ll, links|
+            links[ll.attributes['lang']] = ll.children[0].to_s
+          }
         end
-      else
-        nil
       end
     end
 
-    # Convenience wrapper for _langlinks_ returning the title in language _lang_ (ISO code) for a given article of pageid, if it exists, via the interlanguage link 
-    # 
+    # Convenience wrapper for _langlinks_ returning the title in language _lang_ (ISO code) for a given article of pageid, if it exists, via the interlanguage link
+    #
     # Example:
     #
     #  langlink = mw.langlink_for_lang('Tycho Brahe', 'de')
     def langlink_for_lang(article_or_pageid, lang)
-      return langlinks(article_or_pageid)[lang]
+      langlinks(article_or_pageid)[lang]
     end
 
     # Requests image info from MediaWiki. Follows redirects.
@@ -582,7 +598,7 @@ module MediaWiki
     #
     # Example:
     #   mw.image_info(
-    #     "Trooper.jpg", 'iiprop' => ['timestamp', 'user']
+    #     'Trooper.jpg', 'iiprop' => ['timestamp', 'user']
     #   ).each do |key, value|
     #     puts "#{key.inspect} => #{value.inspect}"
     #   end
@@ -591,47 +607,39 @@ module MediaWiki
     #   "timestamp" => "2009-10-31T12:59:11Z"
     #   "user" => "Valdas"
     #
-    def image_info(file_name_or_page_id, options={})
-      options['iiprop'] = options['iiprop'].join('|') \
-        if options['iiprop'].respond_to?(:join)
+    def image_info(file_name_or_page_id, options = {})
+      if options['iiprop'].respond_to?(:join)
+        options['iiprop'] = options['iiprop'].join('|')
+      end
+
       form_data = options.merge(
-        'action' => 'query',
-        'prop' => 'imageinfo',
+        'action'    => 'query',
+        'prop'      => 'imageinfo',
         'redirects' => true
       )
 
-      case file_name_or_page_id
-      when Fixnum
-        form_data['pageids'] = file_name_or_page_id
-      else
-        form_data['titles'] = "File:#{file_name_or_page_id}"
-      end
+      file_name_or_page_id.is_a?(Fixnum) ?
+        form_data['pageids'] = file_name_or_page_id :
+        form_data['titles']  = "File:#{file_name_or_page_id}"
 
-      xml, _ = make_api_request(form_data)
-      page = xml.elements["query/pages/page"]
-      if valid_page? page
-        if xml.elements["query/redirects/r"]
+      xml = make_api_request(form_data).first
+
+      if valid_page?(page = xml.elements['query/pages/page'])
+        if xml.elements['query/redirects/r']
           # We're dealing with redirect here.
-          image_info(page.attributes["pageid"].to_i, options)
+          image_info(page.attributes['pageid'].to_i, options)
         else
-          page.elements["imageinfo/ii"].attributes
+          page.elements['imageinfo/ii'].attributes
         end
-      else
-        nil
       end
     end
 
     # Download _file_name_ (without "File:" or "Image:" prefix). Returns file contents. All options are passed to
     # #image_info however options['iiprop'] is forced to url. You can still
     # set other options to control what file you want to download.
-    def download(file_name, options={})
-      options['iiprop'] = 'url'
-
-      attributes = image_info(file_name, options)
-      if attributes
-        RestClient.get attributes['url']
-      else
-        nil
+    def download(file_name, options = {})
+      if attributes = image_info(file_name, options.merge('iiprop' => 'url'))
+        RestClient.get(attributes['url'])
       end
     end
 
@@ -699,11 +707,10 @@ module MediaWiki
         'siprop' => 'namespaces'
       )).first
 
-      REXML::XPath.match(res, "//ns").inject(Hash.new) do |namespaces, namespace|
-        prefix = namespace.attributes["canonical"] || ""
-        namespaces[prefix] = namespace.attributes["id"].to_i
-        namespaces
-      end
+      REXML::XPath.match(res, '//ns').each_with_object({}) { |namespace, namespaces|
+        prefix = namespace.attributes['canonical'] || ''
+        namespaces[prefix] = namespace.attributes['id'].to_i
+      }
     end
 
     # Get a list of all installed (and registered) extensions
@@ -718,11 +725,10 @@ module MediaWiki
         'siprop' => 'extensions'
       )).first
 
-      REXML::XPath.match(res, "//ext").inject(Hash.new) do |extensions, extension|
-        name = extension.attributes["name"] || ""
-        extensions[name] = extension.attributes["version"]
-        extensions
-      end
+      REXML::XPath.match(res, '//ext').each_with_object({}) { |extension, extensions|
+        name = extension.attributes['name'] || ''
+        extensions[name] = extension.attributes['version']
+      }
     end
 
     # Sends e-mail to a user
@@ -779,7 +785,7 @@ module MediaWiki
     end
 
     # Sets options for currenlty logged in user
-    # 
+    #
     # [changes] a +Hash+ that will be transformed into an equal sign and pipe-separated key value parameter
     # [optionname] a +String+ indicating which option to change (optional)
     # [optionvalue] the new value for optionname - allows pipe characters (optional)
@@ -820,10 +826,10 @@ module MediaWiki
     # Review current revision of an article (requires FlaggedRevisions extension, see http://www.mediawiki.org/wiki/Extension:FlaggedRevs)
     #
     # [title] Title of article to review
-    # [flags] Hash of flags and values to set, eg. { "accuracy" => "1", "depth" => "2" }
+    # [flags] Hash of flags and values to set, eg. { 'accuracy' => '1', 'depth' => '2' }
     # [comment] Comment to add to review (optional)
     # [options] Hash of additional options
-    def review(title, flags, comment = "Reviewed by MediaWiki::Gateway", options = {})
+    def review(title, flags, comment = 'Reviewed by MediaWiki::Gateway', options = {})
       raise APIError.new('missingtitle', "Article #{title} not found") unless revid = revision(title)
 
       form_data = options.merge(
@@ -857,46 +863,64 @@ module MediaWiki
     #
     def custom_query(options)
       form_data = {}
-      options.each {|k,v| form_data[k.to_s] = v.to_s }
-      form_data['action'] = 'query'
-      make_api_request(form_data).first.elements['query']
+      options.each { |k, v| form_data[k.to_s] = v.to_s }
+      make_api_request(form_data.merge('action' => 'query')).first.elements['query']
     end
 
     private
 
     # Fetch token (type 'delete', 'edit', 'email', 'import', 'move', 'protect')
     def get_token(type, page_titles)
-      form_data = {'action' => 'query', 'prop' => 'info', 'intoken' => type, 'titles' => page_titles}
-      res, _ = make_api_request(form_data)
-      token = res.elements["query/pages/page"].attributes[type + "token"]
-      raise Unauthorized.new "User is not permitted to perform this operation: #{type}" if token.nil?
+      res = make_api_request(
+        'action'  => 'query',
+        'prop'    => 'info',
+        'intoken' => type,
+        'titles'  => page_titles
+      ).first
+
+      unless token = res.elements['query/pages/page'].attributes[type + 'token']
+        raise Unauthorized.new "User is not permitted to perform this operation: #{type}"
+      end
+
       token
     end
 
     def get_undelete_token(page_titles)
-      form_data = {'action' => 'query', 'list' => 'deletedrevs', 'prop' => 'info', 'drprop' => 'token', 'titles' => page_titles}
-      res, _ = make_api_request(form_data)
-      if res.elements["query/deletedrevs/page"]
-        token = res.elements["query/deletedrevs/page"].attributes["token"]
-        raise Unauthorized.new "User is not permitted to perform this operation: #{type}" if token.nil?
+      res = make_api_request(
+        'action' => 'query',
+        'list'   => 'deletedrevs',
+        'prop'   => 'info',
+        'drprop' => 'token',
+        'titles' => page_titles
+      ).first
+
+      if res.elements['query/deletedrevs/page']
+        unless token = res.elements['query/deletedrevs/page'].attributes['token']
+          raise Unauthorized.new("User is not permitted to perform this operation: #{type}")
+        end
+
         token
-      else
-        nil
       end
     end
 
     # User rights management (aka group assignment)
     def get_userrights_token(user)
-      form_data = {'action' => 'query', 'list' => 'users', 'ustoken' => 'userrights', 'ususers' => user}
-      res, _ = make_api_request(form_data)
-      token = res.elements["query/users/user"].attributes["userrightstoken"]
+      res = make_api_request(
+        'action'  => 'query',
+        'list'    => 'users',
+        'ustoken' => 'userrights',
+        'ususers' => user
+      ).first
+
+      token = res.elements['query/users/user'].attributes['userrightstoken']
 
       @log.debug("RESPONSE: #{res.to_s}")
-      if token.nil?
-        if res.elements["query/users/user"].attributes["missing"]
+
+      unless token
+        if res.elements['query/users/user'].attributes['missing']
           raise APIError.new('invaliduser', "User '#{user}' was not found (get_userrights_token)")
         else
-          raise Unauthorized.new "User '#{@username}' is not permitted to perform this operation: get_userrights_token"
+          raise Unauthorized.new("User '#{@username}' is not permitted to perform this operation: get_userrights_token")
         end
       end
 
@@ -904,18 +928,17 @@ module MediaWiki
     end
 
     def get_options_token
-      form_data = { 'action' => 'tokens', 'type' => 'options' }
-      res, _ = make_api_request(form_data)
+      res = make_api_request('action' => 'tokens', 'type' => 'options').first
       res.elements['tokens'].attributes['optionstoken']
     end
 
     def userrights(user, token, groups_to_add, groups_to_remove, reason, options = {})
       # groups_to_add and groups_to_remove can be a string or an array. Turn them into MediaWiki's pipe-delimited list format.
-      if groups_to_add.is_a? Array
+      if groups_to_add.is_a?(Array)
         groups_to_add = groups_to_add.join('|')
       end
 
-      if groups_to_remove.is_a? Array
+      if groups_to_remove.is_a?(Array)
         groups_to_remove = groups_to_remove.join('|')
       end
 
@@ -970,32 +993,37 @@ module MediaWiki
     # [retry_count] Counter for retries
     #
     # Returns XML document
-    def make_api_request(form_data, continue_xpath=nil, retry_count=1)
-      if form_data.kind_of? Hash
+    def make_api_request(form_data, continue_xpath = nil, retry_count = 1)
+      if form_data.is_a?(Hash)
         form_data['format'] = 'xml'
         form_data['maxlag'] = @options[:maxlag]
       end
-      http_send(@wiki_url, form_data, @headers.merge({:cookies => @cookies})) do |response, &block|
-        if response.code == 503 and retry_count < @options[:retry_count]
+
+      http_send(@wiki_url, form_data, @headers.merge(cookies: @cookies)) { |response, &block|
+        if response.code == 503 && retry_count < @options[:retry_count]
           log.warn("503 Service Unavailable: #{response.body}.  Retry in #{@options[:retry_delay]} seconds.")
-          sleep @options[:retry_delay]
+          sleep(@options[:retry_delay])
           make_api_request(form_data, continue_xpath, retry_count + 1)
         end
+
         # Check response for errors and return XML
-        raise MediaWiki::Exception.new "Bad response: #{response}" unless response.code >= 200 and response.code < 300
+        unless response.code >= 200 && response.code < 300
+          raise MediaWiki::Exception.new("Bad response: #{response}")
+        end
+
         doc = get_response(response.dup)
-        action = form_data['action']
 
         # login and createaccount actions require a second request with a token received on the first request
-        if %w(login createaccount).include?(action)
+        if %w[login createaccount].include?(action = form_data['action'])
           action_result = doc.elements[action].attributes['result']
-          @cookies.merge!(response.cookies)
+          @cookies.update(response.cookies)
 
           case action_result.downcase
-            when "success" then
+            when 'success'
               return [doc, false]
-            when "needtoken"
-              token = doc.elements[action].attributes["token"]
+            when 'needtoken'
+              token = doc.elements[action].attributes['token']
+
               if action == 'login'
                 return make_api_request(form_data.merge('lgtoken' => token))
               elsif action == 'createaccount'
@@ -1009,23 +1037,21 @@ module MediaWiki
               end
           end
         end
-        continue = (continue_xpath and doc.elements['query-continue']) ? REXML::XPath.first(doc, continue_xpath) : nil
-        return [doc, continue]
-      end
+
+        return [doc, (continue_xpath && doc.elements['query-continue']) ?
+          REXML::XPath.first(doc, continue_xpath) : nil]
+      }
     end
 
     # Execute the HTTP request using either GET or POST as appropriate
     def http_send url, form_data, headers, &block
-      opts = @http_options.merge(:url => url, :headers => headers)
+      opts = @http_options.merge(url: url, headers: headers)
+      opts[:method] = form_data['action'] == 'query' ? :get : :post
+      opts[:method] == :get ? headers[:params] = form_data : opts[:payload] = form_data
 
-      if form_data['action'] == 'query'
-        log.debug("GET: #{form_data.inspect}, #{@cookies.inspect}")
-        headers[:params] = form_data
-        RestClient::Request.execute(opts.update(:method => :get), &block)
-      else
-        log.debug("POST: #{form_data.inspect}, #{@cookies.inspect}")
-        RestClient::Request.execute(opts.update(:method => :post, :payload => form_data), &block)
-      end
+      log.debug("#{opts[:method].upcase}: #{form_data.inspect}, #{@cookies.inspect}")
+
+      RestClient::Request.execute(opts, &block)
     end
 
     # Get API XML response
@@ -1033,41 +1059,48 @@ module MediaWiki
     # Otherwise return XML root
     def get_response(res)
       begin
-        res = res.force_encoding("UTF-8") if res.respond_to?(:force_encoding)
+        res = res.force_encoding('UTF-8') if res.respond_to?(:force_encoding)
         doc = REXML::Document.new(res).root
       rescue REXML::ParseException
-        raise MediaWiki::Exception.new "Response is not XML.  Are you sure you are pointing to api.php?"
+        raise MediaWiki::Exception.new('Response is not XML.  Are you sure you are pointing to api.php?')
       end
+
       log.debug("RES: #{doc}")
-      raise MediaWiki::Exception.new "Response does not contain Mediawiki API XML: #{res}" unless [ "api", "mediawiki" ].include? doc.name
-      if doc.elements["error"]
-        code = doc.elements["error"].attributes["code"]
-        info = doc.elements["error"].attributes["info"]
-        raise APIError.new(code, info)
+
+      unless %w[api mediawiki].include?(doc.name)
+        raise MediaWiki::Exception.new("Response does not contain Mediawiki API XML: #{res}")
       end
-      if doc.elements["warnings"]
-        warning("API warning: #{doc.elements["warnings"].children.map {|e| e.text}.join(", ")}")
+
+      if error = doc.elements['error']
+        raise APIError.new(*error.attributes.values_at(*%w[code info]))
       end
+
+      if warnings = doc.elements['warnings']
+        warning("API warning: #{warnings.children.map(&:text).join(', ')}")
+      end
+
       doc
     end
 
+    def validate_options(options, valid_options)
+      options.each_key { |opt|
+        unless valid_options.include?(opt.to_s)
+          raise ArgumentError, "Unknown option '#{opt}'", caller(1)
+        end
+      }
+    end
+
     def valid_page?(page)
-      return false unless page
-      return false if page.attributes["missing"]
-      if page.attributes["invalid"]
-        warning("Invalid title '#{page.attributes["title"]}'")
-      else
-        true
-      end
+      page && !page.attributes['missing'] && (!page.attributes['invalid'] ||
+        warning("Invalid title '#{page.attributes['title']}'"))
     end
 
     def warning(msg)
-      if @options[:ignorewarnings]
-        log.warn(msg)
-        return false
-      else
-        raise APIError.new('warning', msg)
-      end
+      raise APIError.new('warning', msg) unless @options[:ignorewarnings]
+      log.warn(msg)
+      false
     end
+
   end
+
 end

@@ -23,7 +23,7 @@ Simple page creation script:
     require 'media_wiki'
     mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php')
     mw.login('RubyBot', 'pa$$w0rd')
-    mw.create('PageTitle', 'Hello world!', :summary => 'My first page')
+    mw.create('PageTitle', 'Hello world!', summary: 'My first page')
 
 ## Development environment
 
@@ -55,4 +55,3 @@ Loosely maintained by Jani Patokallio and [Jens Wille](https://github.com/blackw
 Thanks to:
 * John Carney, Mike Williams, Daniel Heath and the rest of the Lonely Planet Atlas team.
 * Github users for code contributions, see https://github.com/jpatokal/mediawiki-gateway/pulls
-
