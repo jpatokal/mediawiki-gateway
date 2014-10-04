@@ -838,6 +838,30 @@ module MediaWiki
       make_api_request(form_data).first
     end
 
+    # Make a custom query
+    #
+    # [options] query options
+    #
+    # Returns the REXML::Element object as result
+    #
+    # Example:
+    #   def creation_time(pagename)
+    #     res = bot.custom_query(:prop => :revisions,
+    #                            :titles => pagename,
+    #                            :rvprop => :timestamp,
+    #                            :rvdir => :newer,
+    #                            :rvlimit => 1)
+    #     timestr = res.get_elements('*/*/*/rev')[0].attribute('timestamp').to_s
+    #     time.parse(timestr)
+    #   end
+    #
+    def custom_query(options)
+      form_data = {}
+      options.each {|k,v| form_data[k.to_s] = v.to_s }
+      form_data['action'] = 'query'
+      make_api_request(form_data).first.elements['query']
+    end
+
     private
 
     # Fetch token (type 'delete', 'edit', 'email', 'import', 'move', 'protect')
@@ -903,31 +927,6 @@ module MediaWiki
         'remove' => groups_to_remove,
         'reason' => reason
       )).first
-    end
-
-
-    # Make a custom query
-    #
-    # [options] query options
-    #
-    # Returns the REXML::Element object as result
-    #
-    # Example:
-    #   def creation_time(pagename)
-    #     res = bot.custom_query(:prop => :revisions,
-    #                            :titles => pagename,
-    #                            :rvprop => :timestamp,
-    #                            :rvdir => :newer,
-    #                            :rvlimit => 1)
-    #     timestr = res.get_elements('*/*/*/rev')[0].attribute('timestamp').to_s
-    #     time.parse(timestr)
-    #   end
-    #
-    def custom_query(options)
-      form_data = {}
-      options.each {|k,v| form_data[k.to_s] = v.to_s }
-      form_data['action'] = 'query'
-      make_api_request(form_data).first.elements['query']
     end
 
     # Iterate over query results
