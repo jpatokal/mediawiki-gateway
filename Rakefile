@@ -33,6 +33,7 @@ begin
     gemspec.homepage = "http://github.com/jpatokal/mediawiki-gateway"
     gemspec.authors = ["Jani Patokallio"]
     gemspec.version = MediaWiki::VERSION
+    gemspec.required_ruby_version = '>= 1.9.3'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"

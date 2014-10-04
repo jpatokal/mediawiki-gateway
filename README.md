@@ -8,7 +8,7 @@ A Ruby framework for MediaWiki API manipulation.  Features out of the box:
 * Support for maxlag detection and automated retries on 503
 * Integrated logging
 * Tested up to MediaWiki 1.22
-* Should work with both Ruby 1.8 and 1.9
+* Should work with Ruby 1.9.3 and higher
 
 Gem:  http://rubygems.org/gems/mediawiki-gateway
 
