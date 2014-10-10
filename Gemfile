@@ -7,7 +7,6 @@ group :development do
   gem 'atomic'
   gem 'jeweler'
   gem 'sham_rack'
-  gem 'rr'
   gem 'rspec', '~> 1.3'
   gem 'rspec-core'
   gem 'rspec-expectations'
