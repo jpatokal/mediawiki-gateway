@@ -2,7 +2,7 @@ require 'logger'
 require 'rest_client'
 require 'rexml/document'
 require 'uri'
-require 'active_support'
+require 'active_support/core_ext/object/blank'
 
 module MediaWiki
 

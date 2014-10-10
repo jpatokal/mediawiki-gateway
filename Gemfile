@@ -4,6 +4,7 @@ gem 'rest-client', '>= 1.3.0'
 gem 'activesupport'
 
 group :development do
+  gem 'equivalent-xml'
   gem 'jeweler'
   gem 'nokogiri'
   gem 'sham_rack'
@@ -12,5 +13,4 @@ group :development do
   gem 'rspec-expectations'
   gem 'rspec-mocks'
   gem 'sinatra'
-  gem 'activemodel'
 end

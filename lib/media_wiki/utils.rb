@@ -1,3 +1,5 @@
+require 'active_support/core_ext/string/multibyte'
+
 module MediaWiki
 
   class << self

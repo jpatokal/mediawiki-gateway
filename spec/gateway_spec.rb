@@ -322,7 +322,7 @@ describe MediaWiki::Gateway do
             <edit new='' result='Success' pageid='8' title='A New Page' oldrevid='0' newrevid='8'/>
           </api>
         XML
-        Hash.from_xml(@page.first.to_s).should == Hash.from_xml(expected)
+        expect(@page.first.to_s).to be_equivalent_to(expected)
       end
 
     end
@@ -345,7 +345,7 @@ describe MediaWiki::Gateway do
               <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
             </api>
           XML
-          Hash.from_xml(@new_page.first.to_s).should == Hash.from_xml(expected)
+          expect(@new_page.first.to_s).to be_equivalent_to(expected)
         end
 
       end
@@ -376,7 +376,7 @@ describe MediaWiki::Gateway do
         <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
       </api>
       XML
-      Hash.from_xml(@edit_page.first.to_s).should == Hash.from_xml(expected)
+      expect(@edit_page.first.to_s).to be_equivalent_to(expected)
     end
 
   end
@@ -405,7 +405,7 @@ describe MediaWiki::Gateway do
             <upload result="Success" filename="sample_image.jpg"/>
           </api>
         XML
-        Hash.from_xml(@page.first.to_s).should == Hash.from_xml(expected)
+        expect(@page.first.to_s).to be_equivalent_to(expected)
       end
 
     end
@@ -433,7 +433,7 @@ describe MediaWiki::Gateway do
         end
 
         it "should delete the page" do
-          Hash.from_xml(@page.first.to_s) == Hash.from_xml(delete_response)
+          expect(@page.first.to_s).to be_equivalent_to(delete_response)
         end
       end
 
@@ -685,7 +685,7 @@ describe MediaWiki::Gateway do
       end
 
       it "should import content" do
-        Hash.from_xml(@page.first.to_s) == Hash.from_xml(import_response)
+        expect(@page.first.to_s).to be_equivalent_to(import_response)
       end
 
     end
@@ -714,7 +714,7 @@ describe MediaWiki::Gateway do
     end
 
     it "should return export data for the page" do
-      Hash.from_xml(@page.to_s).should == Hash.from_xml(export_response)
+      expect(@page.to_s).to be_equivalent_to(export_response)
     end
 
   end
@@ -791,7 +791,7 @@ describe MediaWiki::Gateway do
           </api>
         XML
 
-        Hash.from_xml(@gateway.create_account({ 'name' => 'FooBar', 'password' => 'BarBaz' }).to_s).should == Hash.from_xml(expected)
+        expect(@gateway.create_account({ 'name' => 'FooBar', 'password' => 'BarBaz' }).to_s).to be_equivalent_to(expected)
       end
 
     end
@@ -819,7 +819,7 @@ describe MediaWiki::Gateway do
 
       it 'should return the expected response' do
         expected = '<api options="success" />'
-        Hash.from_xml(@gateway.options({ :realname => 'Bar Baz' }).to_s).should == Hash.from_xml(expected)
+        expect(@gateway.options({ :realname => 'Bar Baz' }).to_s).to be_equivalent_to(expected)
       end
 
     end
@@ -877,7 +877,7 @@ describe MediaWiki::Gateway do
         end
 
         it "should return a result matching the input" do
-          Hash.from_xml(@result.to_s).should == Hash.from_xml(userrights_response)
+          expect(@result.to_s).to be_equivalent_to(userrights_response)
         end
 
       end

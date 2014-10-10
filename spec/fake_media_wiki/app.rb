@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'nokogiri'
 
 require_relative 'api_pages'
 require_relative 'query_handling'
