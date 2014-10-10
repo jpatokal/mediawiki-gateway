@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
 gem 'rest-client', '>= 1.3.0'
-gem 'activesupport'
 
 group :development do
   gem 'equivalent-xml'

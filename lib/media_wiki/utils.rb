@@ -1,5 +1,3 @@
-require 'active_support/core_ext/string/multibyte'
-
 module MediaWiki
 
   class << self
@@ -61,10 +59,31 @@ module MediaWiki
 
     private
 
-    def upcase_first_char(str)
-      mb_str = str.mb_chars
-      first, rest = mb_str.slice(0, 1), mb_str.slice(1..-1)
-      [ActiveSupport::Multibyte::Chars.new(first).upcase.to_s, rest].join
+    begin
+      require 'unicode'
+    rescue LoadError
+      begin
+        require 'active_support/core_ext/string/multibyte'
+      rescue LoadError
+        warn 'mediawiki-gateway: For better Unicode support,' <<
+             " install the `unicode' or `activesupport' gem."
+
+        def upcase_first_char(str)
+          first, rest = str.slice(0, 1), str.slice(1..-1)
+          [first.upcase, rest].join
+        end
+      else
+        def upcase_first_char(str)
+          mb_str = str.mb_chars
+          first, rest = mb_str.slice(0, 1), mb_str.slice(1..-1)
+          [ActiveSupport::Multibyte::Chars.new(first).upcase.to_s, rest].join
+        end
+      end
+    else
+      def upcase_first_char(str)
+        first, rest = str.slice(0, 1), str.slice(1..-1)
+        [Unicode.upcase(first), rest].join
+      end
     end
 
   end

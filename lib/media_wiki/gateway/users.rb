@@ -96,11 +96,11 @@ module MediaWiki
           'token'  => get_options_token
         )
 
-        if changes.present?
+        if changes && !changes.empty?
           form_data['change'] = changes.map { |key, value| "#{key}=#{value}" }.join('|')
         end
 
-        if optionname.present?
+        if optionname && !optionname.empty?
           form_data[optionname] = optionvalue
         end
 

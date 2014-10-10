@@ -310,7 +310,7 @@ module FakeMediaWiki
       api_response do |_|
         @token.request(user)
 
-        if params[:token].present?
+        if params[:token] && !params[:token].empty?
           @token.validate_admin
           add_user(params[:name], params[:password], 'local', false)
           _.createaccount(:token => @token.createusertoken, :userid => @users.length, :username => params[:name], :result => 'success')
