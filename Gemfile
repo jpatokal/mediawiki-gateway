@@ -8,7 +8,6 @@ group :development do
   gem 'jeweler'
   gem 'sham_rack'
   gem 'rr'
-  gem 'simplecov'
   gem 'rspec', '~> 1.3'
   gem 'rspec-core'
   gem 'rspec-expectations'

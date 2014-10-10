@@ -1,10 +1,3 @@
-begin
-  require 'simplecov'
-  SimpleCov.start
-rescue LoadError
-  warn 'SimpleCov not available. Install it with: gem install simplecov'
-end
-
 require 'media_wiki'
 
 RSpec.configure { |config|
