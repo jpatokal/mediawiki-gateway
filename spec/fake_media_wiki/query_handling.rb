@@ -25,7 +25,7 @@ module FakeMediaWiki
     end
 
     def export
-      builder do |_|
+      Nokogiri::XML::Builder.new do |_|
         _.mediawiki do
           requested_page_titles.each do |requested_title|
             page = @pages.get(requested_title)
@@ -34,12 +34,12 @@ module FakeMediaWiki
               _.id(page[:pageid])
               _.revision do
                 _.id(page[:pageid])
-                _.text(page[:content])
+                _.text!(page[:content])
               end
             end
           end
         end
-      end
+      end.to_xml
     end
     
     def list

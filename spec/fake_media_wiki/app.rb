@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'nokogiri'
 
 require_relative 'api_pages'
 require_relative 'query_handling'
@@ -158,13 +159,13 @@ module FakeMediaWiki
       api_response do |_|
         _.parse({ :revid => page ?  page[:pageid] : 0}) do
           if params[:page] == "Foopage"
-            _.text('Sample <B>HTML</B> content.' \
+            _.text!('Sample <B>HTML</B> content.' \
               '<img width="150" height="150" class="thumbimage" src="http://upload.wikimedia.org/foo/Ruby_logo.svg" alt="Ruby logo.svg"/>' \
               '<span class="editsection">[<a title="Edit section: Nomenclature" href="/w/index.php?title=Seat_of_local_government&amp;action=edit&amp;section=1">edit</a>]</span>' \
               '<a title="Interpreted language" href="/wiki/Interpreted_language">interpreted language</a>'
             )
           else
-            _.text('Sample <B>HTML</B> content.')
+            _.text!('Sample <B>HTML</B> content.')
           end
         end
       end
@@ -173,13 +174,9 @@ module FakeMediaWiki
     include QueryHandling
 
     def api_response(api_attr = {}, &block)
-      builder do |_|
-        if block_given?
-          _.api(api_attr, &block)
-        else
-          _.api(api_attr)
-        end
-      end
+      Nokogiri::XML::Builder.new do |_|
+        _.api(api_attr, &block)
+      end.to_xml
     end
 
     def api_error_response(code, info)

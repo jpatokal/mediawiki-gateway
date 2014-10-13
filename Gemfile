@@ -5,6 +5,7 @@ gem 'activesupport'
 
 group :development do
   gem 'jeweler'
+  gem 'nokogiri'
   gem 'sham_rack'
   gem 'rspec', '~> 1.3'
   gem 'rspec-core'
