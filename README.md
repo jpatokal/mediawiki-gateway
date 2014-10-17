@@ -27,18 +27,17 @@ Simple page creation script:
 
 ## Development environment
 
-To compile and test MediaWiki::Gateway locally, Bundler and Ruby 1.9+ are expected.
+To compile and test MediaWiki::Gateway locally, install its development dependencies:
 
-    rvm install 1.9.3-p194
-    bundle install
+    gem install --development mediawiki-gateway
 
-This will list the available options:
+Then this will list the available options:
 
-    bundle exec rake -T
+    rake -T
 
 To build and install the gem use:
 
-    bundle exec rake install
+    rake gem:install
 
 ### Testing against a live MediaWiki instance
 
