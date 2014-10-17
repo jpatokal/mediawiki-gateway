@@ -1,6 +1,3 @@
-require 'spec_helper'
-
-# Kickstart fake media wiki app
 require 'sham_rack'
 
 $fake_media_wiki = FakeMediaWiki::App.new!

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 shared_examples 'live gateway' do
 
   def reset(*args, &block)

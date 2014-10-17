@@ -14,7 +14,7 @@ RSpec.configure { |config|
     require 'media_wiki/test_wiki/rspec_adapter'
   rescue LoadError
     { skip: 'MediaWiki::TestWiki not available'.tap { |msg|
-      warn "#{msg}. Install it with: gem install mediawiki-testwiki" } }
+      warn "#{msg}. Install the `mediawiki-testwiki' gem." } }
   else
     { live: true }.tap { |filter|
       MediaWiki::TestWiki::RSpecAdapter.enhance(config, filter) }
