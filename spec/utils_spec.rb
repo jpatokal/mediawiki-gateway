@@ -3,7 +3,7 @@
 
 require 'spec_helper'
 
-describe MediaWiki do
+describe MediaWiki::Utils do
 
   describe '.get_path_to_subpage' do
     it "should return the everything before the subpage if there are subpages" do

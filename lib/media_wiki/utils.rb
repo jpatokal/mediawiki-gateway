@@ -1,6 +1,6 @@
 module MediaWiki
 
-  class << self
+  module Utils
 
     # Extract base name.  If there are no subpages, return page name.
     #
@@ -87,5 +87,7 @@ module MediaWiki
     end
 
   end
+
+  extend Utils
 
 end
