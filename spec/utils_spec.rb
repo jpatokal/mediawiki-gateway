@@ -93,7 +93,7 @@ describe MediaWiki::Utils do
       MediaWiki.uri_to_wiki('A#B<C>D[E]F|G{H}I').should == 'ABCDEFGHI'
     end
 
-    it "should capitalize the first character, even if UTF-8" do
+    it "should capitalize the first character, even if UTF-8", skip: described_class::NO_UNICODE_SUPPORT do
       MediaWiki.uri_to_wiki('óboy').should == 'Óboy'
       MediaWiki.uri_to_wiki('%C3%B3boy').should == 'Óboy'
       MediaWiki.uri_to_wiki('%E1%BB%9Fboy').should == 'Ởboy'

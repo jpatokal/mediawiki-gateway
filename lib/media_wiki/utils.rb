@@ -59,7 +59,7 @@ module MediaWiki
 
     private
 
-    begin
+    NO_UNICODE_SUPPORT = begin
       require 'unicode'
     rescue LoadError
       begin
@@ -72,18 +72,24 @@ module MediaWiki
           first, rest = str.slice(0, 1), str.slice(1..-1)
           [first.upcase, rest].join
         end
+
+        'No Unicode support'
       else
         def upcase_first_char(str)
           mb_str = str.mb_chars
           first, rest = mb_str.slice(0, 1), mb_str.slice(1..-1)
           [ActiveSupport::Multibyte::Chars.new(first).upcase.to_s, rest].join
         end
+
+        nil
       end
     else
       def upcase_first_char(str)
         first, rest = str.slice(0, 1), str.slice(1..-1)
         [Unicode.upcase(first), rest].join
       end
+
+      nil
     end
 
   end
