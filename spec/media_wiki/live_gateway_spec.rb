@@ -594,7 +594,7 @@ shared_examples 'live gateway' do
   describe '#import' do
 
     before do
-      @import_file = File.dirname(__FILE__) + '/import-test-data.xml'
+      @import_file = File.dirname(__FILE__) + '/../import-test-data.xml'
     end
 
     describe 'when not logged in' do

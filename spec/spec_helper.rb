@@ -3,6 +3,8 @@ require 'media_wiki'
 require 'nokogiri'
 require 'equivalent-xml/rspec_matchers'
 
+require_relative 'fake_media_wiki/app'
+
 RSpec.configure { |config|
   %w[expect mock].each { |what|
     config.send("#{what}_with", :rspec) { |c| c.syntax = [:should, :expect] }
