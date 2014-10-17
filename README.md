@@ -16,6 +16,8 @@ RDoc: http://rubydoc.info/gems/mediawiki-gateway
 
 Git:  https://github.com/jpatokal/mediawiki-gateway
 
+Travis CI: https://travis-ci.org/jpatokal/mediawiki-gateway
+
 ## Example
 
 Simple page creation script:

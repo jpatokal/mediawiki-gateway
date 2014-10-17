@@ -1,0 +1,26 @@
+language:
+  ruby
+
+rvm:
+  - '1.9'
+  - '2.0'
+  - '2.1'
+  - ruby-head
+  - jruby-19mode
+  - jruby-head
+  - rbx
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-head
+    - rvm: rbx
+
+  fast_finish:
+    true
+
+script:
+  rake spec
+
+install:
+  gem install --prerelease --development mediawiki-gateway
