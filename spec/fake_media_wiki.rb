@@ -1,8 +1,5 @@
 require 'sinatra/base'
 
-require_relative 'api_pages'
-require_relative 'query_handling'
-
 # A simple Rack app that stubs out a web service, for testing.
 
 module FakeMediaWiki
@@ -170,7 +167,133 @@ module FakeMediaWiki
       end
     end
 
-    include QueryHandling
+    def action
+      [:userrights].each do |action_type|
+        return send(action_type)
+      end
+      halt(404, "Page not found")
+    end
+
+    def query
+      [:prop, :export, :list, :meta].each do |query_type|
+        return send(query_type) if params[query_type]
+      end
+      halt(404, "Page not found")
+    end
+
+    def prop
+      return get_revisions if params[:prop] == "revisions"
+      return get_undelete_token if params[:drprop] == 'token'
+      return get_token if params[:intoken]
+      return get_info if params[:prop] == "info"
+    end
+
+    def export
+      Nokogiri::XML::Builder.new do |_|
+        _.mediawiki do
+          requested_page_titles.each do |requested_title|
+            page = @pages.get(requested_title)
+            _.page do
+              _.title(page[:title])
+              _.id(page[:pageid])
+              _.revision do
+                _.id(page[:pageid])
+                _.text!(page[:content])
+              end
+            end
+          end
+        end
+      end.to_xml
+    end
+
+    def list
+      list_type = params[:list].to_sym
+
+      # api.php?action=query&list=users&ususers=Bob&ustoken=userrights
+      if list_type == :users && params[:ustoken] && params[:ususers]
+        # This "list" is actually a request for a user rights token
+        return get_userrights_token(params[:ususers])
+      end
+
+      # This is a real list
+      return send(list_type) if respond_to?(list_type)
+      halt(404, "Page not found")
+    end
+
+    def allpages
+      api_response do |_|
+        _.query do
+          _.allpages do
+            prefix = params[:apprefix]
+            namespace = @pages.namespaces_by_id[params[:apnamespace].to_i]
+            prefix = "#{namespace}:#{prefix}" unless namespace.empty?
+            @pages.list(prefix).each do |key, page|
+              _.p(nil, { :title => page[:title], :ns => page[:namespace], :id => page[:pageid] })
+            end
+          end
+        end
+      end
+    end
+
+    def search
+      api_response do |_|
+        _.query do
+          _.search do
+            namespaces = params[:srnamespace] ? params[:srnamespace].split('|') : [ "0" ]
+            @pages.search(params[:srsearch], namespaces).first(params[:srlimit].to_i).each do |key, page|
+              _.p(nil, { :title => page[:title], :ns => page[:namespace], :id => page[:pageid] })
+            end
+          end
+        end
+      end
+    end
+
+    def meta
+      meta_type = params[:meta].to_sym
+      return send(meta_type) if respond_to?(meta_type)
+      halt(404, "Page not found")
+    end
+
+    def siteinfo
+      if siteinfo_type = params[:siprop]
+        return send(siteinfo_type) if respond_to?(siteinfo_type)
+        halt(404, "Page not found")
+      else
+        api_response do |_|
+          _.query do
+            _.general(generator: "MediaWiki #{MediaWiki::VERSION}")
+          end
+        end
+      end
+    end
+
+    def namespaces
+      api_response do |_|
+        _.query do
+          _.namespaces do
+            @pages.namespaces_by_prefix.each do |prefix, id|
+              attr = { :id => id }
+              attr[:canonical] = prefix unless prefix.empty?
+              _.ns(prefix, attr)
+            end
+          end
+        end
+      end
+    end
+
+    def extensions
+      api_response do |_|
+        _.query do
+          _.extensions do
+            @extensions.each do |name, version|
+              attr = { :version => version }
+              attr[:name] = name unless name.empty?
+              _.ext(name, attr)
+            end
+          end
+        end
+      end
+    end
 
     def api_response(api_attr = {}, &block)
       Nokogiri::XML::Builder.new do |_|
@@ -350,6 +473,142 @@ module FakeMediaWiki
     end
 
     attr_accessor :content, :author
+
+  end
+
+  class ApiPages
+
+    def initialize
+      @page_id = 0
+      @pages = {}
+      @namespaces = { "" => 0 }
+    end
+
+    def add_namespace(id, prefix)
+      @namespaces[prefix] = id
+    end
+
+    def namespaces_by_prefix
+      @namespaces
+    end
+
+    def namespaces_by_id
+      @namespaces.invert
+    end
+
+    def add(title, content, redirect=false)
+      @page_id += 1
+      dummy, prefix = title.split(":", 2).reverse
+      @pages[title] = {
+        :pageid => @page_id,
+        :namespace => namespaces_by_prefix[prefix || ""],
+        :title => title,
+        :content => content,
+        :redirect => redirect
+      }
+    end
+
+    def get(title)
+      @pages[title]
+    end
+
+    def list(prefix)
+      @pages.select do |key, page|
+        key =~ /^#{prefix}/
+      end
+    end
+
+    def search(searchkey, namespaces)
+      raise FakeMediaWiki::ApiError.new("srparam-search", "empty search string is not allowed") if searchkey.empty?
+      @pages.select do |key, page|
+        page[:content] =~ /#{searchkey}/ and namespaces.include? page[:namespace].to_s
+      end
+    end
+
+    def delete(title)
+      @pages.delete(title)
+    end
+
+    def undelete(title)
+      if @pages[title]
+        0
+      else
+        add(title, "Undeleted content")
+        1
+      end
+    end
+  end
+
+  class ApiToken
+
+    ADMIN_TOKEN   = "admin_token+\\"
+    REGULAR_TOKEN = "regular_token+\\"
+    BLANK_TOKEN   = "+\\"
+
+    def initialize(params)
+      @token_str = params[:token]
+      @token_in = params[:intoken]
+    end
+
+    def set_type(type)
+      @token_in = type
+    end
+
+    def validate
+      unless @token_str
+        raise FakeMediaWiki::ApiError.new("notoken", "The token parameter must be set")
+      end
+    end
+
+    def validate_admin
+      validate
+      if @token_str != ADMIN_TOKEN
+        raise FakeMediaWiki::ApiError.new("badtoken", "Invalid token")
+      end
+    end
+
+    def request(user)
+      @user = user
+      respond_to?(requested_token_type) ? send(requested_token_type) : nil
+    end
+
+    def requested_token_type
+      "#{@token_in}token".to_sym
+    end
+
+    def importtoken
+      if @user && @user[:is_admin]
+        ADMIN_TOKEN
+      else
+        nil
+      end
+    end
+
+    alias_method :deletetoken, :importtoken
+    alias_method :undeletetoken, :importtoken
+    alias_method :userrightstoken, :importtoken
+    alias_method :createusertoken, :importtoken
+
+    def edittoken
+      if @user
+        REGULAR_TOKEN
+      else
+        BLANK_TOKEN
+      end
+    end
+
+    alias_method :optionstoken, :edittoken
+
+  end
+
+  class ApiError < StandardError
+
+    attr_reader :code, :message
+
+    def initialize(code, message)
+      @code = code
+      @message = message
+    end
 
   end
 
