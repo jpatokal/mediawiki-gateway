@@ -591,15 +591,13 @@ shared_examples 'live gateway' do
 
   describe '#import' do
 
-    before do
-      @import_file = File.dirname(__FILE__) + '/../import-test-data.xml'
-    end
+    let(:import_file) { data('import.xml') }
 
     describe 'when not logged in' do
 
       it 'should raise an error' do
         lambda {
-          @gateway.import(@import_file)
+          @gateway.import(import_file)
         }.should raise_error(MediaWiki::APIError)
       end
 
@@ -610,7 +608,7 @@ shared_examples 'live gateway' do
       it 'should import content' do
         @gateway.login(@user, @pass)
 
-        page = @gateway.import(@import_file)
+        page = @gateway.import(import_file)
 
         expect(page.first.to_s).to be_equivalent_to(<<-EOT)
           <api>

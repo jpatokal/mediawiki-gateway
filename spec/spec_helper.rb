@@ -19,4 +19,10 @@ RSpec.configure { |config|
     { live: true }.tap { |filter|
       MediaWiki::TestWiki::RSpecAdapter.enhance(config, filter) }
   end
+
+  config.include(Module.new {
+    def data(file)
+      File.join(File.dirname(__FILE__), 'data', file)
+    end
+  })
 }

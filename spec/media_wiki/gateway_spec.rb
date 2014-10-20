@@ -648,9 +648,7 @@ describe MediaWiki::Gateway do
 
   describe "#import" do
 
-    def import_file
-      File.dirname(__FILE__) + "/../import-test-data.xml"
-    end
+    let(:import_file) { data('import.xml') }
 
     describe "when not logged in" do
 
