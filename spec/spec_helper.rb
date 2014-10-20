@@ -3,12 +3,23 @@ require 'media_wiki'
 require 'nokogiri'
 require 'equivalent-xml/rspec_matchers'
 
-require_relative 'fake_media_wiki'
-
 RSpec.configure { |config|
   %w[expect mock].each { |what|
     config.send("#{what}_with", :rspec) { |c| c.syntax = [:should, :expect] }
   }
+
+  config.include(Module.new {
+    def data(file)
+      File.join(File.dirname(__FILE__), 'data', file)
+    end
+  })
+
+  config.alias_example_group_to :describe_fake, begin
+    require_relative 'fake_media_wiki'
+
+    { fake: true }.tap { |filter|
+      FakeMediaWiki::RSpecAdapter.enhance(config, filter) }
+  end
 
   config.alias_example_group_to :describe_live, begin
     require 'media_wiki/test_wiki/rspec_adapter'
@@ -19,10 +30,4 @@ RSpec.configure { |config|
     { live: true }.tap { |filter|
       MediaWiki::TestWiki::RSpecAdapter.enhance(config, filter) }
   end
-
-  config.include(Module.new {
-    def data(file)
-      File.join(File.dirname(__FILE__), 'data', file)
-    end
-  })
 }

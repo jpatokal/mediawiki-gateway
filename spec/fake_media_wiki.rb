@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'sham_rack'
 
 # A simple Rack app that stubs out a web service, for testing.
 
@@ -608,6 +609,20 @@ module FakeMediaWiki
     def initialize(code, message)
       @code = code
       @message = message
+    end
+
+  end
+
+  module RSpecAdapter
+
+    def self.enhance(config, *args)
+      $fake_media_wiki = FakeMediaWiki::App.new!
+      ShamRack.mount($fake_media_wiki, address = 'dummy-wiki.example')
+
+      config.before(*args) {
+        @gateway = MediaWiki::Gateway.new("http://#{address}/w/api.php")
+        $fake_media_wiki.reset
+      }
     end
 
   end
