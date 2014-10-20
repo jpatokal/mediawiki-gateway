@@ -11,12 +11,12 @@ module MediaWiki
       #
       # Returns content of page as string, nil if the page does not exist.
       def get(page_title, options = {})
-        page = make_api_request(options.merge(
+        page = send_request(options.merge(
           'action' => 'query',
           'prop'   => 'revisions',
           'rvprop' => 'content',
           'titles' => page_title
-        )).first.elements['query/pages/page']
+        )).elements['query/pages/page']
 
         page.elements['revisions/rev'].text || '' if valid_page?(page)
       end
@@ -28,13 +28,13 @@ module MediaWiki
       #
       # Returns revision ID as a string, nil if the page does not exist.
       def revision(page_title, options = {})
-        page = make_api_request(options.merge(
+        page = send_request(options.merge(
           'action'  => 'query',
           'prop'    => 'revisions',
           'rvprop'  => 'ids',
           'rvlimit' => 1,
           'titles'  => page_title
-        )).first.elements['query/pages/page']
+        )).elements['query/pages/page']
 
         page.elements['revisions/rev'].attributes['revid'] if valid_page?(page)
       end
@@ -55,8 +55,7 @@ module MediaWiki
 
         validate_options(options, %w[linkbase noeditsections noimages])
 
-        rendered, parsed = nil,
-          make_api_request(form_data).first.elements['parse']
+        rendered, parsed = nil, send_request(form_data).elements['parse']
 
         if parsed.attributes['revid'] != '0'
           rendered = parsed.elements['text'].text.gsub(/<!--(.|\s)*?-->/, '')
@@ -109,7 +108,7 @@ module MediaWiki
         form_data['createonly'] = '' unless options[:overwrite]
         form_data['section']    = options[:section].to_s if options[:section]
 
-        make_api_request(form_data)
+        send_request(form_data)
       end
 
       # Edit page
@@ -191,7 +190,7 @@ module MediaWiki
         form_data['cascade'] = '' if options[:cascade] == true
         form_data['reason']  = options[:reason].to_s if options[:reason]
 
-        make_api_request(form_data)
+        send_request(form_data)
       end
 
       # Move a page to a new title
@@ -210,7 +209,7 @@ module MediaWiki
       def move(from, to, options = {})
         validate_options(options, %w[movesubpages movetalk noredirect reason watch unwatch])
 
-        make_api_request(options.merge(
+        send_request(options.merge(
           'action' => 'move',
           'from'   => from,
           'to'     => to,
@@ -223,7 +222,7 @@ module MediaWiki
       # [title] Title of page to delete
       # [options] Hash of additional options
       def delete(title, options = {})
-        make_api_request(options.merge(
+        send_request(options.merge(
           'action' => 'delete',
           'title'  => title,
           'token'  => get_token('delete', title)
@@ -238,11 +237,11 @@ module MediaWiki
       # Returns number of revisions undeleted, or zero if nothing to undelete
       def undelete(title, options = {})
         if token = get_undelete_token(title)
-          make_api_request(options.merge(
+          send_request(options.merge(
             'action' => 'undelete',
             'title'  => title,
             'token'  => token
-          )).first.elements['undelete'].attributes['revisions'].to_i
+          )).elements['undelete'].attributes['revisions'].to_i
         else
           0 # No revisions to undelete
         end
@@ -300,11 +299,11 @@ module MediaWiki
       #
       # Returns true if the page is a redirect, false if it is not or the page does not exist.
       def redirect?(page_title)
-        page = make_api_request(
+        page = send_request(
           'action' => 'query',
           'prop'   => 'info',
           'titles' => page_title
-        ).first.elements['query/pages/page']
+        ).elements['query/pages/page']
 
         !!(valid_page?(page) && page.attributes['redirect'])
       end
@@ -328,7 +327,7 @@ module MediaWiki
         form_data[article_or_pageid.is_a?(Fixnum) ?
           'pageids' : 'titles'] = article_or_pageid
 
-        xml = make_api_request(form_data).first
+        xml = send_request(form_data)
 
         if valid_page?(page = xml.elements['query/pages/page'])
           if xml.elements['query/redirects/r']
@@ -369,19 +368,19 @@ module MediaWiki
 
         flags.each { |k, v| form_data["flag_#{k}"] = v }
 
-        make_api_request(form_data).first
+        send_request(form_data)
       end
 
       private
 
       def get_undelete_token(page_titles)
-        res = make_api_request(
+        res = send_request(
           'action' => 'query',
           'list'   => 'deletedrevs',
           'prop'   => 'info',
           'drprop' => 'token',
           'titles' => page_titles
-        ).first
+        )
 
         if res.elements['query/deletedrevs/page']
           unless token = res.elements['query/deletedrevs/page'].attributes['token']

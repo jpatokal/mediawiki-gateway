@@ -33,7 +33,7 @@ describe_fake MediaWiki::Gateway::Site do
       end
 
       it "should import content" do
-        expect(@page.first.to_s).to be_equivalent_to(import_response)
+        expect(@page.to_s).to be_equivalent_to(import_response)
       end
 
     end

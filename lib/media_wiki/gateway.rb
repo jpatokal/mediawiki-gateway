@@ -47,16 +47,26 @@ module MediaWiki
 
     attr_reader :wiki_url, :cookies
 
+    # Make generic request to API
+    #
+    # [form_data] hash of attributes to post
+    # [continue_xpath] XPath selector for query continue parameter
+    #
+    # Returns XML document
+    def send_request(form_data, continue_xpath = nil)
+      make_api_request(form_data, continue_xpath).first
+    end
+
     private
 
     # Fetch token (type 'delete', 'edit', 'email', 'import', 'move', 'protect')
     def get_token(type, page_titles)
-      res = make_api_request(
+      res = send_request(
         'action'  => 'query',
         'prop'    => 'info',
         'intoken' => type,
         'titles'  => page_titles
-      ).first
+      )
 
       unless token = res.elements['query/pages/page'].attributes[type + 'token']
         raise Unauthorized.new "User is not permitted to perform this operation: #{type}"
@@ -101,16 +111,13 @@ module MediaWiki
 
     # Make generic request to API
     #
-    # [form_data] hash or string of attributes to post
+    # [form_data] hash of attributes to post
     # [continue_xpath] XPath selector for query continue parameter
     # [retry_count] Counter for retries
     #
-    # Returns XML document
+    # Returns array of XML document and query continue parameter.
     def make_api_request(form_data, continue_xpath = nil, retry_count = 1)
-      if form_data.is_a?(Hash)
-        form_data['format'] = 'xml'
-        form_data['maxlag'] = @options[:maxlag]
-      end
+      form_data.update('format' => 'xml', 'maxlag' => @options[:maxlag])
 
       http_send(@wiki_url, form_data, @headers.merge(cookies: @cookies)) { |response, &block|
         if response.code == 503 && retry_count < @options[:retry_count]

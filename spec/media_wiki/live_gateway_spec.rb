@@ -278,7 +278,7 @@ shared_examples 'live gateway' do
       it 'should create the page' do
         page = @gateway.create(title = 'A New Page', 'Some content')
 
-        node = Nokogiri::XML::Document.parse(page.first.to_s).at('/api/edit')
+        node = Nokogiri::XML::Document.parse(page.to_s).at('/api/edit')
         node['new'].should == ''
         node['title'].should == title
         node['result'].should == 'Success'
@@ -298,7 +298,7 @@ shared_examples 'live gateway' do
         it 'should overwrite the existing page' do
           page = @gateway.create(title = 'Main Page', 'Some new content', summary: 'The summary', overwrite: true)
 
-          node = Nokogiri::XML::Document.parse(page.first.to_s).at('/api/edit')
+          node = Nokogiri::XML::Document.parse(page.to_s).at('/api/edit')
           node['new'].should be_nil
           node['title'].should == title
           node['result'].should == 'Success'
@@ -328,7 +328,7 @@ shared_examples 'live gateway' do
 
       page = @gateway.edit('Main Page', 'Some new content')
 
-      expect(page.first.to_s).to be_equivalent_to(<<-EOT)
+      expect(page.to_s).to be_equivalent_to(<<-EOT)
         <api>
           <edit result="Success" pageid="8" title="Main Page" oldrevid="1" newrevid="8"/>
         </api>
@@ -357,7 +357,7 @@ shared_examples 'live gateway' do
       end
 
       it 'should upload the file' do
-        expect(@page.first.to_s).to be_equivalent_to(<<-EOT)
+        expect(@page.to_s).to be_equivalent_to(<<-EOT)
           <api>
             <upload result="Success" filename="sample_image.jpg"/>
           </api>
@@ -373,7 +373,7 @@ shared_examples 'live gateway' do
     def delete_page
       title, content = 'Deletable Page', 'Some content'
 
-      @gateway.send(:make_api_request,
+      @gateway.send_request(
         'action'     => 'edit',
         'title'      => title,
         'text'       => content,
@@ -393,7 +393,7 @@ shared_examples 'live gateway' do
           @gateway.login(@user, @pass)
 
           delete_page { |block|
-            expect(block.call.first.to_s).to be_equivalent_to(<<-EOT)
+            expect(block.call.to_s).to be_equivalent_to(<<-EOT)
               <api>
                 <delete title="Deletable Page" reason="Default reason"/>
               </api>
@@ -610,7 +610,7 @@ shared_examples 'live gateway' do
 
         page = @gateway.import(import_file)
 
-        expect(page.first.to_s).to be_equivalent_to(<<-EOT)
+        expect(page.to_s).to be_equivalent_to(<<-EOT)
           <api>
             <import>
               <page title="Main Page" ns="0" revisions="1"/>

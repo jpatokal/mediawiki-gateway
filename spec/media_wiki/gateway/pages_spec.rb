@@ -144,7 +144,7 @@ describe_fake MediaWiki::Gateway::Pages do
             <edit new='' result='Success' pageid='8' title='A New Page' oldrevid='0' newrevid='8'/>
           </api>
         XML
-        expect(@page.first.to_s).to be_equivalent_to(expected)
+        expect(@page.to_s).to be_equivalent_to(expected)
       end
 
     end
@@ -167,7 +167,7 @@ describe_fake MediaWiki::Gateway::Pages do
               <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
             </api>
           XML
-          expect(@new_page.first.to_s).to be_equivalent_to(expected)
+          expect(@new_page.to_s).to be_equivalent_to(expected)
         end
 
       end
@@ -187,6 +187,7 @@ describe_fake MediaWiki::Gateway::Pages do
   end
 
   describe "#edit" do
+
     before do
       $fake_media_wiki.reset
       @edit_page = @gateway.edit("Main Page", "Some new content")
@@ -198,17 +199,24 @@ describe_fake MediaWiki::Gateway::Pages do
         <edit result='Success' pageid='8' title='Main Page' oldrevid='1' newrevid='8'/>
       </api>
       XML
-      expect(@edit_page.first.to_s).to be_equivalent_to(expected)
+      expect(@edit_page.to_s).to be_equivalent_to(expected)
     end
 
   end
 
   describe "#delete" do
 
-    def create(title, content, options={})
-      form_data = {'action' => 'edit', 'title' => title, 'text' => content, 'summary' => (options[:summary] || ""), 'token' => @gateway.send(:get_token, 'edit', title)}
-      form_data['createonly'] = "" unless options[:overwrite]
-      @gateway.send(:make_api_request, form_data)
+    before do
+      title, content = 'Deletable Page', 'Some content'
+
+      @gateway.send_request(
+        'action'     => 'edit',
+        'title'      => title,
+        'text'       => content,
+        'summary'    => '',
+        'createonly' => '',
+        'token'      => @gateway.send(:get_token, 'edit', title)
+      )
     end
 
     describe "when logged in as admin" do
@@ -216,22 +224,20 @@ describe_fake MediaWiki::Gateway::Pages do
       describe "and the page exists" do
 
         def delete_response
-         <<-XML
+          <<-XML
             <api>
               <delete title='Deletable Page' reason='Default reason'/>
             </api>
-         XML
+          XML
         end
 
         before do
           @gateway.login("atlasmw", "wombat")
-
-          create("Deletable Page", "Some content")
           @page = @gateway.delete("Deletable Page")
         end
 
         it "should delete the page" do
-          expect(@page.first.to_s).to be_equivalent_to(delete_response)
+          expect(@page.to_s).to be_equivalent_to(delete_response)
         end
 
       end
@@ -253,10 +259,6 @@ describe_fake MediaWiki::Gateway::Pages do
     end
 
     describe "when not logged in" do
-
-      before do
-        create("Deletable Page", "Some content")
-      end
 
       it "should raise an error" do
         lambda do

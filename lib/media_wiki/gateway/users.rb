@@ -13,7 +13,7 @@ module MediaWiki
       #
       # Throws MediaWiki::Unauthorized if login fails
       def login(username, password, domain = 'local', options = {})
-        make_api_request(options.merge(
+        send_request(options.merge(
           'action'     => 'login',
           'lgname'     => username,
           'lgpassword' => password,
@@ -65,13 +65,13 @@ module MediaWiki
       #
       # Will raise a 'noemail' APIError if the target user does not have a confirmed email address, see http://www.mediawiki.org/wiki/API:E-mail for details.
       def email_user(user, subject, text, options = {})
-        res = make_api_request(options.merge(
+        res = send_request(options.merge(
           'action'  => 'emailuser',
           'target'  => user,
           'subject' => subject,
           'text'    => text,
           'token'   => get_token('email', "User:#{user}")
-        )).first
+        ))
 
         res.elements['emailuser'].attributes['result'] == 'Success'
       end
@@ -80,7 +80,7 @@ module MediaWiki
       #
       # [options] is +Hash+ passed as query arguments. See https://www.mediawiki.org/wiki/API:Account_creation#Parameters for more information.
       def create_account(options)
-        make_api_request(options.merge('action' => 'createaccount')).first
+        send_request(options.merge('action' => 'createaccount'))
       end
 
       # Sets options for currenlty logged in user
@@ -108,7 +108,7 @@ module MediaWiki
           form_data['reset'] = true
         end
 
-        make_api_request(form_data).first
+        send_request(form_data)
       end
 
       # Set groups for a user
@@ -126,12 +126,12 @@ module MediaWiki
 
       # User rights management (aka group assignment)
       def get_userrights_token(user)
-        res = make_api_request(
+        res = send_request(
           'action'  => 'query',
           'list'    => 'users',
           'ustoken' => 'userrights',
           'ususers' => user
-        ).first
+        )
 
         token = res.elements['query/users/user'].attributes['userrightstoken']
 
@@ -149,8 +149,8 @@ module MediaWiki
       end
 
       def get_options_token
-        res = make_api_request('action' => 'tokens', 'type' => 'options').first
-        res.elements['tokens'].attributes['optionstoken']
+        send_request('action' => 'tokens', 'type' => 'options')
+          .elements['tokens'].attributes['optionstoken']
       end
 
       def userrights(user, token, groups_to_add, groups_to_remove, reason, options = {})
@@ -163,14 +163,14 @@ module MediaWiki
           groups_to_remove = groups_to_remove.join('|')
         end
 
-        make_api_request(options.merge(
+        send_request(options.merge(
           'action' => 'userrights',
           'user'   => user,
           'token'  => token,
           'add'    => groups_to_add,
           'remove' => groups_to_remove,
           'reason' => reason
-        )).first
+        ))
       end
 
     end

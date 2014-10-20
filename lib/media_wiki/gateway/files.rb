@@ -64,7 +64,7 @@ module MediaWiki
             "One of the 'file', 'url' or 'sessionkey' options must be specified!"
         end
 
-        make_api_request(options.merge(
+        send_request(options.merge(
           'action' => 'upload',
           'token'  => get_token('edit', options['filename'])
         ))
@@ -90,7 +90,7 @@ module MediaWiki
         form_data[article_or_pageid.is_a?(Fixnum) ?
           'pageids' : 'titles'] = article_or_pageid
 
-        xml = make_api_request(form_data).first
+        xml = send_request(form_data)
 
         if valid_page?(page = xml.elements['query/pages/page'])
           if xml.elements['query/redirects/r']
@@ -143,7 +143,7 @@ module MediaWiki
           form_data['pageids'] = file_name_or_page_id :
           form_data['titles']  = "File:#{file_name_or_page_id}"
 
-        xml = make_api_request(form_data).first
+        xml = send_request(form_data)
 
         if valid_page?(page = xml.elements['query/pages/page'])
           if xml.elements['query/redirects/r']

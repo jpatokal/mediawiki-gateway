@@ -53,16 +53,16 @@ module MediaWiki
         end
 
         if smw_version.to_f >= 1.7
-          make_api_request(options.merge(
+          send_request(options.merge(
             'action' => 'ask',
             'query'  => "#{query}|#{params.join('|')}"
-          )).first
+          ))
         else
-          make_api_request(options.merge(
+          send_request(options.merge(
             'action' => 'parse',
             'prop'   => 'text',
             'text'   => "{{#ask:#{query}|#{params.push('format=list').join('|')}}}"
-          )).first.elements['parse/text'].text
+          )).elements['parse/text'].text
         end
       end
 
@@ -86,7 +86,7 @@ module MediaWiki
       def custom_query(options)
         form_data = {}
         options.each { |k, v| form_data[k.to_s] = v.to_s }
-        make_api_request(form_data.merge('action' => 'query')).first.elements['query']
+        send_request(form_data.merge('action' => 'query')).elements['query']
       end
 
     end

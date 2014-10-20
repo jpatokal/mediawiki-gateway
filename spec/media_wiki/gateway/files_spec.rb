@@ -24,7 +24,7 @@ describe_fake MediaWiki::Gateway::Files do
             <upload result="Success" filename="sample_image.jpg"/>
           </api>
         XML
-        expect(@page.first.to_s).to be_equivalent_to(expected)
+        expect(@page.to_s).to be_equivalent_to(expected)
       end
 
     end
