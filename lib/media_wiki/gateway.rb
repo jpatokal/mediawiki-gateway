@@ -45,7 +45,7 @@ module MediaWiki
       }
     end
 
-    attr_reader :base_url, :cookies
+    attr_reader :wiki_url, :cookies
 
     private
 

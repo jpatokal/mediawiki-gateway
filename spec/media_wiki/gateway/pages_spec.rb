@@ -38,7 +38,7 @@ describe_fake MediaWiki::Gateway::Pages do
 
       before do
         @log = double(:debug => nil, :warn => nil)
-        @fail_gateway = MediaWiki::Gateway.new('http://dummy-wiki.example/w/api.php', {:maxlag => -1, :retry_delay => 0})
+        @fail_gateway = MediaWiki::Gateway.new(@gateway.wiki_url, maxlag: -1, retry_delay: 0)
         allow(@fail_gateway).to receive(:log) { @log }
       end
 
@@ -52,7 +52,7 @@ describe_fake MediaWiki::Gateway::Pages do
     end
 
     it "should pass options to RestClient::Request" do
-      gateway = MediaWiki::Gateway.new('http://dummy-wiki.example/w/api.php', {}, :verify_ssl => false)
+      gateway = MediaWiki::Gateway.new(@gateway.wiki_url, {}, verify_ssl: false)
       RestClient::Request.should receive(:execute).with(hash_including(:verify_ssl => false)).and_return([double(:elements => {})])
       gateway.get("").should be_nil
     end
