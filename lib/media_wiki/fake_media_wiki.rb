@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'sham_rack'
+require 'nokogiri'
 
 # A simple Rack app that stubs out a web service, for testing.
 
