@@ -1,0 +1,203 @@
+#! /usr/bin/env ruby
+
+require 'media_wiki'
+
+require 'optparse'
+require 'yaml'
+
+def mw(options)
+  MediaWiki::Gateway.new(options[:url], loglevel: options[:loglevel]).tap { |mw|
+    mw.login(options[:user], options[:pw]) if options[:user]
+  }
+end
+
+commands = {
+  create_page:     ['Update a MediaWiki article\'s content', lambda { |options|
+    abort 'Article name is mandatory.' unless article = ARGV.shift
+
+    puts mw(options).create(article, ARGF.read, overwrite: true, summary: options[:summary] || 'Automated edit via MediaWiki::Gateway')
+  }],
+  delete_batch:    ['Delete articles in batch', lambda { |options|
+    abort 'Article prefix is mandatory.' unless key = ARGV.shift
+
+    mw = mw(options)
+
+    mw.list(key).each { |title|
+      puts "Deleting #{title}..."
+      mw.delete(title)
+    }
+  }],
+  download_batch:  ['Download images in batch', lambda { |options|
+    mw = mw(options)
+
+    ARGF.each { |image|
+      image.strip!
+      File.write(image, mw.download(image)) unless File.exist?(image)
+    }
+  }],
+  email_user:      ['Send e-mail to a registered user', lambda { |options|
+    user, subject = ARGV.shift, ARGV.shift
+    abort 'User and subject are mandatory.' unless user && subject
+
+    mw(options).email_user(user, subject, ARGF.read)
+  }],
+  export_xml:      ['Export MediaWiki pages as XML', lambda { |options|
+    abort 'User is mandatory.' unless options[:user]
+
+    puts mw(options).export(ARGV)
+  }],
+  get_page:        ['Fetch a page\'s current contents in Wiki markup', lambda { |options|
+    abort 'Article name is mandatory.' unless article = ARGV.shift
+
+    puts mw(options).get(article)
+  }],
+  import_xml:      ['Import a MediaWiki XML dump', lambda { |options|
+    abort 'File name is mandatory.' unless file = ARGV.shift
+
+    mw(options).import(file)
+  }],
+  fake_media_wiki: ['Run a live FakeMediaWiki instance instead of just shamracking it', lambda {
+    require 'media_wiki/fake_media_wiki'
+
+    FakeMediaWiki::App.run!(host: 'localhost', port: 9090)
+  }],
+  search_content:  ['Search page contents in a Wiki', lambda { |options|
+    abort 'Search key is mandatory.' unless key = ARGV.shift
+
+    puts mw(options).search(key, nil, 50)
+  }],
+  semantic_query:  ['Query Semantic MediaWiki data', lambda { |options|
+    puts mw(options).semantic_query(ARGV.shift, ARGV)
+  }],
+  upload_commons:  ['Upload files to Mediawiki Commons (interactive)', lambda { |options|
+    abort 'File name is mandatory.' unless file = ARGV.shift
+
+    mw = mw(options)
+
+    puts 'Description of file:'
+    desc = STDIN.gets.chomp
+
+    puts 'Date of file:'
+    date = STDIN.gets.chomp
+
+    puts 'Target filename (leave blank to use existing name):'
+    target = STDIN.gets.chomp
+    target = options[:target] if target.empty?
+
+    puts 'Categories, separated by commas:'
+    cats = STDIN.gets.chomp.split(',')
+
+    puts "Uploading #{file} to #{target || file}..."
+    mw.upload(file, target: target, description: <<-EOT, summary: options[:summary] || 'Uploaded by MediaWiki::Gateway')
+== Summary ==
+{{Information
+|Description={{en|1=#{desc}}}
+|Source={{own}}
+|Author=[[User:#{options[:user]}|#{options[:user]}]]
+|Date=#{date}
+|Permission=
+|other_versions=
+}}
+
+== Licensing ==
+{{self|cc-by-sa-3.0|GFDL}}
+
+#{cats.map { |cat| "[[Category:#{cat}]]" }.join("\n")}
+    EOT
+  }],
+  upload_file:     ['Upload a file to a Wiki', lambda { |options|
+    abort 'File name is mandatory.' unless file = ARGV.shift
+
+    mw(options).upload(file, target: options[:target], description: options[:description], summary: options[:summary] || 'Uploaded by MediaWiki::Gateway')
+  }]
+}
+
+def commands.list
+  l = keys.map(&:length).max
+  map { |c, (d, _)| "  #{c.to_s.ljust(l)} - #{d}" }.unshift('Available commands:')
+end
+
+usage = <<-EOT
+Usage: #{$0} <command> [options]
+       #{$0} [-h|--help] [--version]
+EOT
+
+options = { loglevel: Logger::WARN }
+
+OptionParser.new { |opts|
+  opts.banner = usage
+
+  opts.separator ''
+
+  opts.on('-w', '--url URL', 'MediaWiki API URL') { |url|
+    options[:url] = url
+  }
+
+  opts.on('-u', '--username USERNAME', 'Username for login') { |user|
+    options[:user] = user
+  }
+
+  opts.on('-p', '--password PASSWORD', 'Password for login') { |pw|
+    options[:pw] = pw
+  }
+
+  opts.separator ''
+
+  opts.on('-H', '--host HOST', 'Use preconfigured HOST in hosts.yml') { |host_id|
+    host = YAML.load_file('hosts.yml').fetch(host_id) {
+      abort "Host #{host_id} not found in hosts.yml"
+    }
+
+    options[:url]  = host['url']
+    options[:pw]   = host['pw']
+    options[:user] = host['user']
+  }
+
+  opts.separator ''
+  opts.separator 'Edit options:'
+
+  opts.on('-s', '--summary SUMMARY', 'Edit summary for this change') { |summary|
+    options[:summary] = summary
+  }
+
+  opts.separator ''
+  opts.separator 'Upload options:'
+
+  opts.on('-d', '--description DESCRIPTION', 'Description of file to upload') { |description|
+    options[:description] = description
+  }
+
+  opts.on('-t', '--target-file TARGET-FILE', 'Target file name to upload to') { |target|
+    options[:target] = target
+  }
+
+  opts.separator ''
+  opts.separator 'Generic options:'
+
+  opts.on('-D', '--debug', 'Set log level to debug') {
+    options[:loglevel] = Logger::DEBUG
+  }
+
+  opts.on('-h', '--help', 'Print this help message and exit') {
+    puts opts
+    exit
+  }
+
+  opts.on('--version', 'Print program version and exit') {
+    puts "#{File.basename($0)} v#{MediaWiki::VERSION}"
+    exit
+  }
+
+  opts.separator ''
+  opts.separator commands.list
+}.parse!
+
+abort usage if ARGV.empty?
+
+command = commands.fetch(key = ARGV.shift.tr('-', '_').to_sym) {
+  abort "Invalid command: #{key}\n\n#{commands.list.join("\n")}"
+}.last
+
+command.arity.zero? ? command.call :
+  options[:url] ? command[options] :
+  abort('URL (-u) or valid host (-H) is mandatory.')
