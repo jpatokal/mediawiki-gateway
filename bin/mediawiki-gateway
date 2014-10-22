@@ -56,10 +56,10 @@ commands = {
 
     mw(options).import(file)
   }],
-  fake_media_wiki: ['Run a live FakeMediaWiki instance instead of just shamracking it', lambda {
+  fake_media_wiki: ['Run a live FakeWiki instance instead of just shamracking it', lambda {
     require 'media_wiki/fake_wiki'
 
-    FakeMediaWiki::App.run!(host: 'localhost', port: 9090)
+    MediaWiki::FakeWiki::App.run!(host: 'localhost', port: 9090)
   }],
   search_content:  ['Search page contents in a Wiki', lambda { |options|
     abort 'Search key is mandatory.' unless key = ARGV.shift

@@ -18,7 +18,7 @@ RSpec.configure { |config|
     require 'media_wiki/fake_wiki'
 
     { fake: true }.tap { |filter|
-      FakeMediaWiki::RSpecAdapter.enhance(config, filter) }
+      MediaWiki::FakeWiki::RSpecAdapter.enhance(config, filter) }
   end
 
   config.alias_example_group_to :describe_live, begin
