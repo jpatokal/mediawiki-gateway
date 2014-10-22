@@ -7,7 +7,13 @@ module MediaWiki
 
   class Gateway
 
-    attr_reader :log
+    USER_AGENT = "#{self}/#{VERSION}"
+
+    class << self
+
+      attr_accessor :default_user_agent
+
+    end
 
     # Set up a MediaWiki::Gateway for a given MediaWiki installation
     #
@@ -24,6 +30,7 @@ module MediaWiki
     # [:maxlag] Maximum allowed server lag (see http://www.mediawiki.org/wiki/Manual:Maxlag_parameter), defaults to 5 seconds.
     # [:retry_count] Number of times to try before giving up if MediaWiki returns 503 Service Unavailable, defaults to 3 (original request plus two retries).
     # [:retry_delay] Seconds to wait before retry if MediaWiki returns 503 Service Unavailable, defaults to 10 seconds.
+    # [:user_agent] User-Agent header to send with requests, defaults to ::default_user_agent or nil.
     def initialize(url, options = {}, http_options = {})
       @options = {
         bot:         false,
@@ -33,19 +40,20 @@ module MediaWiki
         max_results: 500,
         maxlag:      5,
         retry_count: 3,
-        retry_delay: 10
+        retry_delay: 10,
+        user_agent:  self.class.default_user_agent
       }.merge(options)
 
       @log = Logger.new(@options[:logdevice])
       @log.level = @options[:loglevel]
 
       @http_options, @wiki_url, @cookies, @headers = http_options, url, {}, {
-        'User-Agent'      => "#{self.class}/#{MediaWiki::VERSION}",
+        'User-Agent'      => [@options[:user_agent], USER_AGENT].compact.join(' '),
         'Accept-Encoding' => 'gzip'
       }
     end
 
-    attr_reader :wiki_url, :cookies
+    attr_reader :log, :wiki_url, :cookies, :headers
 
     # Make generic request to API
     #

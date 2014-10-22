@@ -47,6 +47,24 @@ Simple page creation script:
     mw.login('RubyBot', 'pa$$w0rd')
     mw.create('PageTitle', 'Hello world!', summary: 'My first page')
 
+## Changing the default User-Agent
+
+In order to comply with Wikimedia's [User-Agent policy](https://meta.wikimedia.org/wiki/User-Agent_policy), you are strongly advised to provide your own User-Agent header when accessing Wikimedia websites. The User-Agent information should include the name and version of your bot as well as a URL (homepage, repository) and contact e-mail.
+
+You can set the default User-Agent globally:
+
+```ruby
+MediaWiki::Gateway.default_user_agent = 'MyCoolTool/1.1 (http://example.com/MyCoolTool/; MyCoolTool@example.com)'
+```
+
+You can also set it on an instance by instance basis, overriding the global default:
+
+```ruby
+mw = MediaWiki::Gateway.new('http://my-wiki.example/w/api.php', user_agent: 'MyCoolTool/1.1 (http://example.com/MyCoolTool/; MyCoolTool@example.com)')
+```
+
+You only need to provide the part that identifies your own bot, an additional part denoting that your bot is based on MediaWiki::Gateway is appended automatically.
+
 ## Development environment
 
 To compile and test MediaWiki::Gateway locally, install its development dependencies:

@@ -1,5 +1,53 @@
 describe_fake MediaWiki::Gateway do
 
+  describe 'setting the User-Agent header' do
+
+    ua = described_class::USER_AGENT
+
+    def expect_user_agent(expected, actual = default = true)
+      options = default ? {} : { user_agent: actual }
+      gateway = described_class.new('test.wiki', options)
+      expect(gateway.headers['User-Agent']).to eq(expected)
+    end
+
+    it 'should default to generic value' do
+      expect_user_agent ua
+    end
+
+    it 'should ignore nil value' do
+      expect_user_agent ua, nil
+    end
+
+    it 'should prepend given value' do
+      expect_user_agent "Foo/4.2 #{ua}", 'Foo/4.2'
+    end
+
+    describe 'with global default' do
+
+      before do
+        described_class.default_user_agent = 'Bar/2.3'
+      end
+
+      after do
+        described_class.default_user_agent = nil
+      end
+
+      it 'should default to global value' do
+        expect_user_agent "Bar/2.3 #{ua}"
+      end
+
+      it 'should accept nil value' do
+        expect_user_agent ua, nil
+      end
+
+      it 'should override with given value' do
+        expect_user_agent "Foo/4.2 #{ua}", 'Foo/4.2'
+      end
+
+    end
+
+  end
+
   describe "#get_token" do
 
     describe "when not logged in" do
