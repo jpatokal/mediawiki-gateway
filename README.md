@@ -18,6 +18,26 @@ Git:  https://github.com/jpatokal/mediawiki-gateway
 
 Travis CI: https://travis-ci.org/jpatokal/mediawiki-gateway
 
+## Installation
+
+To install MediaWiki::Gateway, execute the command:
+
+```shell
+$ gem install mediawiki-gateway
+```
+
+Or add it to your application's `Gemfile`:
+
+```ruby
+gem 'mediawiki-gateway'
+```
+
+and then execute the command:
+
+```shell
+$ bundle
+```
+
 ## Example
 
 Simple page creation script:
@@ -54,5 +74,6 @@ This gem is no longer in active development.  Pull requests that fix bugs or add
 Loosely maintained by Jani Patokallio and [Jens Wille](https://github.com/blackwinter).  If you'd be seriously interested in joining as an active maintainer, drop us a line!
 
 Thanks to:
+
 * John Carney, Mike Williams, Daniel Heath and the rest of the Lonely Planet Atlas team.
 * Github users for code contributions, see https://github.com/jpatokal/mediawiki-gateway/pulls
