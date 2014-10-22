@@ -57,7 +57,7 @@ commands = {
     mw(options).import(file)
   }],
   fake_media_wiki: ['Run a live FakeMediaWiki instance instead of just shamracking it', lambda {
-    require 'media_wiki/fake_media_wiki'
+    require 'media_wiki/fake_wiki'
 
     FakeMediaWiki::App.run!(host: 'localhost', port: 9090)
   }],
