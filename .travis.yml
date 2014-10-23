@@ -23,4 +23,5 @@ script:
   rake spec
 
 install:
-  gem install --prerelease --development mediawiki-gateway
+  - gem install nuggets
+  - gem install --prerelease --development mediawiki-gateway
