@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 describe MediaWiki::Utils do
 
   describe '::get_path_to_subpage' do
