@@ -2,6 +2,19 @@
 
 = Revision history for mediawiki-gateway
 
-== 0.7.0 [unreleased]
+== 1.0.0 [2014-10-31]
 
-* ...
+* <b>Required Ruby version is now 1.9.3 or higher.</b>
+* For better Unicode support, install the +unicode+ or +activesupport+ gem.
+* API methods are grouped into submodules of MediaWiki::Gateway.
+* MediaWiki::Utils has been added as a proper module.
+* MediaWiki::FakeWiki has been added as a first-class citizen.
+* MediaWiki::Config has been removed.
+* MediaWiki::Gateway#send_request allows generic API requests.
+* MediaWiki::Gateway::Query#custom_query has been made public.
+* MediaWiki::Gateway::new learned +user_agent+ option.
+* MediaWiki::Gateway#headers attribute has been exposed.
+* MediaWiki::Gateway#wiki_url attribute has been exposed.
+* Added +mediawiki-gateway+ command-line client.
+* Changed or removed some of the dependencies.
+* Housekeeping and internal refactoring.

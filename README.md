@@ -9,7 +9,7 @@ A Ruby framework for [MediaWiki API](http://www.mediawiki.org/wiki/API:Main_page
 * List, search operations work around API limits to fetch all results
 * Support for maxlag detection and automated retries on 503
 * Integrated logging
-* Tested up to MediaWiki 1.22
+* Tested up to MediaWiki 1.23
 * Should work with Ruby 1.9.3 and higher
 
 ## Links
@@ -80,24 +80,28 @@ You only need to provide the part that identifies your own bot, an additional pa
 To compile and test MediaWiki::Gateway locally, install its development dependencies:
 
 ```shell
-gem install --development mediawiki-gateway
+$ gem install --development mediawiki-gateway
 ```
 
 Then this will list the available options:
 
 ```shell
-rake -T
+$ rake -T
 ```
 
 To build and install the gem use:
 
 ```shell
-rake gem:install
+$ rake gem:install
 ```
 
 ### Testing against a live MediaWiki instance
 
 You need to have [Docker](https://docker.com) and [mediawiki-testwiki](https://rubygems.org/gems/mediawiki-testwiki) installed.
+
+## Versioning
+
+This project adheres to the [Semantic Versioning Specification](http://semver.org/).
 
 ## Status
 

@@ -2,15 +2,15 @@ module MediaWiki
 
   module Version
 
-    MAJOR = 0
-    MINOR = 6
-    TINY  = 2
+    MAJOR = 1
+    MINOR = 0
+    PATCH = 0
 
     class << self
 
       # Returns array representation.
       def to_a
-        [MAJOR, MINOR, TINY]
+        [MAJOR, MINOR, PATCH]
       end
 
       # Short-cut for version string.
