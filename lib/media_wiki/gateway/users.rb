@@ -51,6 +51,7 @@ module MediaWiki
         )) { |element|
           result << hash = {}
           element.attributes.each { |key, value| hash[key] = value }
+          break if count and result.size >= count
         }
 
         count ? result.take(count) : result
