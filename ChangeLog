@@ -2,6 +2,11 @@
 
 = Revision history for mediawiki-gateway
 
+== 1.0.1 [unreleased]
+
+* Fixed MediaWiki::Gateway::Users#contributions to not continue when enough
+  contributions have been received. Pull request #79 by Michaël Witrant.
+
 == 1.0.0 [2014-10-31]
 
 * <b>Required Ruby version is now 1.9.3 or higher.</b>

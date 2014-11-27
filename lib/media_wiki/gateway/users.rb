@@ -37,8 +37,8 @@ module MediaWiki
 
       # Get user contributions
       #
-      # user: The user name
-      # count: Maximum number of contributions to retreive, or nil for all
+      # [user] The user name
+      # [count] Maximum number of contributions to retrieve, or nil for all
       # [options] Optional hash of options, eg. { 'ucnamespace' => 4 }.  See http://www.mediawiki.org/wiki/API:Usercontribs
       #
       # Returns array of hashes containing the "item" attributes defined here: http://www.mediawiki.org/wiki/API:Usercontribs
@@ -51,7 +51,7 @@ module MediaWiki
         )) { |element|
           result << hash = {}
           element.attributes.each { |key, value| hash[key] = value }
-          break if count and result.size >= count
+          break if count && result.size >= count
         }
 
         count ? result.take(count) : result
