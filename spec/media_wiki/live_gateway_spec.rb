@@ -753,7 +753,7 @@ end
 unless (pool_size = Integer(ENV['LIVE_POOL_SIZE'] || 2)) > 1
   warn 'Docker pool size must be greater than 1.'
 else
-  ENV.fetch('LIVE_VERSION', '1.23.4').split(/[\s:,]/).each { |version|
+  ENV.fetch('LIVE_VERSION', '1.23.7').split(/[\s:,]/).each { |version|
     describe_live(MediaWiki::Gateway, version: version, pool_size: pool_size) {
       include_examples 'live gateway'
     }
