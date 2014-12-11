@@ -274,6 +274,7 @@ module MediaWiki
       def category_members(category, options = {})
         iterate_query('categorymembers', '//cm', 'title', 'cmcontinue', options.merge(
           'cmtitle' => category,
+          'continue' => '', # new format, per https://www.mediawiki.org/wiki/API:Query#Continuing_queries
           'cmlimit' => @options[:limit]
         ))
       end
