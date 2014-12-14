@@ -164,6 +164,51 @@ module MediaWiki
         end
       end
 
+      # Get a list of all local (same wiki) usages of a given file
+      #
+      # [filename] Name of the file (e.g. 'File:Tetrapyloctomy.jpg')
+      # [options]
+      #
+      # Returns a list of page names
+
+      def imageusage(filename, options = {})
+        iterate_query('imageusage', '//iu', 'title', 'iufrom', options.merge(
+          'iutitle' => filename,
+          'iunamespace' => 0,
+          'continue' => '',
+          'iulimit' => @options[:limit]
+         ))
+      end
+
+      # Get a list of all global (cross wiki) usages of a given file (relies on the GlobalUsage extension)
+      #
+      # [filename] Name of the file (e.g. 'File:Tetrapyloctomy.jpg')
+      # [options]
+      #
+      # Returns a hash of sites with an array of page names using the image on each site
+
+      def globalusage(filename, options = {})
+        form_data = options.merge(
+          'action' => 'query',
+          'prop' => 'globalusage',
+          'titles' => filename,
+          'gulimit' => @options[:limit],
+          'continue' => '',
+          'guprop' => 'url|pageid|namespace'
+        )
+        xml = send_request(form_data)
+        ret = {} # hash 
+        if valid_page?(page = xml.elements['query/pages/page'])
+          if gu = REXML::XPath.match(page, 'globalusage/gu')
+            gu.each {|usage|
+              next unless usage.attributes['ns'] == '0' # only include article space usage
+              ret[usage.attributes['wiki']] = [] unless ret.has_key?(usage.attributes['wiki'])
+              ret[usage.attributes['wiki']] << usage.attributes['title']
+            }
+          end
+        end
+        return ret
+      end
     end
 
     include Files
