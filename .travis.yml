@@ -5,6 +5,7 @@ rvm:
   - '1.9'
   - '2.0'
   - '2.1'
+  - '2.2'
   - ruby-head
   - jruby-19mode
   - jruby-head
@@ -25,3 +26,6 @@ script:
 install:
   - gem install nuggets
   - gem install --prerelease --development mediawiki-gateway
+
+sudo:
+  false
