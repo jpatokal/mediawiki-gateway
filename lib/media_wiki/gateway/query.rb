@@ -55,13 +55,13 @@ module MediaWiki
         if smw_version.to_f >= 1.7
           send_request(options.merge(
             'action' => 'ask',
-            'query'  => "#{query}|#{params.join('|')}"
+            'query'  => [query, *params].join('|')
           ))
         else
           send_request(options.merge(
             'action' => 'parse',
             'prop'   => 'text',
-            'text'   => "{{#ask:#{query}|#{params.push('format=list').join('|')}}}"
+            'text'   => "{{#ask:#{[query, 'format=list', *params].join('|')}}}"
           )).elements['parse/text'].text
         end
       end
