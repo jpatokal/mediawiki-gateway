@@ -113,23 +113,23 @@ module MediaWiki
 
       # Edit page
       #
-      # Same options as create, but always overwrites existing pages (and creates them if they don't exist already).
+      # Same options as create
       def edit(title, content, options = {})
         form_data = options.merge({
-          'action'  => 'edit',
-          'title'   => title,
-          'text'    => content,
-          'summary' => options[:summary] || '',
-          'token'   => get_token('edit', title)
+          action:  'edit',
+          title:   title,
+          text:    content,
+          summary: options[:summary] || '',
+          token:   get_token('edit', title)
         })
 
         if @options[:bot] || options[:bot]
-          form_data.update('bot' => '1', 'assert' => 'bot')
+          form_data.update(bot: '1', assert: 'bot')
         end
 
-        form_data['minor']      = '1' if options[:minor]
-        form_data['notminor']   = '1' if options[:minor] == false || options[:notminor]
-        form_data['section']    = options[:section].to_s if options[:section]
+        form_data[:minor]    = '1' if options[:minor]
+        form_data[:notminor] = '1' if options[:minor] == false || options[:notminor]
+        form_data[:section]  = options[:section].to_s if options[:section]
 
         send_request(form_data)
       end
