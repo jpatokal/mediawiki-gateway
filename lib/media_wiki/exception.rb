@@ -1,7 +1,7 @@
 module MediaWiki
 
   # General exception occurred within MediaWiki::Gateway, and parent class for MediaWiki::APIError, MediaWiki::Unauthorized.
-  class Exception < ::Exception
+  class Exception < ::StandardError
   end
 
   # Wrapper for errors returned by MediaWiki API.  Possible codes are defined in http://www.mediawiki.org/wiki/API:Errors_and_warnings.
