@@ -173,7 +173,7 @@ module MediaWiki
 
     # Execute the HTTP request using either GET or POST as appropriate
     def http_send url, form_data, headers, &block
-      opts = @http_options.merge(url: url, headers: headers)
+      opts = @http_options.merge(url: url, headers: headers, verify_ssl: false)
       opts[:method] = form_data['action'] == 'query' ? :get : :post
       opts[:method] == :get ? headers[:params] = form_data : opts[:payload] = form_data
 
