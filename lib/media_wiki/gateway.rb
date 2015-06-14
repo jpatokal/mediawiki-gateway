@@ -71,12 +71,10 @@ module MediaWiki
     def get_token(type, page_titles)
       res = send_request(
         'action'  => 'query',
-        'prop'    => 'info',
-        'intoken' => type,
-        'titles'  => page_titles
+        'meta'    => 'tokens'
       )
 
-      unless token = res.elements['query/pages/page'].attributes[type + 'token']
+      unless token = res.elements['query/tokens'].attributes["csrftoken"]
         raise Unauthorized.new "User is not permitted to perform this operation: #{type}"
       end
 
