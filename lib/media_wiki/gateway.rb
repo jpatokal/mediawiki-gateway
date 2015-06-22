@@ -127,7 +127,7 @@ module MediaWiki
     def make_api_request(form_data, continue_xpath = nil, retry_count = 1)
       form_data.update('format' => 'xml', 'maxlag' => @options[:maxlag])
 
-      http_send(@wiki_url, form_data, @headers.merge(cookies: @cookies)) { |response, &block|
+      http_send(@wiki_url, form_data, @headers.merge(cookies: @cookies)) do |response|
         if response.code == 503 && retry_count < @options[:retry_count]
           log.warn("503 Service Unavailable: #{response.body}.  Retry in #{@options[:retry_delay]} seconds.")
           sleep(@options[:retry_delay])
@@ -168,10 +168,11 @@ module MediaWiki
 
         return [doc, (continue_xpath && doc.elements['query-continue']) ?
           REXML::XPath.first(doc, continue_xpath) : nil]
-      }
+      end
     end
 
-    # Execute the HTTP request using either GET or POST as appropriate
+    # Execute the HTTP request using either GET or POST as appropriate.
+    # @yieldparam response
     def http_send url, form_data, headers, &block
       opts = @http_options.merge(url: url, headers: headers)
       opts[:method] = form_data['action'] == 'query' ? :get : :post
@@ -179,7 +180,20 @@ module MediaWiki
 
       log.debug("#{opts[:method].upcase}: #{form_data.inspect}, #{@cookies.inspect}")
 
-      RestClient::Request.execute(opts, &block)
+      RestClient::Request.execute(opts) do |response, request, result|
+        # When a block is passed to RestClient::Request.execute, we must
+        # manually handle response codes ourselves. If no block is passed,
+        # then redirects are automatically handled, but HTTP errors also
+        # result in exceptions being raised. For now, we manually check for
+        # HTTP 503 errors (see: #make_api_request), but we must also manually
+        # handle HTTP redirects.
+        if [301, 302, 307].include?(response.code) && request.method == :get
+          response = response.follow_redirection(request, result)
+        end
+
+        block.call(response)
+      end
+
     end
 
     # Get API XML response
