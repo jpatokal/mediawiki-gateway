@@ -171,7 +171,8 @@ module MediaWiki
       end
     end
 
-    # Execute the HTTP request using either GET or POST as appropriate
+    # Execute the HTTP request using either GET or POST as appropriate.
+    # @yieldparam response
     def http_send url, form_data, headers, &block
       opts = @http_options.merge(url: url, headers: headers)
       opts[:method] = form_data['action'] == 'query' ? :get : :post
@@ -184,7 +185,8 @@ module MediaWiki
         # manually handle response codes ourselves. If no block is passed,
         # then redirects are automatically handled, but HTTP errors also
         # result in exceptions being raised. For now, we manually check for
-        # HTTP 503 errors
+        # HTTP 503 errors (see: #make_api_request), but we must also manually
+        # handle HTTP redirects.
         if [301, 302, 307].include?(response.code) && request.method == :get
           response = response.follow_redirection(request, result)
         end
