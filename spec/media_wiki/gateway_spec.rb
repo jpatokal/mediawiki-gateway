@@ -126,4 +126,37 @@ describe_fake MediaWiki::Gateway do
 
   end
 
+  describe 'receiving a maxlag error' do
+
+    before do
+      @log = double(:debug => nil, :warn => nil)
+      @maxlag_gateway = MediaWiki::Gateway.new(@gateway.wiki_url, maxlag: -1, retry_delay: 0)
+      allow(@maxlag_gateway).to receive(:log) { @log }
+    end
+
+    describe 'in HTTP 200, XML format' do
+
+      it 'should retry until retries are exceeded' do
+        lambda do
+          @maxlag_gateway.send_request({ 'maxlag_code' => 200 })
+        end.should raise_error(/Retries exceeded/)
+        @log.should have_received(:warn).with(/maxlag exceeded/).twice
+      end
+
+    end
+
+    describe 'in HTTP 503, plain format' do
+
+      it 'should retry until retries are exceeded' do
+        lambda do
+          @maxlag_gateway.send_request({ 'maxlag_code' => 503 })
+        end.should raise_error(/Retries exceeded/)
+
+        @log.should have_received(:warn).with("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").twice
+      end
+
+    end
+
+  end
+
 end
