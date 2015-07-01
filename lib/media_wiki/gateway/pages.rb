@@ -388,6 +388,19 @@ module MediaWiki
         send_request(form_data)
       end
 
+      # Purge MediaWiki page.  Does not follow redirects.
+      #
+      # [page_titles] Page titles to purge
+      # [options] Hash of additional options
+      #
+      # Returns purge object
+      def purge(page_titles, options = {})
+        page = send_request(options.merge(
+          'action' => 'purge',
+          'titles' => page_titles
+        ))
+      end
+
       private
 
       def get_undelete_token(page_titles)
