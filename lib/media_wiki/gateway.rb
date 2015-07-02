@@ -140,7 +140,7 @@ module MediaWiki
 
           log.warn("503 Service Unavailable: #{response.body}.  Retry in #{retry_delay} seconds.")
           sleep(retry_delay)
-          make_api_request(form_data, continue_xpath, retry_count + 1)
+          return make_api_request(form_data, continue_xpath, retry_count + 1)
         end
 
         # Check response for errors and return XML
@@ -163,7 +163,7 @@ module MediaWiki
 
           log.warn("maxlag exceeded: #{response.body}.  Retry in #{retry_delay} seconds.")
           sleep(retry_delay)
-          make_api_request(form_data, continue_xpath, retry_count + 1)
+          return make_api_request(form_data, continue_xpath, retry_count + 1)
         end
 
         # Handle any errors or warnings that were included in the response
