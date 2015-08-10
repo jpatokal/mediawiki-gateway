@@ -128,7 +128,7 @@ module MediaWiki
       # If this is our first try, then reset our warnings
       @warnings = [] if retry_count == 1
 
-      if retry_count >= @options[:retry_count]
+      if retry_count > @options[:retry_count]
         raise MediaWiki::Exception.new("Terminating after #{retry_count - 1} retries. Previous warnings:\n#{@warnings.join("\n\n")}")
       end
 
