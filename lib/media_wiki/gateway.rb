@@ -125,8 +125,11 @@ module MediaWiki
     #
     # Returns array of XML document and query continue parameter.
     def make_api_request(form_data, continue_xpath = nil, retry_count = 1)
+      # If this is our first try, then reset our warnings
+      @warnings = [] if retry_count == 1
+
       if retry_count >= @options[:retry_count]
-        raise MediaWiki::Exception.new("After #{retry_count - 1} retries: #{@last_warning}")
+        raise MediaWiki::Exception.new("Terminating after #{retry_count - 1} retries. Previous warnings:\n#{@warnings.join("\n\n")}")
       end
 
       form_data.update('format' => 'xml', 'maxlag' => @options[:maxlag])
@@ -138,9 +141,10 @@ module MediaWiki
             retry_delay = [@options[:retry_delay], response.headers[:retry_after].to_i].max
           end
 
-          @last_warning = "503 Service Unavailable: #{response.body}.  Retry in #{retry_delay} seconds."
-          @last_warning += " headers.Retry-After=#{response.headers[:retry_after]}" if response.headers.has_key?(:retry_after)
-          log.warn(@last_warning)
+          warning = "503 Service Unavailable: #{response.body}.  Retry in #{retry_delay} seconds."
+          warning += " headers.Retry-After=#{response.headers[:retry_after]}" if response.headers.has_key?(:retry_after)
+          @warnings.push(warning)
+          log.warn(warning)
           sleep(retry_delay)
           return make_api_request(form_data, continue_xpath, retry_count + 1)
         end
@@ -163,9 +167,10 @@ module MediaWiki
             retry_delay = [@options[:retry_delay], response.headers[:retry_after].to_i].max
           end
 
-          @last_warning = "maxlag exceeded: #{response.body}.  Retry in #{retry_delay} seconds."
-          @last_warning += " headers.Retry-After=#{response.headers[:retry_after]}" if response.headers.has_key?(:retry_after)
-          log.warn(@last_warning)
+          warning = "maxlag exceeded: #{response.body}.  Retry in #{retry_delay} seconds."
+          warning += " headers.Retry-After=#{response.headers[:retry_after]}" if response.headers.has_key?(:retry_after)
+          @warnings.push(warning)
+          log.warn(warning)
           sleep(retry_delay)
           return make_api_request(form_data, continue_xpath, retry_count + 1)
         end
