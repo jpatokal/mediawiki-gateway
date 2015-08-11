@@ -42,11 +42,11 @@ describe_fake MediaWiki::Gateway::Pages do
         allow(@fail_gateway).to receive(:log) { @log }
       end
 
-      it "should retry twice and fail" do
+      it "should retry until fail" do
         lambda {
           @fail_gateway.get("")
         }.should raise_error
-        @log.should have_received(:warn).with("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").twice
+        @log.should have_received(:warn).with("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").exactly(3).times
       end
 
     end

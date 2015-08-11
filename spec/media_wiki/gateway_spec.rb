@@ -140,7 +140,7 @@ describe_fake MediaWiki::Gateway do
         lambda do
           @maxlag_gateway.send_request({ 'maxlag_code' => 200 })
         end.should raise_error(/Retries exceeded/)
-        @log.should have_received(:warn).with(/maxlag exceeded/).twice
+        @log.should have_received(:warn).with(/maxlag exceeded/).exactly(3).times
       end
 
     end
@@ -152,7 +152,7 @@ describe_fake MediaWiki::Gateway do
           @maxlag_gateway.send_request({ 'maxlag_code' => 503 })
         end.should raise_error(/Retries exceeded/)
 
-        @log.should have_received(:warn).with("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").twice
+        @log.should have_received(:warn).with("503 Service Unavailable: Maxlag exceeded.  Retry in 0 seconds.").exactly(3).times
       end
 
     end

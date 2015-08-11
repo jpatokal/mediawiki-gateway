@@ -129,7 +129,7 @@ module MediaWiki
       @warnings = [] if retry_count == 1
 
       if retry_count > @options[:retry_count]
-        raise MediaWiki::Exception.new("Terminating after #{retry_count - 1} retries. Previous warnings:\n#{@warnings.join("\n\n")}")
+        raise MediaWiki::Exception.new("Retries exceeded: Terminating after #{retry_count - 1} retries. Previous warnings:\n#{@warnings.join("\n\n")}")
       end
 
       form_data.update('format' => 'xml', 'maxlag' => @options[:maxlag])
