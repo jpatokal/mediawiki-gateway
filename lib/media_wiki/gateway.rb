@@ -141,6 +141,14 @@ module MediaWiki
             retry_delay = [@options[:retry_delay], response.headers[:retry_after].to_i].max
           end
 
+          # If it's a maxlag error, parse the maxlag message to get the
+          # maxlag, since on Wikipedia they don't pass the maxlag through the
+          # header.
+          match = response.body.match /Retry in (\d+) seconds/
+          if match
+            retry_delay = [retry_delay, match[1].to_i].max
+          end
+
           warning = "503 Service Unavailable: #{response.body}.  Retry in #{retry_delay} seconds."
           warning += " headers.Retry-After=#{response.headers[:retry_after]}" if response.headers.has_key?(:retry_after)
           @warnings.push(warning)
@@ -163,8 +171,18 @@ module MediaWiki
         # response.
         if response.has_error? && response.error_code == 'maxlag'
           retry_delay = @options[:retry_delay]
+
+          # For Wikipedia, it seems like this header value is always 5, so
+          # it's not useful.
           if response.headers.has_key?(:retry_after)
-            retry_delay = [@options[:retry_delay], response.headers[:retry_after].to_i].max
+            retry_delay = [retry_delay, response.headers[:retry_after].to_i].max
+          end
+
+          # Parse the maxlag message to get the maxlag, since on Wikipedia
+          # they don't pass the maxlag through the header.
+          match = response.error_info.match /(\d+) seconds lagged/
+          if match
+            retry_delay = [retry_delay, match[1].to_i].max
           end
 
           warning = "maxlag exceeded: #{response.body}.  Retry in #{retry_delay} seconds."
