@@ -25,7 +25,7 @@ module MediaWiki
         if namespaces
           form_data['srnamespace'] = Array(namespaces).map! { |ns|
             namespaces_by_prefix[ns]
-          }.join('|')
+          }.compact.join('|')
         end
 
         begin
