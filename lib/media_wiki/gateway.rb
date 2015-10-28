@@ -71,12 +71,10 @@ module MediaWiki
     def get_token(type, page_titles)
       res = send_request(
         'action'  => 'query',
-        'prop'    => 'info',
-        'intoken' => type,
-        'titles'  => page_titles
+        'meta'    => 'tokens'
       )
 
-      unless token = res.elements['query/pages/page'].attributes[type + 'token']
+      unless token = res.elements['query/tokens'].attributes["csrftoken"]
         raise Unauthorized.new "User is not permitted to perform this operation: #{type}"
       end
 
@@ -174,7 +172,7 @@ module MediaWiki
     # Execute the HTTP request using either GET or POST as appropriate.
     # @yieldparam response
     def http_send url, form_data, headers, &block
-      opts = @http_options.merge(url: url, headers: headers)
+      opts = @http_options.merge(url: url, headers: headers, verify_ssl: false)
       opts[:method] = form_data['action'] == 'query' ? :get : :post
       opts[:method] == :get ? headers[:params] = form_data : opts[:payload] = form_data
 

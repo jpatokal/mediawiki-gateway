@@ -113,9 +113,25 @@ module MediaWiki
 
       # Edit page
       #
-      # Same options as create, but always overwrites existing pages (and creates them if they don't exist already).
+      # Same options as create
       def edit(title, content, options = {})
-        create(title, content, { overwrite: true }.merge(options))
+        form_data = options.merge({
+          action:  'edit',
+          title:   title,
+          text:    content,
+          summary: options[:summary] || '',
+          token:   get_token('edit', title)
+        })
+
+        if @options[:bot] || options[:bot]
+          form_data.update(bot: '1', assert: 'bot')
+        end
+
+        form_data[:minor]    = '1' if options[:minor]
+        form_data[:notminor] = '1' if options[:minor] == false || options[:notminor]
+        form_data[:section]  = options[:section].to_s if options[:section]
+
+        send_request(form_data)
       end
 
       # Protect/unprotect a page
@@ -342,6 +358,19 @@ module MediaWiki
         end
       end
 
+      # Purge MediaWiki page. Does not follow redirects.
+      #
+      # [page_titles] Page titles to purge
+      # [options] Hash of additional options
+      #
+      # Returns purge object
+      def purge(page_titles, options = {})
+        page = send_request(options.merge(
+          'action' => 'purge',
+          'titles' => page_titles
+        ))
+      end
+
       # Convenience wrapper for _langlinks_ returning the title in language _lang_ (ISO code) for a given article of pageid, if it exists, via the interlanguage link
       #
       # Example:
@@ -370,6 +399,19 @@ module MediaWiki
         flags.each { |k, v| form_data["flag_#{k}"] = v }
 
         send_request(form_data)
+      end
+
+      # Purge MediaWiki page.  Does not follow redirects.
+      #
+      # [page_titles] Page titles to purge
+      # [options] Hash of additional options
+      #
+      # Returns purge object
+      def purge(page_titles, options = {})
+        page = send_request(options.merge(
+          'action' => 'purge',
+          'titles' => page_titles
+        ))
       end
 
       private
