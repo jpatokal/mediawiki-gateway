@@ -358,6 +358,19 @@ module MediaWiki
         end
       end
 
+      # Purge MediaWiki page. Does not follow redirects.
+      #
+      # [page_titles] Page titles to purge
+      # [options] Hash of additional options
+      #
+      # Returns purge object
+      def purge(page_titles, options = {})
+        page = send_request(options.merge(
+          'action' => 'purge',
+          'titles' => page_titles
+        ))
+      end
+
       # Convenience wrapper for _langlinks_ returning the title in language _lang_ (ISO code) for a given article of pageid, if it exists, via the interlanguage link
       #
       # Example:
