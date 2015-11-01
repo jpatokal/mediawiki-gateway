@@ -70,7 +70,18 @@ module MediaWiki
 
       def handle_request
         begin
-          halt(503, "Maxlag exceeded") if params[:maxlag].to_i < 0
+          if params[:maxlag].to_i < 0
+            maxlag = params[:maxlag].to_i
+            # Some versions of mediawiki return an XML response with HTTP 200.
+            if params[:maxlag_code].to_i == 200
+              content_type "application/xml"
+              return maxlag_response(maxlag.abs)
+            else
+              # The documentation states that mediawiki should return
+              # a text/plain response with HTTP 503.
+              halt(503, "Maxlag exceeded")
+            end
+          end
 
           @token = ApiToken.new(params)
           action = params[:action]
@@ -464,6 +475,14 @@ module MediaWiki
                 _.group(added_group)
               end
             end
+          end
+        end
+      end
+
+      def maxlag_response(maxlag)
+        api_response do |_|
+          _.error(:code => "maxlag", :info => "Waiting for 127.0.0.1: #{maxlag} seconds lagged") do
+            _.text("See https://en.wikipedia.org/w/api.php for API usage")
           end
         end
       end
