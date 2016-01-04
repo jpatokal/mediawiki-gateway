@@ -2,6 +2,10 @@
 
 A Ruby framework for [MediaWiki API](http://www.mediawiki.org/wiki/API:Main_page) manipulation.
 
+**Note**: This library is not actively maintained and uses deprecated API methods.
+If you are starting a new project, please use the official Wikimedia Ruby client at
+https://github.com/wikimedia/mediawiki-ruby-api instead.
+
 ## Features
 
 * Simple, elegant syntax for common operations
@@ -9,7 +13,8 @@ A Ruby framework for [MediaWiki API](http://www.mediawiki.org/wiki/API:Main_page
 * List, search operations work around API limits to fetch all results
 * Support for maxlag detection and automated retries on 503
 * Integrated logging
-* Tested up to MediaWiki 1.23
+* Tested up to MediaWiki 1.24
+  * For 1.25+, you must skip deprecation warnings with `:ignorewarnings => true` in `MediaWiki::Gateway.new`.  See issue #69.
 * Should work with Ruby 1.9.3 and higher
 
 ## Links
