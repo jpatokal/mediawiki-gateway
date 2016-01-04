@@ -14,7 +14,7 @@ https://github.com/wikimedia/mediawiki-ruby-api instead.
 * Support for maxlag detection and automated retries on 503
 * Integrated logging
 * Tested up to MediaWiki 1.24
-  * For 1.25+, you must skip deprecation warnings with `:ignorewarnings => true` in `MediaWiki::Gateway.new`.  See issue #69.
+  * For 1.25+, you must skip deprecation warnings with `:ignorewarnings => true` in `MediaWiki::Gateway.new`.  See [issue #69](https://github.com/jpatokal/mediawiki-gateway/issues/69).
 * Should work with Ruby 1.9.3 and higher
 
 ## Links
