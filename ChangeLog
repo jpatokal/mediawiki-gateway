@@ -2,8 +2,18 @@
 
 = Revision history for mediawiki-gateway
 
-== 1.0.1 [unreleased]
+== 1.1.0 [2016-01-05]
 
+* Allow empty params for semantic_query.
+* Add a method to purge a page.  Pull request #93 by MusikAnimal.
+* Follow redirects if HTTP 301, 302 or 307 is returned.  Pull request #86
+  by Brandon Liu.
+* Change exception superclass to StandardError.  Pull request #85 by
+  Brandon Liu.
+* Fixed categorymembers to use new continue rules. Pull request #82
+  by Asaf Bartov.
+* Fix search to return nil if namespace not found.  Pull request #88 by
+  Alexander Adrianov.
 * Fixed MediaWiki::Gateway::Users#contributions to not continue when enough
   contributions have been received. Pull request #79 by Michaël Witrant.
 
