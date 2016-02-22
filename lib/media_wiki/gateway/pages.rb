@@ -99,7 +99,7 @@ module MediaWiki
           'token'   => get_token('edit', title)
         }
 
-        if @options[:bot] || options[:bot]
+        if options[:bot] != false && (@options[:bot] || options[:bot])
           form_data.update('bot' => '1', 'assert' => 'bot')
         end
 
